@@ -1,0 +1,243 @@
+<?php
+/** 
+ * This file is part of framework Obo Development version (http://www.obophp.org/)
+ * @link http://www.obophp.org/
+ * @author Adam Suba, http://www.adamsuba.cz/
+ * @copyright (c) 2011 - 2013 Adam Suba
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ */
+
+namespace obo\Services\EntitiesInformation;
+
+class Explorer extends \obo\Object {
+    
+    /**
+     * @var string[]
+     */
+    private $annotationsDefinitions = array();
+    
+    /**
+     * @param string $className
+     * @return string 
+     */
+    private function propertiesClassNameForEntityWithClassName($className) {
+        if (!\class_exists($propertiesClassName = $className . "Properties")) {
+            foreach ($className::ancestorsClass() as $ancestorClass) {
+                if ($ancestorClass === "obo\Object") {
+                    $propertiesClassName = "\obo\EntityProperties";
+                    break;
+                } elseif (\class_exists($ancestorClass::entityInformation()->propertiesClassName)) {
+                    $propertiesClassName = $ancestorClass::entityInformation()->propertiesClassName;
+                    break;
+                }
+            }
+        }
+        
+        return $propertiesClassName;
+    }
+    
+    /**
+     * @param string $className
+     * @return string 
+     */
+    private function defaultRepositoryNameForEntityWithClassName($className) {
+        $repositoryName = "";
+        foreach (\explode("\\", $className) as $namePart) $repositoryName .= \ucfirst($namePart);
+        return $repositoryName;
+    }
+    
+    /**
+     * @param mixed $annotationValue
+     * @return array 
+     */
+    private function standardizeAnnotationValue($annotationValue) {
+        if ($annotationValue[0] === true) return array();
+        return $annotationValue[0] instanceof \ArrayObject ? (array) $annotationValue[0] : array($annotationValue[0]) ;
+    }
+    
+    /**
+     * @param string $annotationName
+     * @param string $scope
+     * @return boolean
+     * @throws \obo\Exceptions\BadAnnotationException 
+     */
+    public function existAnnotationWithNameForScope($annotationName, $scope) {
+        if (\strpos($annotationName, "obo-") !== 0) return false;
+        if (!isset($this->annotationsDefinitions["{$scope}-{$annotationName}"])) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$annotationName}' for {$scope} does not exist");
+        return true;
+    }
+    
+    /**
+     * @param string $annotationName
+     * @param string $scope
+     * @return \obo\Annotation\Definition 
+     */
+    public function annotationClassWithNameForScope($annotationName, $scope) {
+        return $this->existAnnotationWithNameForScope($annotationName, $scope) ? $this->annotationsDefinitions["{$scope}-{$annotationName}"] : null;
+    }
+    
+    /**
+     * @param \obo\Annotation\Definition $annotationDefinition 
+     * @return void
+     */
+    public function registerAnnotation($annotationClassName) {
+        $this->annotationsDefinitions[$annotationClassName::scope() . "-obo-" . $annotationClassName::name()] = $annotationClassName;
+    }
+    
+    /**
+     * @param \obo\Annotation\Definition $annotationDefinition 
+     * @return void
+     */
+    public function unregisterAnnotation($annotationClassName) {
+        unset($this->annotationsDefinitions[$annotationClassName::scope() . "-obo-" . $annotationClassName::name()]);
+    }
+    
+    /**
+     * @param string $annotationName
+     * @param array $annotationValue
+     * @param \obo\Carriers\EntityInformationCarrier $entityInformation
+     * @return void 
+     */
+    private function processAnnotationWithNameAndValueForEntity($annotationName, array $annotationValue, \obo\Carriers\EntityInformationCarrier $entityInformation) {
+        if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::ENTITY_SCOPE))) return;
+        
+        $annotation = new $annotationClass($entityInformation);
+        $annotation->proccess($annotationValue);
+        $entityInformation->annotations[] = $annotation;
+    }
+    
+    /**
+     * @param string $annotationName
+     * @param array $annotationValue
+     * @param \obo\Carriers\EntityInformationCarrier $informationCarrier
+     * @param string $methodName
+     * @return void 
+     */
+    private function processAnnotationWithNameAndValueForMethodWithName($annotationName, array $annotationValue, \obo\Carriers\EntityInformationCarrier $entityInformation, $methodName) {
+        if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::METHOD_SCOPE))) return;
+        
+        $annotation = new $annotationClass($entityInformation, $methodName);
+        $annotation->proccess($annotationValue);
+        $entityInformation->annotations[] = $annotation;
+    }
+    
+    /**
+     * @param string $annotationName
+     * @param array $annotationValue
+     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
+     * @return void 
+     */
+    private function processAnnotationWithNameAndValueForProperty($annotationName, array $annotationValue, \obo\Carriers\PropertyInformationCarrier $propertyInformation) {
+        if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::PROPERTY_SCOPE))) return;
+        
+        $annotation = new $annotationClass($propertyInformation);
+        $annotation->proccess($annotationValue);
+        $propertyInformation->annotations[] = $annotation;
+    }
+    
+    /**
+     * @param string $entityClassName
+     * @return \obo\Carriers\EntityInformationCarrier
+     * @throws \obo\Exceptions\DefinitionException 
+     */
+    public function exploreEntityWithName($entityClassName) {
+        
+        $entityInformation = new \obo\Carriers\EntityInformationCarrier(array(
+            "className" => $entityClassName,
+            "propertiesClassName" => $this->propertiesClassNameForEntityWithClassName($entityClassName),
+            "managerName" => $entityClassName . "Manager",
+            "repositoryName" => $this->defaultRepositoryNameForEntityWithClassName($entityClassName),
+        ));
+        
+        foreach ($entityClassName::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
+            try {    
+                $this->processAnnotationWithNameAndValueForEntity($annotationName, $this->standardizeAnnotationValue($annotationValue), $entityInformation);
+            } catch (\obo\Exceptions\BadAnnotationException $exc) {
+                $exc->foreseenFileError = $entityClassName::getReflection()->getFileName();
+                $exc->foreseenLineError = $entityClassName::getReflection()->getStartLine();
+                throw $exc;
+            }
+        }
+     
+        foreach ($entityClassName::getReflection()->getMethods() as $method) {
+            foreach ($entityClassName::getReflection()->getMethod($method->name)->getAnnotations() as $annotationName => $annotationValue) {
+                try {
+                    $this->processAnnotationWithNameAndValueForMethodWithName($annotationName, $this->standardizeAnnotationValue($annotationValue), $entityInformation, $method->name);
+                } catch (\obo\Exceptions\BadAnnotationException $exc) {
+                    $exc->foreseenFileError = $entityClassName::getReflection()->getMethod($method->name)->getFileName();
+                    $exc->foreseenLineError = $entityClassName::getReflection()->getMethod($method->name)->getStartLine();
+                    throw $exc;
+                }
+                
+            }
+        }
+        
+        $propertiesObjectClassName = $entityInformation->propertiesClassName;
+        
+        $propertiesMethodAccess = array();
+        
+        foreach ($propertiesObjectClassName::getReflection()->getMethods() as $method) {
+            $methodName = $method->name;
+            
+            if ($method->class == "obo\EntityProperties" OR $method->class == "obo\Object" OR $method->class == "Nette\Object") continue;
+            
+            if (!\preg_match("#^((get)|(set))[A-Z].+#", $methodName)) continue;
+            
+            $propertyName = lcfirst(\preg_replace("#^((get)|(set))#", "", $methodName));
+            
+            $propertiesMethodAccess[$propertyName][\preg_match("#^get[A-Z].+#", $methodName) ? "getterName" : "setterName"] = $methodName;
+        }
+
+        if (!\class_exists($propertiesObjectClassName)) throw new \obo\Exceptions\DefinitionException("Properties class for entity with name '{$entityInformation->className}' does not exist");
+                
+        foreach ($propertiesObjectClassName::getReflection()->getProperties() as $property) {
+            if ($property->class == "obo\EntityProperties" OR $property->class == "obo\Object" OR $property->class == "Nette\Object") continue;
+            
+            $propertyInformation = $entityInformation->addPropertyInformation(array(
+                    "name" => $property->name,
+                )); 
+            
+            foreach ($propertiesObjectClassName::getReflection()->getProperty($property->name)->getAnnotations() as $annotationName => $annotationValue) {
+                try {
+                    $this->processAnnotationWithNameAndValueForProperty($annotationName, $this->standardizeAnnotationValue($annotationValue), $propertyInformation);
+                } catch (\obo\Exceptions\BadAnnotationException $exc) {
+                    $exc->foreseenFileError = $propertiesObjectClassName::getReflection()->getProperty($property->name)->getDeclaringClass()->getFileName();
+                    $exc->foreseenLineError = $propertiesObjectClassName::getReflection()->getProperty($property->name)->getDeclaringClass()->getStartLine();
+                    throw $exc;
+                }
+            }
+            
+            if(isset($propertiesMethodAccess[$property->name])) {
+                foreach ($propertiesMethodAccess[$property->name] as $methodType => $methodName) {
+                    if (!\is_null($propertyInformation->relationship)) throw new \obo\Exceptions\DefinitionException("Property with name '{$property->name}' defined as the relationship can not have getter or setter", null, null, $propertiesObjectClassName::getReflection()->getMethod($methodName)->getFileName(), $propertiesObjectClassName::getReflection()->getMethod($methodName)->getStartLine());
+                    $propertyInformation->$methodType = $methodName;
+                    $propertyInformation->{$methodType == "getterName" ? "directAccessToRead" : "directAccessToWrite"} = false;
+                }
+                
+                unset($propertiesMethodAccess[$property->name]);
+            }
+            
+        }
+        
+        foreach($propertiesMethodAccess as $propertyName => $propertyAccess) {
+            $propertyInformation = $entityInformation->addPropertyInformation(array("name" => $propertyName));  
+            foreach ($propertyAccess as $methodType => $methodName) {
+                $propertyInformation->$methodType = $methodName;
+                $propertyInformation->{$methodType == "getterName" ? "directAccessToRead" : "directAccessToWrite"} = false;
+            }   
+        }
+        
+        try {
+            if (\obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->existRepositoryForEntity($entityInformation)) {
+                $entityInformation->repositoryColumns = \obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->columnsInRepositoryForEntity($entityInformation);
+            }
+        } catch (\obo\Exceptions\ServicesException $exc) {
+            $entityInformation->repositoryColumns = false;
+        }
+
+        $entityInformation->processInformation();
+        
+        return $entityInformation;
+    }
+
+}
