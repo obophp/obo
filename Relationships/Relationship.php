@@ -12,9 +12,7 @@ namespace obo\Relationships;
 
 abstract class Relationship extends \obo\Object{
     public $entityClassNameToBeConnected = "";
-    public $owner = null;
     public $ownerPropertyName = "";
-    public $ownerPropertyValue = null;
     public $cascade = array();
     
     /**
