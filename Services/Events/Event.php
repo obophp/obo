@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -18,17 +19,19 @@ class Event extends \obo\Carriers\DataCarrier{
     public $actionEntity = null;
     public $actionMessage = null;
     public $actionArguments = array();
-    
+
     /**
-     * @param array $specification 
+     * @param array $specification
+
      */
     public function __construct(array $specification) {
         parent::__construct($specification);
         $this->actionArguments["event"] = $this;
     }
-    
+
     /**
-     * @return string 
+     * @return string
+
      */
     public function eventIdentificationKey() {
         if (!\is_null($this->onClassWithName)) return $this->name.$this->onClassWithName;

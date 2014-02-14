@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,22 +12,24 @@
 namespace obo;
 
 abstract class Object extends \Nette\Object{
-    
+
     /**
-     * @return string 
+     * @return string
+
      */
     final public static function className() {
         return get_called_class();
     }
-    
+
     /**
      * @param string $message
-     * @return boolean 
+     * @return boolean
+
      */
     final public static function respondToMessage($message) {
         if (self::getReflection()->hasMethod($message)) return true;
         if (self::getReflection()->getExtensionMethod($message)) return true;
         return false;
     }
-    
+
 }

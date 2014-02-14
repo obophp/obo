@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\Annotation\Property;
 
 class Object extends \obo\Annotation\Base\Property {
-   
+
     /**
      * @return string
      */
@@ -25,7 +26,7 @@ class Object extends \obo\Annotation\Base\Property {
     public static function parametersDefinition() {
         return array("numberOfParameters" => -1);
     }
-    
+
     /**
      * @param array $values
      * @return void

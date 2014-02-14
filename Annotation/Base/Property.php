@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,12 +12,13 @@
 namespace obo\Annotation\Base;
 
 abstract class Property extends \obo\Annotation\Base\Definition {
-    
+
     /**
-     * @var \obo\Carriers\PropertyInformationCarrier 
+     * @var \obo\Carriers\PropertyInformationCarrier
+
      */
     protected $propertyInformation;
-        
+
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
@@ -25,12 +27,12 @@ abstract class Property extends \obo\Annotation\Base\Definition {
         parent::__construct($propertyInformation->entityInformation);
         $this->propertyInformation = $propertyInformation;
     }
-        
+
     /**
      * @return string
      */
     public static function scope() {
         return self::PROPERTY_SCOPE;
     }
-    
+
 }

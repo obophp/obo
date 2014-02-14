@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -12,7 +13,7 @@ namespace obo\Annotation\Method;
 
 class Run extends \obo\Annotation\Base\Method {
     protected $eventsNames = array();
-   
+
     /**
      * @return string
      */
@@ -26,16 +27,17 @@ class Run extends \obo\Annotation\Base\Method {
     public static function parametersDefinition() {
         return array("numberOfParameters" => -1);
     }
-    
+
     /**
      * @param array $values
      * @return void
      */
     public function proccess($values) {
-        parent::proccess($values); 
+        parent::proccess($values);
+
         $this->eventsNames = $values;
     }
-    
+
     /**
      * @return void
      */
@@ -48,5 +50,5 @@ class Run extends \obo\Annotation\Base\Method {
             )));
         }
     }
-    
+
 }

@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,9 +12,9 @@
 namespace obo\Annotation\Entity;
 
 class PrimaryProperty extends \obo\Annotation\Base\Entity {
-    
+
     protected $primaryPropertyName = "";
-    
+
     /**
      * @return string
      */
@@ -27,7 +28,7 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
     public static function parametersDefinition() {
         return array("numberOfParameters" => 1);
     }
-    
+
     /**
      * @param array $values
      */
@@ -35,12 +36,12 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
         parent::proccess($values);
         $this->entityInformation->primaryPropertyName = $this->primaryPropertyName = $values[0];
     }
-    
+
     /**
      * @return void
      */
     public function registerEvents() {
-    
+
     }
-    
+
 }

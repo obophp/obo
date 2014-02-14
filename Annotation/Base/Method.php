@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\Annotation\Base;
 
 abstract class Method extends \obo\Annotation\Base\Definition {
-    
+
     protected $methodName;
 
     /**
@@ -23,12 +24,12 @@ abstract class Method extends \obo\Annotation\Base\Definition {
         parent::__construct($entityInformation);
         $this->methodName = $methodName;
     }
-    
+
     /**
      * @return string
      */
     public static function scope() {
         return self::METHOD_SCOPE;
     }
-    
+
 }

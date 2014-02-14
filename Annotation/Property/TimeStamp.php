@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,9 +12,9 @@
 namespace obo\Annotation\Property;
 
 class TimeStamp extends \obo\Annotation\Base\Property {
-    
+
     protected $eventsNames = array();
-   
+
     /**
      * @return string
      */
@@ -27,7 +28,7 @@ class TimeStamp extends \obo\Annotation\Base\Property {
     public static function parametersDefinition() {
         return array("numberOfParameters" => -1);
     }
-    
+
     /**
      * @param array $values
      * @return void
@@ -37,11 +38,12 @@ class TimeStamp extends \obo\Annotation\Base\Property {
         $this->propertyInformation->dataType = new \obo\DataType\DateTime($this->propertyInformation);
         $this->eventsNames = $values;
     }
-    
+
     /**
      * @return void
      */
-    public function registerEvents() {  
+    public function registerEvents() {
+
         foreach ($this->eventsNames as $eventName) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
                 "onClassWithName" => $this->entityInformation->className,

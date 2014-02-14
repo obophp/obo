@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,13 +12,13 @@
 namespace obo\Annotation;
 
 class CoreAnnotations extends \obo\Object{
-    
+
     /**
      * @param \obo\Services\EntitiesInformation\Explorer $entitiesExplorer
      * @return void
      */
     public static function register(\obo\Services\EntitiesInformation\Explorer $entitiesExplorer) {
-        
+
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\ColumnName");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Many");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\One");
@@ -29,5 +30,5 @@ class CoreAnnotations extends \obo\Object{
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Serialize");
 
     }
-    
+
 }

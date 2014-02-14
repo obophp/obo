@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -13,21 +14,22 @@ namespace obo\Relationships;
 class One extends \obo\Relationships\Relationship {
     public $autoCreate = true;
     public $entityClassNameToBeConnectedInPropertyWithName = null;
-    
+
     public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = array()) {
-        
+
         if (\strpos($entityClassNameToBeConnected, "property:") === 0) {
             $this->entityClassNameToBeConnectedInPropertyWithName = \substr($entityClassNameToBeConnected, 9);
             $entityClassNameToBeConnected = null;
         }
-        
+
         parent::__construct($entityClassNameToBeConnected, $ownerPropertyName, $cascade);
     }
 
     /**
      * @param \obo\Entity $owner
      * @param mixed $propertyValue
-     * @return \obo\Entity|null 
+     * @return \obo\Entity|null
+
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
         if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {
@@ -35,13 +37,15 @@ class One extends \obo\Relationships\Relationship {
         } else {
             if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
         }
-        
+
         $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
-        
+
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue);
         } else {
             return $this->autoCreate ? $entityManagerName::entityFromArray(array()) : null;
-        }  
-    }     
+        }
+
+    }
+
 }

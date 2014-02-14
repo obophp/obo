@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,12 +12,12 @@
 namespace obo\Annotation\Base;
 
 abstract class Entity extends \obo\Annotation\Base\Definition {
-    
+
     /**
      * @return string
      */
     public static function scope() {
         return self::ENTITY_SCOPE;
     }
-    
+
 }

@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,25 +12,29 @@
 namespace obo\Services\EntitiesInformation;
 
 class Information extends \obo\Object {
-    
+
     /** @var \obo\Carriers\EntityInformationCarrier[] */
-    private $entitiesInformations = array(); 
-    
+    private $entitiesInformations = array();
+
     /**
      * @param string $className
-     * @return \obo\Carriers\EntityInformationCarrier 
+     * @return \obo\Carriers\EntityInformationCarrier
+
      */
     public function informationForEntityWithClassName($className) {
         if(!isset($this->entitiesInformations[$className])) $this->findClassInformationForEntityWithClassName($className);
-        return $this->entitiesInformations[$className];        
+        return $this->entitiesInformations[$className];
+
     }
 
     /**
      * @param string $className
-     * @return \obo\Carriers\EntityInformationCarrier 
-     */  
+     * @return \obo\Carriers\EntityInformationCarrier
+
+     */
+
     private function findClassInformationForEntityWithClassName($className) {
-        
+
         if (\obo\obo::$developerMode === false AND \obo\Services::isRegisteredServiceWithName(\obo\obo::CACHE)) {
             $cache = \obo\Services::serviceWithName(\obo\obo::CACHE);
             $entityInformation = $cache->load($className);
@@ -40,27 +45,27 @@ class Information extends \obo\Object {
         } else {
             $entityInformation = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->exploreEntityWithName($className);
         }
-        
+
         $this->registerCoreEventsForEntity($entityInformation);
-        
+
         if ($entityInformation->repositoryColumns !== false) $this->entitiesInformations[$className] = $entityInformation;
-        
+
         return $entityInformation;
-    }  
-    
+    }
+
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
      * @return void
      */
     private function registerCoreEventsForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
-            
+
             foreach($entityInformation->annotations as $annotation) $annotation->registerEvents();
-            
+
             foreach($entityInformation->propertiesInformation as $propertyInformation) {
                 foreach($propertyInformation->annotations as $annotation) {
                     $annotation->registerEvents();
                 }
-                
+
                 if($propertyInformation->dataType instanceof \obo\DataType\Base\DataType) $propertyInformation->dataType->registerEvents();
             }
 
@@ -75,5 +80,5 @@ class Information extends \obo\Object {
                 )
             ));
     }
-    
+
 }

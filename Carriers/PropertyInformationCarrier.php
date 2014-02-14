@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -10,7 +11,8 @@
 
 namespace obo\Carriers;
 
-class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {    
+class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
+
     public $entityInformation = null;
     public $name = "";
     public $dataType = null;

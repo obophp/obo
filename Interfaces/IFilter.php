@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,12 +12,12 @@
 namespace obo\Interfaces;
 
 interface IFilter {
- 
+
     /**
      * @return array
      */
     public function getWhere();
-    
+
     /**
      * @return array
      */
