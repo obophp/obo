@@ -1,6 +1,6 @@
 <?php
 
-/** 
+/**
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -13,49 +13,54 @@ namespace obo\Relationships;
 class EntitiesCollection extends \obo\Carriers\DataCarrier{
     /** @var \obo\Relationships\Many*/
     private $relationShip = null;
-    
+    /**  @var \obo\Entity */
+    private $owner = null;
+
     /**
-     * @param \obo\Relationships\Many $relationship 
+     * @param \obo\Entity $owner
+     * @param \obo\Relationships\Many $relationship
      */
-    public function __construct(\obo\Relationships\Many $relationship) {
+    public function __construct(\obo\Entity $owner, \obo\Relationships\Many $relationship) {
         $this->relationShip = $relationship;
+        $this->owner = $owner;
     }
-    
+
     /**
      * @param \obo\Entity $entity
      * @param boolean $createRelationshipInRepository
-     * @param bolean $notifyEvents 
+     * @param bolean $notifyEvents
      * @return \obo\Entity
      */
     public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->relationShip->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
+
         if($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaRepositoryWithName)) {
-            $ownerPrimaryPopertyName = $this->relationShip->owner->entityInformation()->primaryPropertyName;
+            $ownerPrimaryPopertyName = $this->owner->entityInformation()->primaryPropertyName;
             $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
             $entityPrimaryPropertyName = $entityClassNameTobeConnected::entityInformation()->primaryPropertyName;
-            
+
             $specification = array(
-                $this->relationShip->owner->entityInformation()->repositoryName => $this->relationShip->owner->$ownerPrimaryPopertyName,
-                $entity->entityInformation()->repositoryName => $entity->$entityPrimaryPropertyName
+                $this->owner->entityInformation()->repositoryName => $this->owner->valueForPropertyWithName($ownerPrimaryPopertyName),
+                $entity->entityInformation()->repositoryName => $entity->valueForPropertyWithName($entityPrimaryPropertyName),
             );
-            
+
             \obo\EntityManager::repositoryMapper()->addRecordToRelationshipRepository($this->relationShip->connectViaRepositoryWithName, $specification);
         }
 
         if ($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaPropertyWithName)) {
-            $entity->setValueForPropertyWithName($this->relationShip->owner, $this->relationShip->connectViaPropertyWithName);
-            if (!\is_null($this->relationShip->ownerNameInProperty)) $entity->setValueForPropertyWithName($this->relationShip->owner->className(), $this->relationShip->ownerNameInProperty);
+            $entity->setValueForPropertyWithName($this->owner, $this->relationShip->connectViaPropertyWithName);
+            if (!\is_null($this->relationShip->ownerNameInProperty)) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
             $entity->save();
         }
-        
+
         $this->setValueForVariableWithName($entity, $entity->id);
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->relationShip->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
         return $entity;
     }
-    
+
     /**
      * @param array | \Iterator $data
-     * @param bolean $notifyEvents 
+     * @param bolean $notifyEvents
      * @return \obo\Entity
      */
     public function addNew($data = array(), $notifyEvents = true) {
@@ -65,39 +70,39 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier{
         $newEntity->save();
         return $this->add($newEntity, true, $notifyEvents);
     }
-    
+
     /**
      * @param \obo\Entity $entity
      * @param bolean $removeEntity
-     * @param bolean $notifyEvents 
+     * @param bolean $notifyEvents
      * @return void
      */
     public function remove(\obo\Entity $entity, $removeEntity = false, $notifyEvents = true) {
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->relationShip->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
         $entityPrimaryPropertyName = $entity->entityInformation()->primaryPropertyName;
         if(!\is_null($this->relationShip->connectViaRepositoryWithName)) {
-            $ownerPrimaryPopertyName = $this->relationShip->owner->entityInformation()->primaryPropertyName;
+            $ownerPrimaryPopertyName = $this->owner->entityInformation()->primaryPropertyName;
             $specification = array(
-                $this->relationShip->owner->entityInformation()->repositoryName => $this->relationShip->owner->$ownerPrimaryPopertyName,
-                $entity->entityInformation()->repositoryName => $entity->$entityPrimaryPropertyName
+                $this->owner->entityInformation()->repositoryName => $this->owner->valueForPropertyWithName($ownerPrimaryPopertyName),
+                $entity->entityInformation()->repositoryName => $entity->valueForPropertyWithName($entityPrimaryPropertyName),
             );
             \obo\EntityManager::repositoryMapper()->removeRecordFromRelationshipRepository($this->relationShip->connectViaRepositoryWithName, $specification);
         }
         $primaryPropertyValue = $entity->$entityPrimaryPropertyName;
         if (isset($this->$primaryPropertyValue)) unset ($this->$primaryPropertyValue);
         if ($removeEntity) $entity->delete();
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->relationShip->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
     }
-    
+
     /**
      * @return void
      */
     public function save() {
         foreach($this->asArray() as $entity) $entity->save();
     }
-    
+
     /**
-     * @param boolean $removeEntity 
+     * @param boolean $removeEntity
      * @return void
      */
     public function delete($removeEntity = false) {
@@ -105,9 +110,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier{
             $this->remove($entity, $removeEntity);
         }
     }
-    
+
     /**
-     * @return array 
+     * @return array
      */
     public function dump() {
         $dump = array();

@@ -22,8 +22,6 @@ class Many extends \obo\Relationships\Relationship{
      * @return \obo\Relationships\EntitiesCollection 
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $ownerPropertyValue) {
-        $this->owner = $owner;
-        $this->ownerPropertyValue = $ownerPropertyValue;
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         $ownerPrimaryPropertyName = $owner->entityInformation()->primaryPropertyName;
@@ -41,8 +39,10 @@ class Many extends \obo\Relationships\Relationship{
 
         $entities = $ownedEntityManagerName::findEntities($query);  
 
-        $entitiesCollection = new \obo\Relationships\EntitiesCollection($this); 
+        $entitiesCollection = new \obo\Relationships\EntitiesCollection($owner, $this); 
+        
         foreach ($entities as $entity) $entitiesCollection->add($entity, false, false);
+        
         return $entitiesCollection;   
     } 
 }
