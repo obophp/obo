@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\Annotation\Property;
 
 class ColumnName extends \obo\Annotation\Base\Property {
-    
+
     protected $columnName = "";
 
     /**
@@ -20,14 +21,14 @@ class ColumnName extends \obo\Annotation\Base\Property {
     public static function name() {
         return "columnName";
     }
-    
+
     /**
      * @return array
      */
     public static function parametersDefinition() {
         return array("numberOfParameters" => 1);
     }
-    
+
     /**
      * @param array $values
      * @return void
@@ -36,11 +37,11 @@ class ColumnName extends \obo\Annotation\Base\Property {
         parent::proccess($values);
         $this->propertyInformation->columnName = $this->columnName = $values[0];
     }
-    
+
     /**
      * @return void
      */
     public function registerEvents() {
-        
+
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,9 +12,9 @@
 namespace obo\Annotation\Entity;
 
 class RepositoryName extends \obo\Annotation\Base\Entity {
-    
+
     protected $repositoryName = "";
-    
+
     /**
      * @return string
      */
@@ -36,11 +37,11 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
         parent::proccess($values);
         $this->entityInformation->repositoryName = $this->repositoryName = $values[0];
     }
-    
+
     /**
      * @return void
      */
     public function registerEvents() {
-        
+
     }
 }

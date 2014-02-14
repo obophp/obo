@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\RepositoryMappers;
 
 class DibiRepositoryMapper extends \obo\Object {
-    
+
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
      * @return boolean
@@ -19,33 +20,37 @@ class DibiRepositoryMapper extends \obo\Object {
     public function existRepositoryForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
         return (boolean) \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchSingle($query = "SHOW TABLES LIKE '{$entityInformation->repositoryName}';");
     }
-    
+
     /**
      * @param \obo\Entity $entity
-     * @return array 
+     * @return array
+
      */
     public function columnsInRepositoryForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
-        $tableName = $entityInformation->repositoryName; 
+        $tableName = $entityInformation->repositoryName;
+
         $query = "SHOW COLUMNS FROM [{$tableName}];";
         $tableColumns = array();
         foreach (\obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchAll($query) as $column) $tableColumns[$column->Field] = $column->Type;
         return $tableColumns;
     }
-    
+
     /**
      * @param string $columnName
      * @param \obo\Entity $entity
-     * @return boolean 
+     * @return boolean
+
      */
     public function existRepositoryColumnWithNameForEntity($columnName, \obo\Entity $entity) {
         if (!$this->existRepositoryForEntity($entity->entityInformation())) return false;
         $tableColumn = self::columnsInRepositoryForEntity($entity);
         return isset($tableColumn[$columnName]);
     }
-    
+
     /**
      * @param \obo\Entity $entity
-     * @return array 
+     * @return array
+
      */
     public function dataForEntity(\obo\Entity $entity) {
         $tableName = $entity->entityInformation()->repositoryName;
@@ -55,10 +60,11 @@ class DibiRepositoryMapper extends \obo\Object {
         $data = \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchAll($query,$entity->$primaryPropertyName);
         return isset($data[0]) ? (array) $data[0] : array();
     }
-    
+
     /**
      * @param \obo\Entity $entity
-     * @return void 
+     * @return void
+
      */
     public function insertEntityToRepository(\obo\Entity $entity) {
         if ($entity->isBasedInRepository()) {
@@ -68,9 +74,10 @@ class DibiRepositoryMapper extends \obo\Object {
             $entity->setValueForPropertyWithName(\obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->getInsertId(), $entity->entityInformation()->primaryPropertyName);
         }
     }
-    
+
     /**
-     * @param \obo\Entity $entity 
+     * @param \obo\Entity $entity
+
      * @return void
      */
     public function updateEntityInRepository(\obo\Entity $entity) {
@@ -78,9 +85,10 @@ class DibiRepositoryMapper extends \obo\Object {
         $primaryPropertyColumnName = $entity->informationForPropertyWithName($primaryPropertyName)->columnName;
         \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("UPDATE [{$entity->entityInformation()->repositoryName}] SET %a", $entity->entityInformation()->propertiesNamesToColumnsNames($entity->dataWhoNeedToStore($entity->entityInformation()->columnsNamesToPropertiesNames($entity->entityInformation()->repositoryColumns))), "WHERE [{$entity->entityInformation()->repositoryName}].[{$primaryPropertyColumnName}] = %i", $entity->$primaryPropertyName);
     }
-    
+
     /**
-     * @param \obo\Entity $entity 
+     * @param \obo\Entity $entity
+
      * @return void
      */
     public function removeEntityFromRepository(\obo\Entity $entity) {
@@ -88,31 +96,36 @@ class DibiRepositoryMapper extends \obo\Object {
         $primaryPropertyColumnName = $entity->informationForPropertyWithName($primaryPropertyName)->columnName;
         \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("DELETE FROM [{$entity->entityInformation()->repositoryName}] WHERE [{$entity->entityInformation()->repositoryName}].[{$primaryPropertyColumnName}] = %i LIMIT 1", $entity->$primaryPropertyName);
     }
-    
+
     /**
      * @param string $repositoryName
-     * @param mixed $specification 
+     * @param mixed $specification
+
      * @return void
      */
     public function addRecordToRelationshipRepository($repositoryName, array $specification) {
-        \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("INSERT INTO [{$repositoryName}] ", $specification);        
+        \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("INSERT INTO [{$repositoryName}] ", $specification);
+
     }
-    
+
     /**
      * @param string $repositoryName
-     * @param array $specification 
+     * @param array $specification
+
      * @return void
      */
     public function removeRecordFromRelationshipRepository($repositoryName, array $specification) {
         $where = array("WHERE 1=1");
         foreach ($specification as $columnName => $columnValue) {
-            $where = \array_merge($where, array(" AND [{$columnName}] = %s", $columnValue));  
+            $where = \array_merge($where, array(" AND [{$columnName}] = %s", $columnValue));
+
         }
         \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query(array_merge(array("DELETE FROM [{$repositoryName}]"), $where));
     }
-    
+
     /**
-     * @return array 
+     * @return array
+
      */
     public function dataFromQuery($arguments) {
         $result = \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query(func_get_args());
@@ -120,15 +133,16 @@ class DibiRepositoryMapper extends \obo\Object {
         while ($record = $result->fetch()) $data[] = $record;
         return $data;
     }
-    
+
     /**
-     * @return string 
+     * @return string
+
      */
     public function constructQuery($arguments) {
         $queryTranslator = new \DibiTranslator(\obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER));
         return $queryTranslator->translate(func_get_args());
     }
-    
+
     /**
      * @return void
      */

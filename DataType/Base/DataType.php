@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\DataType\Base;
 
 abstract class DataType extends \obo\Object {
-    
+
     /**
      * @var \obo\Carriers\PropertyInformationCarrier
      */
@@ -29,10 +30,10 @@ abstract class DataType extends \obo\Object {
      * @return string
      */
     public abstract function name();
-          
+
     /**
      * @return void
      */
     public abstract function registerEvents();
-    
+
 }

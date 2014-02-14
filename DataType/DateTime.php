@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\DataType;
 
 class DateTime extends \obo\DataType\Base\DataType {
-    
+
     /**
      * @return string
      */
@@ -27,7 +28,7 @@ class DateTime extends \obo\DataType\Base\DataType {
     public function validate($value) {
         if (!$value instanceof \DateTime) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be instance of \DateTime, " . \gettype($value) . " given");
     }
-    
+
     /**
      * @param mixed $arguments
      * @return void
@@ -35,7 +36,7 @@ class DateTime extends \obo\DataType\Base\DataType {
     public function convertValue($arguments) {
         if (!$arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) instanceof \DateTime) $arguments["entity"]->setValueForPropertyWithName(new \DateTime($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
     }
-    
+
     /**
      * @return void
      */
@@ -48,8 +49,7 @@ class DateTime extends \obo\DataType\Base\DataType {
             },
             "actionArguments" => array("dataType" => $this),
         )));
-            
-            
+
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
             "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
@@ -58,7 +58,7 @@ class DateTime extends \obo\DataType\Base\DataType {
             },
             "actionArguments" => array("dataType" => $this),
         )));
-                        
+
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
             "name" => "afterInitialize",
@@ -66,6 +66,7 @@ class DateTime extends \obo\DataType\Base\DataType {
                 $arguments["dataType"]->convertValue($arguments);
             },
             "actionArguments" => array("dataType" => $this),
-        )));    
+        )));
+
     }
 }

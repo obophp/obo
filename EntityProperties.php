@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -18,13 +19,14 @@ class EntityProperties extends \obo\Object{
     protected $_owner = null;
 
     /**
-     * @param \obo\Entity $owner 
+     * @param \obo\Entity $owner
+
      */
     public function __construct(\obo\Entity $owner) {
         $this->ownerProperties = $owner;
         $this->_owner = $owner;
     }
-    
+
     /**
      * @throws \obo\Exceptions\PropertyNotFoundException
      */

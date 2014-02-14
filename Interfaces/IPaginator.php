@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -17,14 +18,15 @@ interface IPaginator {
      * @return void
      */
     public function setItemCount($itemCount);
-    
+
     /**
      * @return int
      */
     public function getItemsPerPage();
-    
+
     /**
      * @return int
      */
-    public function getOffset();   
+    public function getOffset();
+
 }

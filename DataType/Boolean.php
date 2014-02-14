@@ -1,6 +1,7 @@
 <?php
 
-/** 
+/**
+
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -11,7 +12,7 @@
 namespace obo\DataType;
 
 class Boolean extends \obo\DataType\Base\DataType {
-    
+
     /**
      * @return string
      */
@@ -27,7 +28,7 @@ class Boolean extends \obo\DataType\Base\DataType {
     public function validate($value) {
         if (!\is_bool($value)) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be boolean, " . \gettype($value) . " given");
     }
-    
+
     /**
      * @return void
      */
