@@ -52,7 +52,7 @@ class Explorer extends \obo\Object {
      */
     private function standardizeAnnotationValue($annotationValue) {
         if ($annotationValue[0] === true) return array();
-        return ($annotationValue[0] instanceof \Nette\ArrayHash || $annotationValue[0] instanceof \ArrayObject)
+        return ($annotationValue[0] instanceof \ArrayObject || $annotationValue[0] instanceof \Nette\ArrayHash)
                     ? (array) $annotationValue[0] : array($annotationValue[0]);
     }
 
