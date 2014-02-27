@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -15,7 +14,6 @@ abstract class Property extends \obo\Annotation\Base\Definition {
 
     /**
      * @var \obo\Carriers\PropertyInformationCarrier
-
      */
     protected $propertyInformation;
 

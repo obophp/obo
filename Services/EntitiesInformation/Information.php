@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -19,7 +18,6 @@ class Information extends \obo\Object {
     /**
      * @param string $className
      * @return \obo\Carriers\EntityInformationCarrier
-
      */
     public function informationForEntityWithClassName($className) {
         if(!isset($this->entitiesInformations[$className])) $this->findClassInformationForEntityWithClassName($className);
@@ -30,7 +28,6 @@ class Information extends \obo\Object {
     /**
      * @param string $className
      * @return \obo\Carriers\EntityInformationCarrier
-
      */
 
     private function findClassInformationForEntityWithClassName($className) {

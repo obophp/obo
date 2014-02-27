@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -18,7 +17,6 @@ class EventManager extends \obo\Object{
 
     /**
      * @param \obo\Services\Events\Event $event
-
      * @return void
      */
     public function registerEvent(\obo\Services\Events\Event $event) {
@@ -32,7 +30,6 @@ class EventManager extends \obo\Object{
      * @param \obo\Entity $entity
      * @param array $arguments
      * @return void
-
      */
     public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = array()) {
         if (!$this->isActiveIgnoreNotificationForEntity($entity)) {
@@ -59,7 +56,6 @@ class EventManager extends \obo\Object{
      * @param \obo\Entity $entity
      * @param array $arguments
      * @return void
-
      */
     private function executeAction(\obo\Services\Events\Event $event, \obo\Entity $entity, array $arguments) {
         if (!is_null($event->actionAnonymousFunction)) {
@@ -75,7 +71,6 @@ class EventManager extends \obo\Object{
 
     /**
      * @param string $eventKey
-
      * @return void
      */
     public function addIgnoreNotifyForEventWithKey($eventKey) {
@@ -84,7 +79,6 @@ class EventManager extends \obo\Object{
 
     /**
      * @param string $eventKey
-
      * @return void
      */
     public function removeIgnoreNotifyForEventWithKey($eventKey) {
@@ -94,7 +88,6 @@ class EventManager extends \obo\Object{
     /**
      * @param string $eventKey
      * @return boolean
-
      */
     public function isActiveIgnoreNotifyForEventWithKey($eventKey) {
         return isset($this->ignoreEvents[$eventKey]);
@@ -102,7 +95,6 @@ class EventManager extends \obo\Object{
 
     /**
      * @param \obo\Entity $entity
-
      * @return void
      */
     public function turnOnIgnoreNotificationForEntity(\obo\Entity $entity) {
@@ -111,7 +103,6 @@ class EventManager extends \obo\Object{
 
     /**
      * @param \obo\Entity $entity
-
      * @return void
      */
     public function turnOffIgnoreNotificationForEntity(\obo\Entity $entity) {
@@ -120,9 +111,7 @@ class EventManager extends \obo\Object{
 
     /**
      * @param \obo\Entity $entity
-
      * @return boolean
-
      */
     public function isActiveIgnoreNotificationForEntity(\obo\Entity $entity) {
         return isset($this->ignoreNotificationEntities[$entity->objectIdentificationKey()]);

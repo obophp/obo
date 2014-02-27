@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -21,7 +20,6 @@ class Many extends \obo\Relationships\Relationship{
      * @param \obo\Entity $owner
      * @param type $ownerPropertyValue
      * @return \obo\Relationships\EntitiesCollection
-
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $ownerPropertyValue) {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;

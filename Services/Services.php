@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -19,9 +18,7 @@ class Services extends \obo\Object {
     /**
      * @param mixed $service
      * @param string $serviceName
-
      * @param boolean $forced
-
      * @return void
      */
     public static function registerServiceWithName($service, $serviceName, $forced = false) {
@@ -33,7 +30,6 @@ class Services extends \obo\Object {
      * @param function $factory
      * @param string $serviceName
      * @param boolean $forced
-
      * @return void
      */
     public static function registerFactoryForServiceWithName($factory, $serviceName, $forced = false) {
@@ -44,7 +40,6 @@ class Services extends \obo\Object {
     /**
      * @param string $serviceName
      * @return mixed
-
      */
     public static function serviceWithName($serviceName) {
         if (isset(self::$services[$serviceName])) {

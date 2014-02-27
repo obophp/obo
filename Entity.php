@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/, Roman Pavlík
@@ -29,7 +28,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $propertyName
      * @return mixed
-
      */
     public function &__get($propertyName) {
         return $this->valueForPropertyWithName($propertyName);
@@ -39,7 +37,6 @@ abstract class Entity  extends \obo\Object {
      * @param string $propertyName
      * @param mixed $value
      * @return mixed
-
      */
     public function __set($propertyName, $value) {
         return $this->setValueForPropertyWithName($value, $propertyName);
@@ -48,7 +45,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $name
      * @return boolean
-
      */
     public function __isset($name) {
         return $this->hasPropertyWithName($name);
@@ -56,7 +52,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return void
-
      */
     public function __wakeup() {
         $this->entityInformation();
@@ -65,7 +60,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\EntityProperties
-
      */
     private function propertiesObject() {
         if (!is_null($this->propertiesObject)) return $this->propertiesObject;
@@ -107,7 +101,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $propertyName
      * @return bool
-
      */
     public static function hasPropertyWithName($propertyName) {
         return self::entityInformation()->existInformationForPropertyWithName($propertyName);
@@ -125,7 +118,6 @@ abstract class Entity  extends \obo\Object {
      * @param boolean $entityAsPrimaryPropertyValue
      * @return mixed
      * @throws \obo\Exceptions\PropertyNotFoundException
-
      */
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false) {
         if (!$this->hasPropertyWithName($propertyName)) {
@@ -232,7 +224,6 @@ abstract class Entity  extends \obo\Object {
      * @param array | \Iterator | null $onlyFromList
      * @param boolean $entityAsPrimaryPropertyValue
      * @return array
-
      */
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
        $data = array();
@@ -254,7 +245,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param array | \Iterator $data
-
      * @return void
      */
     public function changeValuesPropertiesFromArray($data) {
@@ -267,7 +257,6 @@ abstract class Entity  extends \obo\Object {
      * @param array | \Iterator | null $onlyFromList
      * @param boolean $entityAsPrimaryPropertyValue
      * @return array
-
      */
     public function dataWhoNeedToStore($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
         if ($this->isBasedInRepository()) {
@@ -300,7 +289,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\Entity
-
      */
     public function setInitialized() {
         $this->initialized = true;
@@ -311,7 +299,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return boolean
-
      */
     public function isBasedInRepository() {
         if (!is_null($this->basedInRepository)) return $this->basedInRepository;
@@ -322,7 +309,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param boolean $state
      * @return boolean
-
      */
     public function setBasedInRepository($state) {
         return $this->basedInRepository = (bool) $state;
@@ -345,7 +331,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\Entity
-
      */
     public function save() {
         $managerName = $this->entityInformation()->managerName;
@@ -355,7 +340,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return void
-
      */
     public function delete() {
         $managerName = $this->entityInformation()->managerName;
@@ -364,7 +348,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return array
-
      */
     public function dump() {
         $arguments = func_get_args();

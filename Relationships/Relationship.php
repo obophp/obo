@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -20,7 +19,6 @@ abstract class Relationship extends \obo\Object{
      * @param string $entityClassNameToBeConnected
      * @param string $ownerPropertyName
      * @param array $cascade
-
      * @return void
      */
     public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = array()){
