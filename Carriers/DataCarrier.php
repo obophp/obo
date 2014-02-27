@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -17,7 +16,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return array
-
      */
     protected function &variables() {
         return $this->variables;
@@ -27,7 +25,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @param string $name
      * @return mixed
      * @throws \obo\Exceptions\VariableNotFoundException
-
      */
     public function &variableForName($name) {
        if (isset($this->variables[$name])) return $this->variables[$name];
@@ -36,7 +33,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return array
-
      */
     public function asArray() {
         return $this->variables;
@@ -44,7 +40,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @param array $variables
-
      * @return void
      */
     public function setVariables(array $variables) {
@@ -54,7 +49,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $variable
      * @param string $variableName
-
      * @return void
      */
     public function setValueForVariableWithName($variable, $variableName) {
@@ -63,7 +57,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @param string $varibleName
-
      * @return void
      */
     public function unsetValueForVaraibleWithName($varibleName) {
@@ -75,7 +68,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param array $data
      * @return void
-
      */
     public function __construct($data = array()) {
         foreach ($data as $variableName => $variableValue) $this->$variableName = $variableValue;
@@ -84,7 +76,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param string $name
      * @return mixed
-
      */
     public function &__get($name) {
         return $this->variableForName($name);
@@ -94,7 +85,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @param string $name
      * @param mixed $value
      * @return mixed
-
      */
     public function __set($name, $value) {
         return $this->setValueForVariableWithName($value, $name);
@@ -103,7 +93,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param type $name
      * @return void
-
      */
     public function __unset($name) {
         $this->unsetValueForVaraibleWithName($name);
@@ -113,7 +102,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      *
      * @param type $name
      * @return boolean
-
      */
     public function __isset($name) {
         $variables = $this->variables();
@@ -122,7 +110,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return void
-
      */
     public function __clone() {
         $data = array();
@@ -140,7 +127,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return mixed
-
      */
     public function rewind() {
         return reset($this->variables());
@@ -148,7 +134,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return mixed
-
      */
     public function current() {
         return current($this->variables());
@@ -156,7 +141,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return mixed
-
      */
     public function key() {
         return key($this->variables());
@@ -164,7 +148,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return mixed
-
      */
     public function prev() {
         return \prev($this->variables());
@@ -186,7 +169,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return boolean
-
      */
     public function valid() {
         return isset($this->variables[$this->key()]);
@@ -195,7 +177,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $offset
      * @param mixed $value
-
      * @return void
      */
     public function offsetSet($offset, $value) {
@@ -209,7 +190,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $offset
      * @return boolean
-
      */
     public function offsetExists($offset) {
         return isset($this->variables[$offset]);
@@ -217,7 +197,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @param mixed $offset
-
      * @return void
      */
     public function offsetUnset($offset) {
@@ -227,7 +206,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $offset
      * @return mixed
-
      */
     public function offsetGet($offset) {
         if (isset($this->variables[$offset])) return $this->variables[$offset];
@@ -236,7 +214,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return int
-
      */
     public function count() {
         return \count($this->variables());
@@ -244,7 +221,6 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @return array
-
      */
     public function dump() {
         return \print_r($this->variables(), true);

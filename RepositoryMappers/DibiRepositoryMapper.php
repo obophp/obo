@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -24,7 +23,6 @@ class DibiRepositoryMapper extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return array
-
      */
     public function columnsInRepositoryForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
         $tableName = $entityInformation->repositoryName;
@@ -39,7 +37,6 @@ class DibiRepositoryMapper extends \obo\Object {
      * @param string $columnName
      * @param \obo\Entity $entity
      * @return boolean
-
      */
     public function existRepositoryColumnWithNameForEntity($columnName, \obo\Entity $entity) {
         if (!$this->existRepositoryForEntity($entity->entityInformation())) return false;
@@ -50,7 +47,6 @@ class DibiRepositoryMapper extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return array
-
      */
     public function dataForEntity(\obo\Entity $entity) {
         $tableName = $entity->entityInformation()->repositoryName;
@@ -64,7 +60,6 @@ class DibiRepositoryMapper extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return void
-
      */
     public function insertEntityToRepository(\obo\Entity $entity) {
         if ($entity->isBasedInRepository()) {
@@ -77,7 +72,6 @@ class DibiRepositoryMapper extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-
      * @return void
      */
     public function updateEntityInRepository(\obo\Entity $entity) {
@@ -88,7 +82,6 @@ class DibiRepositoryMapper extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-
      * @return void
      */
     public function removeEntityFromRepository(\obo\Entity $entity) {
@@ -100,7 +93,6 @@ class DibiRepositoryMapper extends \obo\Object {
     /**
      * @param string $repositoryName
      * @param mixed $specification
-
      * @return void
      */
     public function addRecordToRelationshipRepository($repositoryName, array $specification) {
@@ -111,7 +103,6 @@ class DibiRepositoryMapper extends \obo\Object {
     /**
      * @param string $repositoryName
      * @param array $specification
-
      * @return void
      */
     public function removeRecordFromRelationshipRepository($repositoryName, array $specification) {
@@ -125,7 +116,6 @@ class DibiRepositoryMapper extends \obo\Object {
 
     /**
      * @return array
-
      */
     public function dataFromQuery($arguments) {
         $result = \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query(func_get_args());
@@ -136,7 +126,6 @@ class DibiRepositoryMapper extends \obo\Object {
 
     /**
      * @return string
-
      */
     public function constructQuery($arguments) {
         $queryTranslator = new \DibiTranslator(\obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER));

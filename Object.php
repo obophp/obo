@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -15,7 +14,6 @@ abstract class Object extends \Nette\Object{
 
     /**
      * @return string
-
      */
     final public static function className() {
         return get_called_class();
@@ -24,7 +22,6 @@ abstract class Object extends \Nette\Object{
     /**
      * @param string $message
      * @return boolean
-
      */
     final public static function respondToMessage($message) {
         if (self::getReflection()->hasMethod($message)) return true;

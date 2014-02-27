@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/, Roman Pavlík
@@ -29,7 +28,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $propertyName
      * @return mixed
-
      */
     public function &__get($propertyName) {
         return $this->valueForPropertyWithName($propertyName);
@@ -39,7 +37,6 @@ abstract class Entity  extends \obo\Object {
      * @param string $propertyName
      * @param mixed $value
      * @return mixed
-
      */
     public function __set($propertyName, $value) {
         return $this->setValueForPropertyWithName($value, $propertyName);
@@ -48,7 +45,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $name
      * @return boolean
-
      */
     public function __isset($name) {
         return $this->hasPropertyWithName($name);
@@ -56,7 +52,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return void
-
      */
     public function __wakeup() {
         $this->entityInformation();
@@ -65,7 +60,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\EntityProperties
-
      */
     private function propertiesObject() {
         if (!is_null($this->propertiesObject)) return $this->propertiesObject;
@@ -107,7 +101,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $propertyName
      * @return bool
-
      */
     public static function hasPropertyWithName($propertyName) {
         return self::entityInformation()->existInformationForPropertyWithName($propertyName);
@@ -125,7 +118,6 @@ abstract class Entity  extends \obo\Object {
      * @param boolean $entityAsPrimaryPropertyValue
      * @return mixed
      * @throws \obo\Exceptions\PropertyNotFoundException
-
      */
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false) {
         if (!$this->hasPropertyWithName($propertyName)) {
@@ -160,9 +152,9 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param mixed $value
      * @param string $propertyName
-     * @return mixed
+     * @param bool $triggerEvents
      * @throws \obo\Exceptions\PropertyNotFoundException
-
+     * @return mixed
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
@@ -174,13 +166,18 @@ abstract class Entity  extends \obo\Object {
 
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
-            if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
+        if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             $change = false;
 
-            if (\is_object($value) AND (\is_a($value, "\obo\Entity") OR (\is_a($value, "\obo\Relationships\EntitiesCollection")))) {
-                if (\is_a($value, "\obo\Entity")) {
-                    $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
-                    if ($this->valueForPropertyWithName($propertyName, true) !== $primaryPropertyValue) $change = true;
+
+            if (\is_object($value) AND (\is_a($value, "\obo\Entity") OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
+                if ($value instanceof \obo\Entity) {
+                    if (\is_null($this->valueForPropertyWithName($propertyName, true))) {
+                        $change = true;
+                    } else {
+                        $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
+                        if ($this->valueForPropertyWithName($propertyName, true) !== $primaryPropertyValue) $change = true;
+                    }
                 }
             } else {
                 if ($this->valueForPropertyWithName($propertyName, true) != $value) $change = true;
@@ -205,18 +202,18 @@ abstract class Entity  extends \obo\Object {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this);
             if ($change) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  array("propertyValue" => array("old" => &$oldValue , "new" => &$value)));
-                    if(isset($this->propertiesChanges[$propertyName])) {
-                        $compareValue = $value;
+                if(isset($this->propertiesChanges[$propertyName])) {
+                    $compareValue = $value;
 
-                        if (\is_a($compareValue, "\obo\Entity")) {
-                            $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
-                        }
-
-                        if (isset ($this->propertiesChanges[$propertyName]["oldValue"]) AND $this->propertiesChanges[$propertyName]["oldValue"] == $compareValue) unset($this->propertiesChanges[$propertyName]);
-                        $this->propertiesChanges[$propertyName]["newValue"] = $value;
-                    } else {
-                        $this->propertiesChanges[$propertyName] = array("oldValue" => $oldValue, "newValue" => $value);
+                    if (\is_a($compareValue, "\obo\Entity")) {
+                        $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
                     }
+
+                    if (isset ($this->propertiesChanges[$propertyName]["oldValue"]) AND $this->propertiesChanges[$propertyName]["oldValue"] == $compareValue) unset($this->propertiesChanges[$propertyName]);
+                    $this->propertiesChanges[$propertyName]["newValue"] = $value;
+                } else {
+                    $this->propertiesChanges[$propertyName] = array("oldValue" => $oldValue, "newValue" => $value);
+                }
             }
         }
 
@@ -227,7 +224,6 @@ abstract class Entity  extends \obo\Object {
      * @param array | \Iterator | null $onlyFromList
      * @param boolean $entityAsPrimaryPropertyValue
      * @return array
-
      */
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
        $data = array();
@@ -249,7 +245,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param array | \Iterator $data
-
      * @return void
      */
     public function changeValuesPropertiesFromArray($data) {
@@ -262,7 +257,6 @@ abstract class Entity  extends \obo\Object {
      * @param array | \Iterator | null $onlyFromList
      * @param boolean $entityAsPrimaryPropertyValue
      * @return array
-
      */
     public function dataWhoNeedToStore($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
         if ($this->isBasedInRepository()) {
@@ -295,7 +289,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\Entity
-
      */
     public function setInitialized() {
         $this->initialized = true;
@@ -306,7 +299,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return boolean
-
      */
     public function isBasedInRepository() {
         if (!is_null($this->basedInRepository)) return $this->basedInRepository;
@@ -317,7 +309,6 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param boolean $state
      * @return boolean
-
      */
     public function setBasedInRepository($state) {
         return $this->basedInRepository = (bool) $state;
@@ -340,7 +331,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return \obo\Entity
-
      */
     public function save() {
         $managerName = $this->entityInformation()->managerName;
@@ -350,7 +340,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return void
-
      */
     public function delete() {
         $managerName = $this->entityInformation()->managerName;
@@ -359,7 +348,6 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @return array
-
      */
     public function dump() {
         $arguments = func_get_args();

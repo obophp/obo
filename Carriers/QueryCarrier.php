@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -24,7 +23,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @param string $defaultEntityClassName
-
      * @return void
      */
 
@@ -34,7 +32,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function select($arguments) {
         $this->processArguments(func_get_args(), $this->select, " ", ",");
@@ -43,7 +40,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function rewriteSelect($arguments) {
         $this->select = array("query" => "", "data" => array());
@@ -52,7 +48,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function from($arguments) {
         $this->processArguments(func_get_args(), $this->from, " ");
@@ -61,7 +56,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function join($arguments) {
         $this->processArguments(func_get_args(), $this->join, " ");
@@ -70,7 +64,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function rewriteJoin($arguments) {
         $this->join = array("query" => "", "data" => array());
@@ -79,7 +72,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function where($arguments) {
         $this->processArguments(func_get_args(), $this->where, " ");
@@ -88,7 +80,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function rewriteWhere($arguments) {
         $this->where = array("query" => "", "data" => array());
@@ -97,7 +88,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function groupBy($arguments) {
         $this->processArguments(func_get_args(), $this->groupBy, " ", ",");
@@ -106,7 +96,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function rewriteGroupBy($arguments) {
         $this->groupBy = array("query" => "", "data" => array());
@@ -115,7 +104,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function orderBy($arguments) {
         $this->processArguments(func_get_args(), $this->orderBy, " ", ",");
@@ -124,7 +112,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function rewriteOrderBy($arguments) {
         $this->orderBy = array("query" => "", "data" => array());
@@ -133,7 +120,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function limit($arguments) {
         $this->limit = array("query" => "", "data" => array());
@@ -143,7 +129,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public function offset($arguments) {
         $this->offset = array("query" => "", "data" => array());
@@ -153,7 +138,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return void
-
      */
     public function dumpQuery() {
        \obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->dumpQuery($this->constructQuery());
@@ -225,7 +209,6 @@ class QueryCarrier extends \obo\Object {
      * @param array $targetPart
      * @param string $prefix
      * @param string $sufix
-
      */
     private function processArguments(array $arguments, array &$targetPart, $prefix = "", $sufix = "" ) {
 
@@ -257,7 +240,6 @@ class QueryCarrier extends \obo\Object {
     /**
      * @param array $part
      * @param array $joins
-
      * @return void
      */
     private function convert(array &$part, array &$joins) {
@@ -328,7 +310,6 @@ class QueryCarrier extends \obo\Object {
 
     /**
      * @return \obo\Carriers\QueryCarrier
-
      */
     public static function instance() {
         return new QueryCarrier();

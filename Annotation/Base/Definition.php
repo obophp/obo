@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -19,13 +18,11 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @var \obo\Carriers\EntityInformationCarrier
-
      */
     protected $entityInformation = null;
 
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
-     * @return void
      */
     public function __construct(\obo\Carriers\EntityInformationCarrier $entityInformation) {
         $this->entityInformation = $entityInformation;
@@ -53,7 +50,7 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
-     * @param type $values
+     * @param mixed $values
      * @return void
      */
     public function proccess($values) {
@@ -115,7 +112,6 @@ abstract class Definition extends \obo\Object {
     /**
      * @param array $annotationValue
      * @throws \obo\Exceptions\BadAnnotationException
-
      * @return void
      */
     private function checkParametersForAnnotationValue($annotationValue) {

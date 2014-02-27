@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -22,7 +21,6 @@ class Event extends \obo\Carriers\DataCarrier{
 
     /**
      * @param array $specification
-
      */
     public function __construct(array $specification) {
         parent::__construct($specification);
@@ -31,7 +29,6 @@ class Event extends \obo\Carriers\DataCarrier{
 
     /**
      * @return string
-
      */
     public function eventIdentificationKey() {
         if (!\is_null($this->onClassWithName)) return $this->name.$this->onClassWithName;

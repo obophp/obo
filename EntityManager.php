@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/, Roman Pavlík
@@ -24,7 +23,6 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @return string
-
      */
     public static function classNameManagedEntity() {
         if (isset(self::$classNamesManagedEntities[self::className()])) return self::$classNamesManagedEntities[self::className()];
@@ -34,7 +32,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return boolean
-
      */
     public static function isEntityBasedInRepository(\obo\Entity $entity) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
@@ -57,7 +54,6 @@ abstract class EntityManager  extends \obo\Object {
      * @param boolean $separately
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
-
      */
     public static function entityWithPrimaryPropertyValue($primaryPropertyValue, $separately = false) {
         $entity = self::emptyEntity();
@@ -82,7 +78,6 @@ abstract class EntityManager  extends \obo\Object {
      * @param boolean $overwriteOriginalData
      * @param boolean $separately
      * @return \obo\Entity
-
      */
     public static function entityFromArray($data, $loadOriginalData = false, $overwriteOriginalData = true, $separately = false) {
         $entity = self::emptyEntity();
@@ -132,7 +127,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param array|int $specification
      * @return \obo\Entity
-
      */
     public static function entity($specification) {
        if (is_array($specification) OR $specification instanceof \Traversable) {
@@ -148,7 +142,6 @@ abstract class EntityManager  extends \obo\Object {
      * @param \obo\Carriers\QueryCarrier $specification
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
-
      */
     public static function findEntity(\obo\Carriers\QueryCarrier $specification, $requiredEntity = true) {
         $specification->limit(1);
@@ -163,7 +156,6 @@ abstract class EntityManager  extends \obo\Object {
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Carriers\DataCarrier of \obo\Entity
-
      */
     public static function findEntities(\obo\Carriers\QueryCarrier $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
 
@@ -201,7 +193,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param array $data
      * @return \obo\Entity
-
      */
     protected static function entityFromRawData($data) {
         $classNameManagedEntity = self::classNameManagedEntity();
@@ -251,7 +242,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Carriers\QueryCarrier $specification
      * @return int
-
      */
     public static function countRecords(\obo\Carriers\QueryCarrier $specification) {
         $specification->setDefaultEntityClassName($classNameManagedEntity = self::classNameManagedEntity());
@@ -263,7 +253,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @throws \obo\Exceptions\EntityIsNotInitializedException
-
      * @return void
      */
     public static function saveEntity(\obo\Entity $entity) {
@@ -287,7 +276,6 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @throws \obo\Exceptions\EntityIsNotInitializedException
-
      * @return void
      */
     public static function deleteEntity(\obo\Entity $entity) {
