@@ -160,9 +160,9 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param mixed $value
      * @param string $propertyName
-     * @return mixed
+     * @param bool $triggerEvents
      * @throws \obo\Exceptions\PropertyNotFoundException
-
+     * @return mixed
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
@@ -174,13 +174,18 @@ abstract class Entity  extends \obo\Object {
 
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
-            if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
+        if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             $change = false;
 
-            if (\is_object($value) AND (\is_a($value, "\obo\Entity") OR (\is_a($value, "\obo\Relationships\EntitiesCollection")))) {
-                if (\is_a($value, "\obo\Entity")) {
-                    $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
-                    if ($this->valueForPropertyWithName($propertyName, true) !== $primaryPropertyValue) $change = true;
+
+            if (\is_object($value) AND (\is_a($value, "\obo\Entity") OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
+                if ($value instanceof \obo\Entity) {
+                    if (\is_null($this->valueForPropertyWithName($propertyName, true))) {
+                        $change = true;
+                    } else {
+                        $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
+                        if ($this->valueForPropertyWithName($propertyName, true) !== $primaryPropertyValue) $change = true;
+                    }
                 }
             } else {
                 if ($this->valueForPropertyWithName($propertyName, true) != $value) $change = true;
@@ -205,18 +210,18 @@ abstract class Entity  extends \obo\Object {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this);
             if ($change) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  array("propertyValue" => array("old" => &$oldValue , "new" => &$value)));
-                    if(isset($this->propertiesChanges[$propertyName])) {
-                        $compareValue = $value;
+                if(isset($this->propertiesChanges[$propertyName])) {
+                    $compareValue = $value;
 
-                        if (\is_a($compareValue, "\obo\Entity")) {
-                            $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
-                        }
-
-                        if (isset ($this->propertiesChanges[$propertyName]["oldValue"]) AND $this->propertiesChanges[$propertyName]["oldValue"] == $compareValue) unset($this->propertiesChanges[$propertyName]);
-                        $this->propertiesChanges[$propertyName]["newValue"] = $value;
-                    } else {
-                        $this->propertiesChanges[$propertyName] = array("oldValue" => $oldValue, "newValue" => $value);
+                    if (\is_a($compareValue, "\obo\Entity")) {
+                        $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
                     }
+
+                    if (isset ($this->propertiesChanges[$propertyName]["oldValue"]) AND $this->propertiesChanges[$propertyName]["oldValue"] == $compareValue) unset($this->propertiesChanges[$propertyName]);
+                    $this->propertiesChanges[$propertyName]["newValue"] = $value;
+                } else {
+                    $this->propertiesChanges[$propertyName] = array("oldValue" => $oldValue, "newValue" => $value);
+                }
             }
         }
 
