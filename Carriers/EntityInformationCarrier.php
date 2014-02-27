@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -26,7 +25,6 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @param array $information
      * @return \obo\Carriers\PropertyInformationCarrier
-
      */
     public function addPropertyInformation(array $information) {
         $propertyInformation = new \obo\Carriers\PropertyInformationCarrier($information);
@@ -39,9 +37,7 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @param string $propertyName
      * @return \obo\Carriers\PropertyInformationCarrier
-
      * @throws \obo\Exceptions\PropertyNotFoundException
-
      */
     public function informationForPropertyWithName($propertyName) {
         if (!$this->existInformationForPropertyWithName($propertyName)) throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' does not exist in entity '{$this->className}'");
@@ -51,9 +47,7 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @param string $columnName
      * @return \obo\Carriers\PropertyInformationCarrier
-
      * @throws \obo\Exceptions\PropertyNotFoundException
-
      */
     public function informationForPropertyThatIsMappedToColumnWithName($columnName) {
         if (!$this->existInformationForPropertyThatIsMappedToColumnWithName($columnName)) throw new \obo\Exceptions\PropertyNotFoundException("Property that is mapped to column with name '{$columnName}' does not exist in entity '{$this->className}'");
@@ -63,7 +57,6 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @param string $propertName
      * @return boolean
-
      */
     public function existInformationForPropertyWithName($propertName) {
         return isset($this->propertiesInformation[$propertName]);
@@ -72,7 +65,6 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @param string $columnName
      * @return boolean
-
      */
     public function existInformationForPropertyThatIsMappedToColumnWithName($columnName) {
         return isset($this->inversePropertiesInformationList[$columnName]);

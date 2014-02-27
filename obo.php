@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -31,7 +30,6 @@ class obo extends \obo\Object {
 
     /**
      * @param \DibiConnection $repositoryLayer
-
      */
     public static function connectToRepositoryLayer(\DibiConnection $repositoryLayer) {
         \obo\Services::registerServiceWithName($repositoryLayer, self::REPOSITORY_LAYER);
@@ -43,7 +41,6 @@ class obo extends \obo\Object {
 
     /**
      * @return void
-
      */
     public static function run() {
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);

@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -29,7 +28,6 @@ class One extends \obo\Relationships\Relationship {
      * @param \obo\Entity $owner
      * @param mixed $propertyValue
      * @return \obo\Entity|null
-
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
         if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {

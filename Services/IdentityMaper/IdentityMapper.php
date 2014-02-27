@@ -1,7 +1,6 @@
 <?php
 
 /**
-
  * This file is part of framework Obo Development version (http://www.obophp.org/)
  * @link http://www.obophp.org/
  * @author Adam Suba, http://www.adamsuba.cz/
@@ -25,7 +24,6 @@ class IdentityMapper extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return \obo\Entity
-
      */
     public function mappedEntity(\obo\Entity $entity) {
         if (isset($this->entities[$entity->entityIdentificationKey()])) {
@@ -40,7 +38,6 @@ class IdentityMapper extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @return boolean
-
      */
     public function isMappedEntity(\obo\Entity $entity) {
         return isset($this->entities[$entity->entityIdentificationKey()]);
