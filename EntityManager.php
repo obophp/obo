@@ -245,9 +245,9 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function countRecords(\obo\Carriers\QueryCarrier $specification) {
         $specification->setDefaultEntityClassName($classNameManagedEntity = self::classNameManagedEntity());
-        $primaryPropertyColumnName = $classNameManagedEntity::informationForPropertyWithName($classNameManagedEntity::entityInformation()->primaryPropertyName)->columnName;
+        $primaryPropertyName = $classNameManagedEntity::informationForPropertyWithName($classNameManagedEntity::entityInformation()->primaryPropertyName)->name;
         $specification = clone $specification;
-        return \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchSingle($specification->select("COUNT(DISTINCT {{$primaryPropertyColumnName}})")->constructQuery());
+        return \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchSingle($specification->select("COUNT(DISTINCT {{$primaryPropertyName}})")->constructQuery());
     }
 
     /**
