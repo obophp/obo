@@ -72,7 +72,7 @@ class Many extends \obo\Annotation\Base\Property {
                     if ($cascadeOption == "save") {
                         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
                             "onClassWithName" => $this->entityInformation->className,
-                            "name" => "beforeSave",
+                            "name" => "afterSave",
                             "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->save();},
                             "actionArguments" => array("propertyName" => $this->propertyInformation->name),
                         )));
