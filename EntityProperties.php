@@ -10,7 +10,7 @@
 
 namespace obo;
 
-class EntityProperties extends \obo\Object{
+class EntityProperties extends \obo\Object {
     /**
      * @deprecated
      */
