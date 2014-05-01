@@ -10,7 +10,7 @@
 
 namespace obo;
 
-abstract class Object extends \Nette\Object{
+abstract class Object extends \Nette\Object {
 
     /**
      * @return string

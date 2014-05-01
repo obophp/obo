@@ -10,7 +10,7 @@
 
 namespace obo\Relationships;
 
-class EntitiesCollection extends \obo\Carriers\DataCarrier{
+class EntitiesCollection extends \obo\Carriers\DataCarrier {
     /** @var \obo\Relationships\Many*/
     private $relationShip = null;
     /**  @var \obo\Entity */

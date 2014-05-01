@@ -10,7 +10,7 @@
 
 namespace obo\Relationships;
 
-class Many extends \obo\Relationships\Relationship{
+class Many extends \obo\Relationships\Relationship {
     public $connectViaPropertyWithName = null;
     public $ownerNameInProperty = null;
     public $connectViaRepositoryWithName = null;

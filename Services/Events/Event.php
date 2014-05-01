@@ -10,7 +10,7 @@
 
 namespace obo\Services\Events;
 
-class Event extends \obo\Carriers\DataCarrier{
+class Event extends \obo\Carriers\DataCarrier {
     public $onClassWithName = null;
     public $onObject = null;
     public $name = "";
