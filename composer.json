@@ -11,6 +11,9 @@
             "homepage": "http://adamsuba.cz"
         }
     ],
+    "autoload": {
+        "psr-4": {"Obo\\": "/"}
+    },
     "require": {
         "php": ">=5.3.1",
         "nette/utils": "~2.2"
