@@ -10,7 +10,7 @@
 
 namespace obo\Relationships;
 
-abstract class Relationship extends \obo\Object{
+abstract class Relationship extends \obo\Object {
     public $entityClassNameToBeConnected = "";
     public $ownerPropertyName = "";
     public $cascade = array();

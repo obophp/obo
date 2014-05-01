@@ -10,7 +10,7 @@
 
 namespace obo\Services\Events;
 
-class EventManager extends \obo\Object{
+class EventManager extends \obo\Object {
     private $events = array();
     private $ignoreEvents = array();
     private $ignoreNotificationEntities = array();
