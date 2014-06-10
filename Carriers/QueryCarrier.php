@@ -264,13 +264,13 @@ class QueryCarrier extends \obo\Object {
                     $joinKey = "{$defaultEntityClassName}->{$entityClassNameToBeConnected}";
                     $entityToBeConnectInformation = $entityClassNameToBeConnected::entityInformation();
 
-                    if (\is_a($defaultPropertyInformation->relationship, "obo\Relationships\One")) {
+                    if ($defaultPropertyInformation->relationship instanceof obo\Relationships\One) {
                         $join = "LEFT JOIN [{$entityToBeConnectInformation->repositoryName}] as [{$joinKey}]
                                 ON [{$tableAlias}].[".$defaultEntityInformation->propertiesInformation[$defaultPropertyInformation->relationship->ownerPropertyName]->columnName."]
 
                                 = [{$joinKey}].[".$entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName."]";
 
-                    } elseif (is_a($defaultPropertyInformation->relationship, "obo\Relationships\Many")) {
+                    } elseif ($defaultPropertyInformation->relationship instanceof obo\Relationships\Many) {
                         if (\is_null($defaultPropertyInformation->relationship->connectViaRepositoryWithName)) {
                             $join = "LEFT JOIN [{$entityToBeConnectInformation->repositoryName}] as [{$joinKey}]
                                     ON [{$joinKey}].[".$entityToBeConnectInformation->propertiesInformation[$defaultPropertyInformation->relationship->connectViaPropertyWithName]->columnName."]
