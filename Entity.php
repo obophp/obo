@@ -111,6 +111,13 @@ abstract class Entity  extends \obo\Object {
     public function propertiesChanges() {
         return $this->propertiesChanges;
     }
+    
+    /**
+     * @return mixed
+     */
+    public function primaryPropertyValue() {
+        return $this->valueForPropertyWithName($this->entityInformation()->primaryPropertyName);
+    }
 
     /**
      * @param string $propertyName
