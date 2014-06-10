@@ -47,12 +47,12 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     }
 
     /**
-     * @param mixed $variable
+     * @param mixed $value
      * @param string $variableName
      * @return void
      */
-    public function setValueForVariableWithName($variable, $variableName) {
-        $this->variables[$variableName] = $variable;
+    public function setValueForVariableWithName($value, $variableName) {
+        $this->variables[$variableName] = $value;
     }
 
     /**
@@ -62,7 +62,24 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     public function unsetValueForVaraibleWithName($varibleName) {
         $this->variableForName($varibleName);
         unset($this->variables[$varibleName]);
-
+    }
+    
+    /**
+     * @return void
+     */
+    public function clear() {
+        $this->variables = array();
+    }
+    
+    /**
+     * @param mixed $variableName
+     * @param mixed $value
+     * @throws \obo\Exceptions\VariableNotFoundException
+     */
+    public function changeVariableNameForValue($variableName, $value) {
+        if (\is_null($varibleName = \array_search($value, $this->variables))) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
+        $this->unsetValueForVaraibleWithName($varibleName);
+        $this->setValueForVariableWithName($value, $variableName);
     }
 
     /**
