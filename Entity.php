@@ -95,7 +95,6 @@ abstract class Entity  extends \obo\Object {
      */
     public static function propertiesInformation() {
         return self::entityInformation()->propertiesInformation;
-
     }
 
     /**
@@ -112,6 +111,13 @@ abstract class Entity  extends \obo\Object {
     public function propertiesChanges() {
         return $this->propertiesChanges;
     }
+    
+    /**
+     * @return mixed
+     */
+    public function primaryPropertyValue() {
+        return $this->valueForPropertyWithName($this->entityInformation()->primaryPropertyName);
+    }
 
     /**
      * @param string $propertyName
@@ -121,9 +127,11 @@ abstract class Entity  extends \obo\Object {
      */
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false) {
         if (!$this->hasPropertyWithName($propertyName)) {
-            if ($pos = \strpos($propertyName, "_") AND \is_a($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos)), "\obo\Entity")) {
+            
+            if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
                 return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue);
             }
+            
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can not be read, does not exist in entity '" . $this->className() . "'");
         }
 
@@ -141,7 +149,7 @@ abstract class Entity  extends \obo\Object {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
 
-        if ($entityAsPrimaryPropertyValue === true AND \is_a($value, "\obo\Entity")) {
+        if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) {
             $primaryPropertyName = $value->entityInformation()->primaryPropertyName;
             $value = $value->valueForPropertyWithName($primaryPropertyName);
         }
@@ -158,7 +166,7 @@ abstract class Entity  extends \obo\Object {
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
-            if ($pos = \strpos($propertyName, "_") AND \is_a($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos)), "\obo\Entity")) {
+            if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
                 return $entity->setValueForPropertyWithName($value, substr($propertyName, $pos+1));
             }
             throw new \obo\Exceptions\PropertyNotFoundException("Can not write to the property with name '{$propertyName}', does not exist in entity '".$this->className()."'");
@@ -169,8 +177,7 @@ abstract class Entity  extends \obo\Object {
         if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             $change = false;
 
-
-            if (\is_object($value) AND (\is_a($value, "\obo\Entity") OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
+            if (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
                 if ($value instanceof \obo\Entity) {
                     if (\is_null($this->valueForPropertyWithName($propertyName, true))) {
                         $change = true;
@@ -205,7 +212,7 @@ abstract class Entity  extends \obo\Object {
                 if(isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
 
-                    if (\is_a($compareValue, "\obo\Entity")) {
+                    if ($compareValue instanceof \obo\Entity) {
                         $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
                     }
 
@@ -382,12 +389,12 @@ abstract class Entity  extends \obo\Object {
                     "primaryPropertyName" => $connectedEntityInformation->primaryPropertyName,
                 );
 
-                if (!is_null($propertyValue) AND !(is_a($propertyValue, "obo\Relationships\EntitiesCollection") AND !count($propertyValue))) {
+                if (!is_null($propertyValue) AND !($propertyValue instanceof obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
 
                     if (isset($arguments[0])
 
                         AND $arguments[0]->className() == $connectedEntityInformation->className
-                        AND !is_a($propertyValue, "obo\Relationships\EntitiesCollection")
+                        AND !$propertyValue instanceof obo\Relationships\EntitiesCollection
                         AND $arguments[0]->valueForPropertyWithName($arguments[0]->entityInformation()->primaryPropertyName) == $propertyValue->valueForPropertyWithName($connectedEntityInformation->primaryPropertyName)
                     ) {
                         $relationshipInformation["entity"] = "**RECURSION**";
