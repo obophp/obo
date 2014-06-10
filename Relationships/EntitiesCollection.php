@@ -12,10 +12,19 @@ namespace obo\Relationships;
 
 class EntitiesCollection extends \obo\Carriers\DataCarrier {
     /** @var \obo\Relationships\Many*/
-    private $relationShip = null;
-    /**  @var \obo\Entity */
-    private $owner = null;
-
+    protected $relationShip = null;
+    /** @var \obo\Entity */
+    protected $owner = null;
+    
+    /** @var boolean*/
+    protected $savingInProgress = false;
+    
+    /** @var boolean*/
+    protected $afterSavingNeedReload = false;
+    
+    /** @var boolean*/
+    protected $deletingInProgress = false;
+    
     /**
      * @param \obo\Entity $owner
      * @param \obo\Relationships\Many $relationship
@@ -23,6 +32,20 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     public function __construct(\obo\Entity $owner, \obo\Relationships\Many $relationship) {
         $this->relationShip = $relationship;
         $this->owner = $owner;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function isSavingInProgress() {
+        return $this->savingInProgress;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isDeletingInProgress() {
+        return $this->deletingInProgress;
     }
 
     /**
@@ -32,9 +55,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return \obo\Entity
      */
     public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
+
+        if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
+        
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
 
         if($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaRepositoryWithName)) {
+            if (!$entity->isBasedInRepository()) $entity->save();
             $ownerPrimaryPopertyName = $this->owner->entityInformation()->primaryPropertyName;
             $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
             $entityPrimaryPropertyName = $entityClassNameTobeConnected::entityInformation()->primaryPropertyName;
@@ -47,13 +74,30 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
             \obo\EntityManager::repositoryMapper()->addRecordToRelationshipRepository($this->relationShip->connectViaRepositoryWithName, $specification);
         }
 
-        if ($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaPropertyWithName)) {
+        if (!\is_null($this->relationShip->connectViaPropertyWithName)) {
             $entity->setValueForPropertyWithName($this->owner, $this->relationShip->connectViaPropertyWithName);
             if (!\is_null($this->relationShip->ownerNameInProperty)) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
-            $entity->save();
+            
+            if ($createRelationshipInRepository) {
+                $entity->save();
+            }
         }
-
-        $this->setValueForVariableWithName($entity, $entity->id);
+        
+        if (!$entityKey = $entity->primaryPropertyValue()) {
+             $entityKey = "__" . ($this->count()+1);
+             $this->afterSavingNeedReload = true;
+             
+             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                     new \obo\Services\Events\Event(array(
+                         "onObject" => $entity,
+                         "name" => "afterInsert",
+                         "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress()) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
+                         "actionArguments" => array("entitiesCollection" => $this),
+                     )));
+        }
+        
+        $this->setValueForVariableWithName($entity, $entityKey);
+        
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
         return $entity;
     }
@@ -79,26 +123,54 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      */
     public function remove(\obo\Entity $entity, $removeEntity = false, $notifyEvents = true) {
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
-        $entityPrimaryPropertyName = $entity->entityInformation()->primaryPropertyName;
+        
         if(!\is_null($this->relationShip->connectViaRepositoryWithName)) {
-            $ownerPrimaryPopertyName = $this->owner->entityInformation()->primaryPropertyName;
-            $specification = array(
-                $this->owner->entityInformation()->repositoryName => $this->owner->valueForPropertyWithName($ownerPrimaryPopertyName),
-                $entity->entityInformation()->repositoryName => $entity->valueForPropertyWithName($entityPrimaryPropertyName),
-            );
-            \obo\EntityManager::repositoryMapper()->removeRecordFromRelationshipRepository($this->relationShip->connectViaRepositoryWithName, $specification);
+            \obo\EntityManager::repositoryMapper()->removeRecordFromRelationshipRepository($this->relationShip->connectViaRepositoryWithName,
+            array(
+                $this->owner->entityInformation()->repositoryName => $this->owner->primaryPropertyValue(),
+                $entity->entityInformation()->repositoryName => $entity->primaryPropertyValue(),
+            ));
         }
-        $primaryPropertyValue = $entity->$entityPrimaryPropertyName;
-        if (isset($this->$primaryPropertyValue)) unset ($this->$primaryPropertyValue);
+        
+        $primaryPropertyValue = $entity->primaryPropertyValue();
+        
+        if (isset($this->$primaryPropertyValue)) {
+            $key = $primaryPropertyValue;
+        } elseif($key = \array_search($entity, $this->asArray())) {
+            $key = $key;
+        } else {
+            throw new \obo\Exceptions\EntityNotFoundException("The entity, you want to delete does not exist in the collection");
+        }
+        
+        $this->unsetValueForVaraibleWithName($key);
+        
         if ($removeEntity) $entity->delete();
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
     }
-
+    
+    /**
+     * @return void
+     */
+    public function loadEntities() {
+        foreach ($this->relationShip->entitiesForOwners($this->owner) as $entity) $this->add($entity, false, false);
+    }
+    
+    /**
+     * @return void
+     */
+    public function reloadEntitites() {
+        $this->clear();
+        $this->loadEntities();
+    }
+                
     /**
      * @return void
      */
     public function save() {
+        $this->savingInProgress = true;
         foreach($this->asArray() as $entity) $entity->save();
+        if ($this->afterSavingNeedReload) $this->reloadEntitites();
+        $this->savingInProgress = false;
     }
 
     /**
@@ -106,9 +178,11 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return void
      */
     public function delete($removeEntity = false) {
+        $this->deletingInProgress = true;
         foreach($this->asArray() as $entity) {
             $this->remove($entity, $removeEntity);
         }
+        $this->deletingInProgress = false;
     }
 
     /**

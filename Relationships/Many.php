@@ -22,6 +22,13 @@ class Many extends \obo\Relationships\Relationship {
      * @return \obo\Relationships\EntitiesCollection
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $ownerPropertyValue) {
+        $entitiesCollection = new \obo\Relationships\EntitiesCollection($owner, $this);
+        $entitiesCollection->loadEntities();
+
+        return $entitiesCollection;
+    }
+    
+    public function entitiesForOwners(\obo\Entity $owner) {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         $ownerPrimaryPropertyName = $owner->entityInformation()->primaryPropertyName;
@@ -33,19 +40,11 @@ class Many extends \obo\Relationships\Relationship {
         } elseif (!\is_null($this->connectViaRepositoryWithName)){
             $query = \obo\Carriers\QueryCarrier::instance()
                     ->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]", $owner->$ownerPrimaryPropertyName);
-
         }
-
+        
         if (!\is_null($this->sortVia)) $query->orderBy($this->sortVia);
 
-        $entities = $ownedEntityManagerName::findEntities($query);
-
-        $entitiesCollection = new \obo\Relationships\EntitiesCollection($owner, $this);
-
-        foreach ($entities as $entity) $entitiesCollection->add($entity, false, false);
-
-        return $entitiesCollection;
-
+        return $ownedEntityManagerName::findEntities($query);
     }
 
 }
