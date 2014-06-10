@@ -95,7 +95,6 @@ abstract class Entity  extends \obo\Object {
      */
     public static function propertiesInformation() {
         return self::entityInformation()->propertiesInformation;
-
     }
 
     /**
@@ -124,6 +123,7 @@ abstract class Entity  extends \obo\Object {
             if ($pos = \strpos($propertyName, "_") AND \is_a($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos)), "\obo\Entity")) {
                 return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue);
             }
+            
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can not be read, does not exist in entity '" . $this->className() . "'");
         }
 
