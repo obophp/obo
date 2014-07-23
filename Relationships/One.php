@@ -39,7 +39,7 @@ class One extends \obo\Relationships\Relationship {
         $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
 
         if ($propertyValue) {
-            return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue);
+            return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
         } else {
             return $this->autoCreate ? $entityManagerName::entityFromArray(array()) : null;
         }

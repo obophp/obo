@@ -320,6 +320,13 @@ abstract class Entity  extends \obo\Object {
     public function setBasedInRepository($state) {
         return $this->basedInRepository = (bool) $state;
     }
+    
+    /**
+     * @return boolean
+     */
+    public function isDeleted() {
+        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete) : false;
+    }
 
     /**
      * @return string

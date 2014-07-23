@@ -18,10 +18,11 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     public $repositoryColumns = array();
     public $primaryPropertyName = "id";
     public $propertiesInformation = array();
-    private $inversePropertiesInformationList = array();
     public $annotations = array();
     public $propertiesForSerialization = array();
+    public $propertyNameForSoftDelete = null;
 
+    private $inversePropertiesInformationList = array();
     /**
      * @param array $information
      * @return \obo\Carriers\PropertyInformationCarrier
@@ -70,6 +71,9 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
         return isset($this->inversePropertiesInformationList[$columnName]);
     }
 
+    /**
+     * @return void
+     */
     public function processInformation() {
         foreach($this->propertiesInformation as $propertyInformation) {
             if (\is_null($propertyInformation->columnName) AND isset($this->repositoryColumns[$propertyInformation->name])) {
@@ -79,6 +83,11 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
         }
     }
 
+    /**
+     * @param array $propertiesNames
+     * @param booleam $convertKeys
+     * @return array
+     */
     public function propertiesNamesToColumnsNames($propertiesNames, $convertKeys = true) {
         if ($convertKeys) {
             $convert = array();
@@ -95,6 +104,11 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
         return $propertiesNames;
     }
 
+    /**
+     * @param array $columnsNames
+     * @param bolean $convertKeys
+     * @return array
+     */
     public function columnsNamesToPropertiesNames($columnsNames, $convertKeys = true) {
 
         if ($convertKeys) {

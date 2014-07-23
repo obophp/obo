@@ -168,7 +168,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      */
     public function save() {
         $this->savingInProgress = true;
-        foreach($this->asArray() as $entity) $entity->save();
+        foreach($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
         if ($this->afterSavingNeedReload) $this->reloadEntitites();
         $this->savingInProgress = false;
     }

@@ -72,7 +72,10 @@ class One extends \obo\Annotation\Base\Property {
                     \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
                         "onClassWithName" => $this->entityInformation->className,
                         "name" => "beforeSave",
-                        "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->save();},
+                        "actionAnonymousFunction" => function($arguments) {
+                            $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
+                            if (!$connectedEntity->isDeleted()) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->save();
+                        },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name),
                     )));
                 } elseif ($cascadeOption == "delete") {
@@ -83,7 +86,6 @@ class One extends \obo\Annotation\Base\Property {
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => true),
                     )));
                 }
-
             }
 
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
