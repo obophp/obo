@@ -111,7 +111,7 @@ abstract class Entity  extends \obo\Object {
     public function propertiesChanges() {
         return $this->propertiesChanges;
     }
-    
+
     /**
      * @return mixed
      */
@@ -127,11 +127,11 @@ abstract class Entity  extends \obo\Object {
      */
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false) {
         if (!$this->hasPropertyWithName($propertyName)) {
-            
+
             if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
                 return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue);
             }
-            
+
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can not be read, does not exist in entity '" . $this->className() . "'");
         }
 
@@ -282,8 +282,11 @@ abstract class Entity  extends \obo\Object {
      * @return array
      */
     private function serializePropertiesWhichRequireIt(array $propertiesAsArray) {
-        foreach($this->entityInformation()->propertiesForSerialization as $propertyName)
-            $propertiesAsArray[$propertyName] = \serialize($propertiesAsArray[$propertyName]);
+        foreach($this->entityInformation()->propertiesForSerialization as $propertyName) {
+            if (isset($propertiesAsArray[$propertyName])) {
+                $propertiesAsArray[$propertyName] = \serialize($propertiesAsArray[$propertyName]);
+            }
+        }
         return $propertiesAsArray;
     }
 
@@ -320,7 +323,7 @@ abstract class Entity  extends \obo\Object {
     public function setBasedInRepository($state) {
         return $this->basedInRepository = (bool) $state;
     }
-    
+
     /**
      * @return boolean
      */
