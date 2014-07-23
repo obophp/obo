@@ -247,7 +247,7 @@ class QueryCarrier extends \obo\Object {
         foreach ($blocks[0] as $block) {
             $defaultEntityClassName = $this->defaultEntityClassName;
             $joinKey = null;
-            $tableAlias = $defaultEntityClassName::entityInformation()->repositoryName;
+            $ownerRepositoryName = $defaultEntityClassName::entityInformation()->repositoryName;
             $items = \explode("}.{", trim($block, "{}"));
 
             if (count($items)>1) {
@@ -258,44 +258,59 @@ class QueryCarrier extends \obo\Object {
                     if (isset($defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
                             AND $defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
                         throw new \obo\Exceptions\AutoJoinException("Functionality autojoin can not be used in non-static relationship ONE for property with name '{$defaultPropertyInformation->name}'");
-
+    
                     $defaultEntityInformation = $defaultEntityClassName::entityInformation();
                     $entityClassNameToBeConnected = $defaultPropertyInformation->relationship->entityClassNameToBeConnected;
                     $joinKey = "{$defaultEntityClassName}->{$entityClassNameToBeConnected}";
                     $entityToBeConnectInformation = $entityClassNameToBeConnected::entityInformation();
 
                     if ($defaultPropertyInformation->relationship instanceof \obo\Relationships\One) {
-                        $join = "LEFT JOIN [{$entityToBeConnectInformation->repositoryName}] as [{$joinKey}]
-                                ON [{$tableAlias}].[".$defaultEntityInformation->propertiesInformation[$defaultPropertyInformation->relationship->ownerPropertyName]->columnName."]
-
-                                = [{$joinKey}].[".$entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName."]";
-
+                        
+                        $join = self::oneRelationshipJoinQuery(
+                                    $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
+                                    $joinKey,//$joinKey
+                                    $ownerRepositoryName,//$ownerRepositoryName
+                                    $defaultEntityInformation->propertiesInformation[$defaultPropertyInformation->relationship->ownerPropertyName]->columnName,//$foreignKeyColumnName
+                                    $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
+                                    $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
+                                );
+                        
                     } elseif ($defaultPropertyInformation->relationship instanceof \obo\Relationships\Many) {
+
                         if (\is_null($defaultPropertyInformation->relationship->connectViaRepositoryWithName)) {
-                            $join = "LEFT JOIN [{$entityToBeConnectInformation->repositoryName}] as [{$joinKey}]
-                                    ON [{$joinKey}].[".$entityToBeConnectInformation->propertiesInformation[$defaultPropertyInformation->relationship->connectViaPropertyWithName]->columnName."]
-
-                                    = [{$tableAlias}].[".$defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName."]";
-
+                            
+                            $join = self::manyViaPropertyRelationshipJoinQuery(
+                                        $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
+                                        $joinKey,//$joinKey
+                                        $ownerRepositoryName,//$ownerRepositoryName
+                                        $entityToBeConnectInformation->propertiesInformation[$defaultPropertyInformation->relationship->connectViaPropertyWithName]->columnName,//$foreignKeyColumnName
+                                        $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
+                                        $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
+                                    );
+        
                             if (!\is_null($defaultPropertyInformation->relationship->ownerNameInProperty)) {
-                                $join .= " AND [{$joinKey}].[{$defaultPropertyInformation->relationship->ownerNameInProperty}] = '{$defaultPropertyInformation->entityInformation->className}'";
+                                $join .= self::manyViaPropertyRelationshipExtendsJoinQuery(
+                                            $joinKey,//$joinKey
+                                            $defaultPropertyInformation->relationship->ownerNameInProperty,//$ownerNameInPropertyWithName
+                                            $defaultPropertyInformation->entityInformation->className//$ownerClassName
+                                        );
                             }
 
                         } elseif (\is_null($defaultPropertyInformation->relationship->connectViaPropertyWithName)) {
-                            $join = "
-                                    LEFT JOIN [{$defaultPropertyInformation->relationship->connectViaRepositoryWithName}]
-                                    ON [{$defaultPropertyInformation->relationship->connectViaRepositoryWithName}].[{$defaultEntityInformation->repositoryName}]
-                                    = [{$tableAlias}].[".$defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName."]
-
-                                    LEFT JOIN [{$entityToBeConnectInformation->repositoryName}] as [{$joinKey}]
-                                    ON [{$defaultPropertyInformation->relationship->connectViaRepositoryWithName}].[{$entityToBeConnectInformation->repositoryName}]
-                                    = [{$joinKey}].[".$entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName."]";
-
+                            $join = self::manyViaRepostioryRelationshipJoinQuery(
+                                        $joinKey,//$joinKey
+                                        $defaultPropertyInformation->relationship->connectViaRepositoryWithName,//$connectViaRepositoryWithName
+                                        $ownerRepositoryName,//$ownerRepositoryName
+                                        $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
+                                        $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownerPrimaryPropertyColumnName
+                                        $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedPrimaryPropertyColumnName
+                                        $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
+                                    );                                    
                         }
                     }
 
                     $defaultEntityClassName = $entityClassNameToBeConnected;
-                    $tableAlias = $joinKey;
+                    $ownerRepositoryName = $joinKey;
                     $joins[$joinKey] = $join;
                 }
             } else {
@@ -303,11 +318,69 @@ class QueryCarrier extends \obo\Object {
                 $defaultPropertyInformation = $defaultEntityClassName::informationForPropertyWithName($items[0]);
             }
 
-            $part["query"] = \preg_replace("#(\{(.*?)\}\.?)+#", "[{$tableAlias}].[{$defaultPropertyInformation->columnName}]", $part["query"], 1);
+            $part["query"] = \preg_replace("#(\{(.*?)\}\.?)+#", "[{$ownerRepositoryName}].[{$defaultPropertyInformation->columnName}]", $part["query"], 1);
         }
 
     }
-
+    
+    /**
+     * @param string $ownedRepositoryName
+     * @param string $joinKey
+     * @param string $ownerRepositoryName
+     * @param string $foreignKeyColumnName
+     * @param string $ownedEntityPrimaryColumnName
+     * @param string $columnNameForSoftDelete
+     * @return string
+     */
+    protected static function oneRelationshipJoinQuery($ownedRepositoryName, $joinKey, $ownerRepositoryName, $foreignKeyColumnName, $ownedEntityPrimaryColumnName, $columnNameForSoftDelete) {
+        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
+        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$ownerRepositoryName}].[{$foreignKeyColumnName}] = [{$joinKey}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";         
+    }
+    
+    /**
+     * @param string $ownedRepositoryName
+     * @param string $joinKey
+     * @param string $ownerRepositoryName
+     * @param string $foreignKeyColumnName
+     * @param string $ownedEntityPrimaryColumnName
+     * @param string $columnNameForSoftDelete
+     * @return string
+     */
+    protected static function manyViaPropertyRelationshipJoinQuery($ownedRepositoryName, $joinKey, $ownerRepositoryName, $foreignKeyColumnName, $ownedEntityPrimaryColumnName, $columnNameForSoftDelete) {
+        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
+        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$joinKey}].[{$foreignKeyColumnName}] = [{$ownerRepositoryName}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";
+    }
+    
+    /**
+     * @param type $joinKey
+     * @param type $ownerNameInPropertyWithName
+     * @param type $ownerClassName
+     * @return type
+     */
+    protected static function manyViaPropertyRelationshipExtendsJoinQuery($joinKey, $ownerNameInPropertyWithName, $ownerClassName) {
+        return " AND [{$joinKey}].[{$ownerNameInPropertyWithName}] = '{$ownerClassName}'";
+    }
+    
+    /**
+     * @param string $joinKey
+     * @param string $connectViaRepositoryWithName
+     * @param string $ownerRepositoryName
+     * @param string $ownedRepositoryName
+     * @param string $ownerPrimaryPropertyColumnName
+     * @param string $ownedPrimaryPropertyColumnName
+     * @param string $columnNameForSoftDelete
+     * @return string
+     */
+    protected static function manyViaRepostioryRelationshipJoinQuery($joinKey, $connectViaRepositoryWithName, $ownerRepositoryName, $ownedRepositoryName, $ownerPrimaryPropertyColumnName, $ownedPrimaryPropertyColumnName, $columnNameForSoftDelete) {
+        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
+        return "LEFT JOIN [{$connectViaRepositoryWithName}]
+                ON [{$connectViaRepositoryWithName}].[{$ownerRepositoryName}]
+                = [{$ownerRepositoryName}].[{$ownerPrimaryPropertyColumnName}] 
+                LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}]
+                ON [{$connectViaRepositoryWithName}].[{$ownedRepositoryName}]
+                = [{$joinKey}].[{$ownedPrimaryPropertyColumnName}]{$softDeleteClausule}";   
+    }
+    
     /**
      * @return \obo\Carriers\QueryCarrier
      */

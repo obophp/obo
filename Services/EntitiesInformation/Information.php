@@ -36,11 +36,11 @@ class Information extends \obo\Object {
             $cache = \obo\Services::serviceWithName(\obo\obo::CACHE);
             $entityInformation = $cache->load($className);
             if($entityInformation === NULL) {
-                $entityInformation = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->exploreEntityWithName($className);
+                $entityInformation = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->exploreEntityWithClassName($className);
                 if ($entityInformation->repositoryColumns !== false) $cache->store($className, $entityInformation);
             }
         } else {
-            $entityInformation = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->exploreEntityWithName($className);
+            $entityInformation = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->exploreEntityWithClassName($className);
         }
 
         $this->registerCoreEventsForEntity($entityInformation);

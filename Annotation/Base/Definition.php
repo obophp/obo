@@ -92,6 +92,11 @@ abstract class Definition extends \obo\Object {
         $parametersDefinition = self::parametersDefinition();
 
         switch (true) {
+            
+            case $parametersDefinition["numberOfParameters"] == "?" :
+                    if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects zero or one parameter, you send more parameters");
+                break;
+            
             case $parametersDefinition["numberOfParameters"] == 0 :
                     if (count($annotationValue)) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' does not accept any parameters, you sent " . count($annotationValue) . " parameters");
                 break;

@@ -85,9 +85,8 @@ class DibiRepositoryMapper extends \obo\Object {
      * @return void
      */
     public function removeEntityFromRepository(\obo\Entity $entity) {
-        $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-        $primaryPropertyColumnName = $entity->informationForPropertyWithName($primaryPropertyName)->columnName;
-        \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("DELETE FROM [{$entity->entityInformation()->repositoryName}] WHERE [{$entity->entityInformation()->repositoryName}].[{$primaryPropertyColumnName}] = %i LIMIT 1", $entity->$primaryPropertyName);
+        $primaryPropertyColumnName = $entity->informationForPropertyWithName($entity->entityInformation()->primaryPropertyName)->columnName;
+        \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->query("DELETE FROM [{$entity->entityInformation()->repositoryName}] WHERE [{$entity->entityInformation()->repositoryName}].[{$primaryPropertyColumnName}] = %i LIMIT 1", $entity->primaryPropertyValue());
     }
 
     /**
