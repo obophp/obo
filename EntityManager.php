@@ -175,7 +175,7 @@ abstract class EntityManager  extends \obo\Object {
         $classNameEntity = self::classNameManagedEntity();
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;  
         
-        $specification->select("DISTINCT [{$repositoryName}].[*]");
+        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
         return self::entitiesFromRepositoryMapper($specification);
     }
 
@@ -246,7 +246,7 @@ abstract class EntityManager  extends \obo\Object {
         
         $specification = \obo\Carriers\QueryCarrier::instance();
         
-        $specification->select("*")->where("{{$primaryPropertyName}} = %s", $entity->valueForPropertyWithName($primaryPropertyName));
+        $specification->select("[".\implode("], [", $entity->entityInformation()->repositoryColumnsForPersistableProperties)."]")->where("{{$primaryPropertyName}} = %s", $entity->valueForPropertyWithName($primaryPropertyName));
                 
         if (!$ignoreSoftDelete AND !is_null($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete)) {
             $specification->where("AND {{$propertyNameForSoftDelete}} = 0");
