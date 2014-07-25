@@ -328,7 +328,7 @@ abstract class Entity  extends \obo\Object {
      * @return boolean
      */
     public function isDeleted() {
-        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete) : false;
+        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);;
     }
 
     /**
