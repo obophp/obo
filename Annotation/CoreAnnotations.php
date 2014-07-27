@@ -17,7 +17,6 @@ class CoreAnnotations extends \obo\Object {
      * @return void
      */
     public static function register(\obo\Services\EntitiesInformation\Explorer $entitiesExplorer) {
-
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\ColumnName");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Many");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\One");
@@ -27,8 +26,5 @@ class CoreAnnotations extends \obo\Object {
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Method\Run");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\TimeStamp");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\DataType");
-        $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Serialize");
-
     }
-
 }
