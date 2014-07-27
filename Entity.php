@@ -268,26 +268,13 @@ abstract class Entity  extends \obo\Object {
     public function dataWhoNeedToStore($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
         if ($this->isBasedInRepository()) {
             if (\is_null($onlyFromList)) {
-                return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray($this->propertiesChanges, $entityAsPrimaryPropertyValue));
+                return $this->propertiesAsArray($this->propertiesChanges, $entityAsPrimaryPropertyValue);
             } else {
-                return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($this->propertiesChanges))), $entityAsPrimaryPropertyValue));
+                return $this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($this->propertiesChanges))), $entityAsPrimaryPropertyValue);
             }
         } else {
-            return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue));
+            return $this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue);
         }
-    }
-
-    /**
-     * @param array $propertiesAsArray
-     * @return array
-     */
-    private function serializePropertiesWhichRequireIt(array $propertiesAsArray) {
-        foreach($this->entityInformation()->propertiesForSerialization as $propertyName) {
-            if (isset($propertiesAsArray[$propertyName])) {
-                $propertiesAsArray[$propertyName] = \serialize($propertiesAsArray[$propertyName]);
-            }
-        }
-        return $propertiesAsArray;
     }
 
     /**
