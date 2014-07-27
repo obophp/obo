@@ -19,7 +19,6 @@ abstract class DataType extends \obo\Object {
 
     /**
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
-     * @return void
      */
     public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
         $this->propertyInformation = $propertyInformation;
