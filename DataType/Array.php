@@ -43,8 +43,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
     public function unserialize($arguments) {
         $value = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name);
 
-        // if value is an empty string or is not even a string -> set to serialized empty array
-        if ($value === "" || !is_string($value)) $value = "a:0:{}";
+        if ($value === "" || !is_string($value)) $value = serialize(array());
 
         $arguments["entity"]->setValueForPropertyWithName(unserialize($value), $this->propertyInformation->name, false);
     }
