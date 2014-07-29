@@ -28,28 +28,31 @@ class DataType extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $values
+     * @throws \obo\Exceptions\BadDataTypeException
      * @return void
      */
     public function proccess($values) {
         parent::proccess($values);
 
         switch ($values[0]) {
-            case "boolean" :
+            case "boolean":
                     $dataType = new \obo\DataType\Boolean($this->propertyInformation);
                 break;
-            case "number" :
+            case "number":
                     $dataType = new \obo\DataType\Number($this->propertyInformation);
                 break;
-            case "string" :
+            case "string":
                     $dataType = new \obo\DataType\String($this->propertyInformation);
                 break;
-            case "dateTime" :
+            case "dateTime":
                     $dataType = new \obo\DataType\DateTime($this->propertyInformation);
                 break;
-            default :
-                throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime");
+            case "array":
+                    $dataType = new \obo\DataType\ArrayDataType($this->propertyInformation);
                 break;
-
+            default :
+                throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime and array");
+                break;
         }
 
         $this->propertyInformation->dataType = $dataType ;
