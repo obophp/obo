@@ -20,3 +20,5 @@ nbproject/
 ############################
 .htaccess
 web.config
+
+vendor/
