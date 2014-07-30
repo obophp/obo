@@ -175,7 +175,7 @@ abstract class EntityManager  extends \obo\Object {
         $classNameEntity = self::classNameManagedEntity();
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;  
         
-        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
+        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
         return self::entitiesFromRepositoryMapper($specification);
     }
 
@@ -254,7 +254,7 @@ abstract class EntityManager  extends \obo\Object {
         
         $data = self::rawDataForSpecification($specification);
         
-        return isset($data[0]) ? $entity->entityInformation()->columnsNamesToPropertiesNames($data[0]) : array();
+        return isset($data[0]) ? $data[0] : array();
     }
 
     /**
@@ -280,8 +280,8 @@ abstract class EntityManager  extends \obo\Object {
      * @return void
      */
     public static function saveEntity(\obo\Entity $entity, $forced = false) {
-        if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Can not save entity who is not initialized");
-        if ($forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Can not save entity who is deleted");
+        if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
+        if (!$forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
         
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
         if (count($entity->dataWhoNeedToStore($entity->entityInformation()->columnsNamesToPropertiesNames($entity->entityInformation()->repositoryColumns)))) {
@@ -305,7 +305,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return void
      */
     public static function deleteEntity(\obo\Entity $entity) {
-        if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Can not delete entity who is not initialized");
+        if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDelete", $entity);
 
         if (\is_null($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete)) {
