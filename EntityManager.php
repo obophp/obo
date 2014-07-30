@@ -175,7 +175,7 @@ abstract class EntityManager  extends \obo\Object {
         $classNameEntity = self::classNameManagedEntity();
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;  
         
-        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
+        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
         return self::entitiesFromRepositoryMapper($specification);
     }
 
