@@ -217,7 +217,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @param \obo\Entity $entity
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
-    private function createRelationshipInRepositoryForEntity(\obo\Entity $entity) {
+    protected function createRelationshipInRepositoryForEntity(\obo\Entity $entity) {
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
         $entityPrimaryPropertyName = $entityClassNameTobeConnected::entityInformation()->primaryPropertyName;
