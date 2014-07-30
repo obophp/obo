@@ -254,7 +254,7 @@ abstract class EntityManager  extends \obo\Object {
         
         $data = self::rawDataForSpecification($specification);
         
-        return isset($data[0]) ? $entity->entityInformation()->columnsNamesToPropertiesNames($data[0]) : array();
+        return isset($data[0]) ? $data[0] : array();
     }
 
     /**
