@@ -61,7 +61,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
 
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
 
         if($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaRepositoryWithName)) {
             if (!$entity->isBasedInRepository()) {
@@ -108,7 +108,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
 
         $this->setValueForVariableWithName($entity, $entityKey);
 
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
         return $entity;
     }
 
@@ -134,7 +134,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return void
      */
     public function remove(\obo\Entity $entity, $removeEntity = false, $notifyEvents = true) {
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
 
         if(!\is_null($this->relationShip->connectViaRepositoryWithName)) {
             \obo\EntityManager::repositoryMapper()->removeRecordFromRelationshipRepository($this->relationShip->connectViaRepositoryWithName,
@@ -157,7 +157,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
         $this->unsetValueForVaraibleWithName($key);
 
         if ($removeEntity) $entity->delete();
-        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner);
+        if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
     }
 
     /**
