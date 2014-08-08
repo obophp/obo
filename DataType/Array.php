@@ -30,7 +30,6 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $arguments
-     * @return void
      */
     public function serialize($arguments) {
         $arguments["entity"]->setValueForPropertyWithName(serialize($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
@@ -38,13 +37,10 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $arguments
-     * @return void
      */
     public function unserialize($arguments) {
         $value = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name);
-
         if ($value === "" || !is_string($value)) $value = serialize(array());
-
         $arguments["entity"]->setValueForPropertyWithName(unserialize($value), $this->propertyInformation->name, false);
     }
 
@@ -54,7 +50,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "afterInitialize",
+            "name" => "beforeInitialize",
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->unserialize($arguments);
             },
@@ -75,6 +71,15 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
             "name" => "beforeSave",
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->serialize($arguments);
+            },
+            "actionArguments" => array("dataType" => $this),
+        )));
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            "onClassWithName" => $this->propertyInformation->entityInformation->className,
+            "name" => "afterSave",
+            "actionAnonymousFunction" => function($arguments) {
+                $arguments["dataType"]->unserialize($arguments);
             },
             "actionArguments" => array("dataType" => $this),
         )));

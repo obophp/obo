@@ -42,33 +42,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
-    public function distribute(array $arguments) {
-        $propertiesInformation = $arguments["entity"]->propertiesInformation();
-
-        if (!isset($propertiesInformation[$this->propertyToStore]))
-            throw new \obo\Exceptions\PropertyNotFoundException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' does not exists");
-
-        if (!$propertiesInformation[$this->propertyToStore]->dataType instanceof \obo\DataType\ArrayDataType)
-            throw new \obo\Exceptions\BadDataTypeException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' must be Obo Array dataType");
-
-        $rawData = ($arguments["entity"]->valueForPropertyWithName($this->propertyToStore));
-
-        //if (!is_array($rawData)) $rawData = unserialize($rawData);
-
-        if(isset($rawData[$this->propertyInformation->name])) {
-            $arguments["entity"]->setValueForPropertyWithName($rawData[$this->propertyInformation->name], $this->propertyInformation->name, false);
-            //unset($rawData[$this->propertyInformation->name]);
-            //\Tracy\Debugger::barDump($rawData);
-            //$arguments["entity"]->setValueForPropertyWithName($rawData, $this->propertyToStore, false);
-        }
-    }
-
-    /**
-     * @param array $arguments
-     * @throws \obo\Exceptions\BadDataTypeException
-     * @throws \obo\Exceptions\PropertyNotFoundException
-     */
-    public function merge(array $arguments) {
+    public function fromArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
 
         if (!isset($propertiesInformation[$this->propertyToStore]))
@@ -78,29 +52,45 @@ class StoreTo extends \obo\Annotation\Base\Property {
             throw new \obo\Exceptions\BadDataTypeException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' must be Obo Array dataType");
 
         $rawData = $arguments["entity"]->valueForPropertyWithName($this->propertyToStore);
-        //\Tracy\Debugger::barDump($rawData);
-        $rawData[$this->propertyInformation->name] = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name);
-        $arguments["entity"]->setValueForPropertyWithName($rawData, $this->propertyToStore, false);
+        if (isset($rawData[$this->propertyInformation->name])) {
+            $arguments["entity"]->setValueForPropertyWithName($rawData[$this->propertyInformation->name], $this->propertyInformation->name, false);
+        }
     }
 
     /**
-     * @return void
+     * @param array $arguments
+     * @throws \obo\Exceptions\BadDataTypeException
+     * @throws \obo\Exceptions\PropertyNotFoundException
      */
+    public function toArray(array $arguments) {
+        $propertiesInformation = $arguments["entity"]->propertiesInformation();
+
+        if (!isset($propertiesInformation[$this->propertyToStore]))
+            throw new \obo\Exceptions\PropertyNotFoundException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' does not exists");
+
+        if (!$propertiesInformation[$this->propertyToStore]->dataType instanceof \obo\DataType\ArrayDataType)
+            throw new \obo\Exceptions\BadDataTypeException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' must be Obo Array dataType");
+
+        $rawData = $arguments["entity"]->valueForPropertyWithName($this->propertyToStore);
+        $rawData[$this->propertyInformation->name] = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name, true, false);
+        $arguments["entity"]->setValueForPropertyWithName($rawData, $this->propertyToStore);
+    }
+
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->entityInformation->className,
-            "name" => "afterInitialize",
+            "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-                $arguments["annotation"]->distribute($arguments);
+                $arguments["annotation"]->fromArray($arguments);
             },
             "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
         )));
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->entityInformation->className,
-            "name" => "beforeSave",
+            "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-                $arguments["annotation"]->merge($arguments);
+                $arguments["annotation"]->toArray($arguments);
             },
             "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
         )));
