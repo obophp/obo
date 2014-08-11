@@ -11,18 +11,20 @@
 namespace obo\Relationships;
 
 class EntitiesCollection extends \obo\Carriers\DataCarrier {
-    /** @var \obo\Relationships\Many*/
+
+    /** @var \obo\Relationships\Many */
     protected $relationShip = null;
+
     /** @var \obo\Entity */
     protected $owner = null;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $savingInProgress = false;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $afterSavingNeedReload = false;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $deletingInProgress = false;
 
     /**
@@ -32,6 +34,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     public function __construct(\obo\Entity $owner, \obo\Relationships\Many $relationship) {
         $this->relationShip = $relationship;
         $this->owner = $owner;
+    }
+
+    /**
+     * @return \obo\Entity
+     */
+    public function getOwner() {
+        return $this->owner;
     }
 
     /**
