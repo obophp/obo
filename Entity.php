@@ -122,14 +122,16 @@ abstract class Entity  extends \obo\Object {
     /**
      * @param string $propertyName
      * @param boolean $entityAsPrimaryPropertyValue
+     * @param bool $triggerEvents
+     * @throws Exceptions\PropertyNotFoundException
+     * @throws Exceptions\ServicesException
      * @return mixed
-     * @throws \obo\Exceptions\PropertyNotFoundException
      */
-    public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false) {
+    public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
 
             if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
-                return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue);
+                return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue, $triggerEvents);
             }
 
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can not be read, does not exist in entity '" . $this->className() . "'");
@@ -137,7 +139,9 @@ abstract class Entity  extends \obo\Object {
 
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+        if ($triggerEvents) {
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+        }
 
         if ($propertyInformation->directAccessToRead) {
             $value = $this->propertiesObject()->$propertyName;
@@ -147,7 +151,9 @@ abstract class Entity  extends \obo\Object {
 
         }
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+        if ($triggerEvents) {
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+        }
 
         if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) {
             $primaryPropertyName = $value->entityInformation()->primaryPropertyName;
@@ -268,26 +274,13 @@ abstract class Entity  extends \obo\Object {
     public function dataWhoNeedToStore($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
         if ($this->isBasedInRepository()) {
             if (\is_null($onlyFromList)) {
-                return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray($this->propertiesChanges, $entityAsPrimaryPropertyValue));
+                return $this->propertiesAsArray($this->propertiesChanges, $entityAsPrimaryPropertyValue);
             } else {
-                return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($this->propertiesChanges))), $entityAsPrimaryPropertyValue));
+                return $this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($this->propertiesChanges))), $entityAsPrimaryPropertyValue);
             }
         } else {
-            return $this->serializePropertiesWhichRequireIt($this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue));
+            return $this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue);
         }
-    }
-
-    /**
-     * @param array $propertiesAsArray
-     * @return array
-     */
-    private function serializePropertiesWhichRequireIt(array $propertiesAsArray) {
-        foreach($this->entityInformation()->propertiesForSerialization as $propertyName) {
-            if (isset($propertiesAsArray[$propertyName])) {
-                $propertiesAsArray[$propertyName] = \serialize($propertiesAsArray[$propertyName]);
-            }
-        }
-        return $propertiesAsArray;
     }
 
     /**
@@ -301,8 +294,9 @@ abstract class Entity  extends \obo\Object {
      * @return \obo\Entity
      */
     public function setInitialized() {
-        $this->initialized = true;
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOffIgnoreNotificationForEntity($this);
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInitialize", $this);
+        $this->initialized = true;
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);
         return $this;
     }

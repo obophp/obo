@@ -1,8 +1,7 @@
-obo
+Obo
 ===
 
 Event driven ORM library
-
 
 Main features
 ---
@@ -18,4 +17,4 @@ Main features
 - Timestamp
 - Paginator support
 - Filter support
-- Anotations
+- Annotations

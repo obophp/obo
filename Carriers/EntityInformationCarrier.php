@@ -21,7 +21,6 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     public $propertiesInformation = array();
     public $annotations = array();
     public $propertiesNames = array();
-    public $propertiesForSerialization = array();
     public $propertyNameForSoftDelete = null;
 
     private $inversePropertiesInformationList = array();
@@ -58,11 +57,11 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     }
 
     /**
-     * @param string $propertName
+     * @param string $propertyName
      * @return boolean
      */
-    public function existInformationForPropertyWithName($propertName) {
-        return isset($this->propertiesInformation[$propertName]);
+    public function existInformationForPropertyWithName($propertyName) {
+        return isset($this->propertiesInformation[$propertyName]);
     }
 
     /**
@@ -78,22 +77,22 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
      */
     public function processInformation() {
         foreach($this->propertiesInformation as $propertyInformation) {
-            
+
             $this->propertiesNames[] = $propertyInformation->name;
-            
+
             if (\is_null($propertyInformation->columnName) AND isset($this->repositoryColumns[$propertyInformation->name])) {
                 $propertyInformation->columnName = $propertyInformation->name;
             }
-            
-            $this->inversePropertiesInformationList[$propertyInformation->columnName] = $propertyInformation;   
+
+            $this->inversePropertiesInformationList[$propertyInformation->columnName] = $propertyInformation;
         }
-        
+
         $this->repositoryColumnsForPersistableProperties = $this->propertiesNamesToColumnsNames($this->propertiesNames, false, true);
     }
-   
+
     /**
      * @param array $propertiesNames
-     * @param booleam $convertKeys
+     * @param boolean $convertKeys
      * @return array
      */
     public function propertiesNamesToColumnsNames($propertiesNames, $convertKeys = true, $ignoreNonPersistProperties = false) {
@@ -116,12 +115,12 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
 
     /**
      * @param array $columnsNames
-     * @param bolean $convertKeys
+     * @param boolean $convertKeys
      * @return array
      */
     public function columnsNamesToPropertiesNames($columnsNames, $convertKeys = true) {
         $propertiesNames = array();
-        
+
         if ($convertKeys) {
             $convert = array();
             foreach ($columnsNames as $columnName => $columnValue) {
