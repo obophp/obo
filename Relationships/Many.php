@@ -18,40 +18,66 @@ class Many extends \obo\Relationships\Relationship {
 
     /**
      * @param \obo\Entity $owner
-     * @param type $ownerPropertyValue
+     * @param mixed $ownerPropertyValue
      * @return \obo\Relationships\EntitiesCollection
      */
-    public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $ownerPropertyValue) {
+    public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
+        $this->owner = $owner;
+        return new \obo\Relationships\EntitiesCollection($owner, $this);
+    }
+
+    /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return \obo\Entity
+     */
+    public function findEntities(\obo\Carriers\QuerySpecification $specification = null) {
+
+        if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
+
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-        $ownerPrimaryPropertyName = $owner->entityInformation()->primaryPropertyName;
+
+        return $ownedEntityManagerName::findEntities($this->constructQuery(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+    }
+
+    /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return int
+     */
+    public function countEntities (\obo\Carriers\QuerySpecification $specification = null) {
+        if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
+
+        $ownedEntityClassName = $this->entityClassNameToBeConnected;
+        $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
+        return $ownedEntityManagerName::countRecords($this->constructQuery(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+    }
+
+    /**
+     * @param \obo\Carriers\QueryCarrier $specification
+     * @return \obo\Carriers\QueryCarrier
+     */
+    protected function constructQuery(\obo\Carriers\QueryCarrier $specification = null) {
+        $ownedEntityClassName = $this->entityClassNameToBeConnected;
+        $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $ownerPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
         $softDeleteJoinQuery = "";
-        
+
+        $query = \is_null($specification) ? \obo\Carriers\QueryCarrier::instance() : $specification;
+
         if (!\is_null($this->connectViaPropertyWithName)){
-            $query = \obo\Carriers\QueryCarrier::instance()
-                    ->where("{{$this->connectViaPropertyWithName}} = %s", $owner->$ownerPrimaryPropertyName);
-            if (!\is_null($ownerPropertyNameForSoftDelete)) $query->where("AND {{$ownerPropertyNameForSoftDelete}} = 0");
-            if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $owner->className());
+            $query->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->$ownerPrimaryPropertyName);
+            if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
         } elseif (!\is_null($this->connectViaRepositoryWithName)){
             if(!\is_null($ownerPropertyNameForSoftDelete)) {
                 $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = 0";
             }
-            
-            $query = \obo\Carriers\QueryCarrier::instance()
-                    ->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $owner->$ownerPrimaryPropertyName);
+
+            $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName);
         }
 
         if (!\is_null($this->sortVia)) $query->orderBy($this->sortVia);
 
-        $entities = $ownedEntityManagerName::findEntities($query);
-
-        $entitiesCollection = new \obo\Relationships\EntitiesCollection($owner, $this);
-
-        foreach ($entities as $entity) $entitiesCollection->add($entity, false, false);
-
-        return $entitiesCollection;
-
+        return $query;
     }
 
 }

@@ -11,6 +11,7 @@
 namespace obo\Relationships;
 
 abstract class Relationship extends \obo\Object {
+    public $owner = null;
     public $entityClassNameToBeConnected = "";
     public $ownerPropertyName = "";
     public $cascade = array();
@@ -27,5 +28,9 @@ abstract class Relationship extends \obo\Object {
         $this->cascade = new \obo\Carriers\DataCarrier($cascade);
     }
 
+    /**
+     * @param \obo\Entity $owner
+     * @param mixed $propertyValue
+     */
     public abstract function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue);
 }

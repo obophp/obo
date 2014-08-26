@@ -12,14 +12,6 @@ namespace obo\Interfaces;
 
 interface IFilter {
 
-    /**
-     * @return array
-     */
-    public function getWhere();
-
-    /**
-     * @return array
-     */
-    public function getOrderBy();
+    public function getSpecification();
 
 }

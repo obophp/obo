@@ -18,13 +18,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     /** @var \obo\Entity */
     protected $owner = null;
 
-    /** @var boolean */
+    /** @var boolean*/
+    protected $loadEntities = false;
+
+    /** @var boolean*/
     protected $savingInProgress = false;
 
-    /** @var boolean */
+    /** @var boolean*/
     protected $afterSavingNeedReload = false;
 
-    /** @var boolean */
+    /** @var boolean*/
     protected $deletingInProgress = false;
 
     /**
@@ -58,6 +61,17 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     }
 
     /**
+     * @return array
+     */
+    protected function &variables() {
+        if (!$this->loadEntities) {
+            $this->loadEntities = true;
+            $this->loadEntities();
+        }
+        return parent::variables();
+    }
+
+    /**
      * @param \obo\Entity $entity
      * @param bool $createRelationshipInRepository
      * @param bool $notifyEvents
@@ -67,7 +81,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return \obo\Entity
      */
     public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
-
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
@@ -118,6 +131,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
         $this->setValueForVariableWithName($entity, $entityKey);
 
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
+
         return $entity;
     }
 
@@ -143,6 +157,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return void
      */
     public function remove(\obo\Entity $entity, $removeEntity = false, $notifyEvents = true) {
+
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
 
         if(!\is_null($this->relationShip->connectViaRepositoryWithName)) {
@@ -170,10 +185,37 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     }
 
     /**
+     * @param \obo\Interfaces\IPaginator $paginator
+     * @param \obo\Interfaces\IFilter $filter
+     * @return \obo\Entity[]
+     */
+    public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
+
+        $specification = new \obo\Carriers\QuerySpecification();
+
+        if (!\is_null($filter)) {
+            $specification->addSpecification($filter->getSpecification());
+        }
+
+        $paginator->setItemCount($this->relationShip->countEntities($specification));
+        $specification->addSpecification($paginator->getSpecification());
+
+        return $this->find($specification);
+    }
+
+    /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return \obo\Entity[]
+     */
+    public function find(\obo\Carriers\QuerySpecification $specification) {
+        return $this->relationShip->findEntities($specification);
+    }
+
+    /**
      * @return void
      */
     public function loadEntities() {
-        foreach ($this->relationShip->entitiesForOwners($this->owner) as $entity) $this->add($entity, false, false);
+        foreach ($this->relationShip->findEntities() as $entity) $this->add($entity, false, false);
     }
 
     /**
@@ -188,6 +230,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return void
      */
     public function save() {
+        if (!$this->loadEntities) return;
         $this->savingInProgress = true;
         foreach($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
         if ($this->afterSavingNeedReload) $this->reloadEntitites();

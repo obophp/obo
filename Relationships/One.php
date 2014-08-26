@@ -30,6 +30,8 @@ class One extends \obo\Relationships\Relationship {
      * @return \obo\Entity|null
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
+        $this->owner = $owner;
+        
         if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {
             $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
         } else {
