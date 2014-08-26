@@ -149,29 +149,30 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Carriers\QueryCarrier $specification
+     * @param \obo\Carriers\IQuerySpecification $specification
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
-     * @return \obo\Carriers\DataCarrier of \obo\Entity
+     * @return \obo\Entity
      */
-    public static function findEntities(\obo\Carriers\QueryCarrier $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
+    public static function findEntities(\obo\Carriers\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
+
+        $query = new \obo\Carriers\QueryCarrier;
+        $query->addSpecification($specification);
 
         if (!\is_null($filter)) {
-           $specification->where($filter->getWhere());
-           $specification->rewriteOrderBy($filter->getOrderBy());
+           $query->addSpecification($filter->getSpecification());
         }
 
         if (!\is_null($paginator)) {
-            $paginator->setItemCount(self::countRecords(clone $specification));
-            $specification->limit($paginator->getItemsPerPage());
-            $specification->offset($paginator->getOffset());
+           $paginator->setItemCount(self::countRecords(clone $query));
+           $query->addSpecification($paginator->getSpecification());
         }
 
         $classNameEntity = self::classNameManagedEntity();
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;
 
-        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
-        return self::entitiesFromRepositoryMapper($specification);
+        $query->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
+        return self::entitiesFromRepositoryMapper($query);
     }
 
     /**

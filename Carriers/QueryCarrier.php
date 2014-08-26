@@ -10,17 +10,12 @@
 
 namespace obo\Carriers;
 
-class QueryCarrier extends \obo\Object {
-    private $defaultEntityClassName = null;
-    private $select = array("query" => "", "data" => array());
-    private $from = array("query" => "", "data" => array());
-    private $join = array("query" => "", "data" => array());
-    private $where = array("query" => "", "data" => array());
-    private $groupBy = array("query" => "", "data" => array());
-    private $orderBy = array("query" => "", "data" => array());
-    private $limit = array("query" => "", "data" => array());
-    private $offset = array("query" => "", "data" => array());
+class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carriers\IQuerySpecification {
 
+    protected $defaultEntityClassName = null;
+    protected $select = array("query" => "", "data" => array());
+    protected $from = array("query" => "", "data" => array());
+    protected $join = array("query" => "", "data" => array());
     /**
      * @param string $defaultEntityClassName
      * @return void
@@ -71,72 +66,6 @@ class QueryCarrier extends \obo\Object {
     }
 
     /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function where($arguments) {
-        $this->processArguments(func_get_args(), $this->where, " ");
-        return $this;
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function rewriteWhere($arguments) {
-        $this->where = array("query" => "", "data" => array());
-        return $this->where(func_get_args());
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function groupBy($arguments) {
-        $this->processArguments(func_get_args(), $this->groupBy, " ", ",");
-        return $this;
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function rewriteGroupBy($arguments) {
-        $this->groupBy = array("query" => "", "data" => array());
-        return $this->groupBy(func_get_args());
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function orderBy($arguments) {
-        $this->processArguments(func_get_args(), $this->orderBy, " ", ",");
-        return $this;
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function rewriteOrderBy($arguments) {
-        $this->orderBy = array("query" => "", "data" => array());
-        return $this->orderBy(func_get_args());
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function limit($arguments) {
-        $this->limit = array("query" => "", "data" => array());
-        $this->processArguments(func_get_args(), $this->limit);
-        return $this;
-    }
-
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public function offset($arguments) {
-        $this->offset = array("query" => "", "data" => array());
-        $this->processArguments(func_get_args(), $this->offset);
-        return $this;
-    }
-
-    /**
      * @return void
      */
     public function dumpQuery() {
@@ -156,7 +85,6 @@ class QueryCarrier extends \obo\Object {
 
             $this->convert($clone->select, $joins);
             $this->convert($clone->where, $joins);
-            $this->convert($clone->groupBy, $joins);
             $this->convert($clone->orderBy, $joins);
             $this->convert($clone->join, $joins);
             $clone->join($joins);
@@ -181,11 +109,6 @@ class QueryCarrier extends \obo\Object {
             $data = \array_merge($data, $clone->where["data"]);
         }
 
-        if ($clone->groupBy["query"] !="") {
-            $query.= " GROUP BY " . rtrim($clone->groupBy["query"], ",");
-            $data = \array_merge($data, $clone->groupBy["data"]);
-        }
-
         if ($clone->orderBy["query"] !="") {
             $query.= " ORDER BY " . rtrim($clone->orderBy["query"], ",");
             $data = \array_merge($data, $clone->orderBy["data"]);
@@ -202,39 +125,6 @@ class QueryCarrier extends \obo\Object {
         }
 
         return \array_merge(array($query), $data);
-    }
-
-    /**
-     * @param array $arguments
-     * @param array $targetPart
-     * @param string $prefix
-     * @param string $sufix
-     */
-    private function processArguments(array $arguments, array &$targetPart, $prefix = "", $sufix = "" ) {
-
-        $formatArguments = array();
-        $queryPosition = 0;
-        $matches = array();
-        if (count($arguments) == 1 AND is_array(\current($arguments))) $arguments = \current($arguments);
-
-        foreach ($arguments as $argument) {
-            if (\is_null($argument)) continue;
-            if (\is_array($argument)) {
-                $formatArguments += $argument;
-            } else {
-                $formatArguments[] = $argument;
-            }
-        }
-
-        foreach ($formatArguments as $key => $argument) {
-            if ($queryPosition == $key) {
-                $queryPosition = \preg_match_all("#%([a-zA-Z~][a-zA-Z0-9~]{0,5})#", $argument, $matches) + $key +1;
-                $targetPart["query"] .= $prefix . $argument .$sufix;
-            } else {
-                $targetPart["data"][] = $argument;
-            }
-        }
-
     }
 
     /**
@@ -258,14 +148,14 @@ class QueryCarrier extends \obo\Object {
                     if (isset($defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
                             AND $defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
                         throw new \obo\Exceptions\AutoJoinException("Functionality autojoin can not be used in non-static relationship ONE for property with name '{$defaultPropertyInformation->name}'");
-    
+
                     $defaultEntityInformation = $defaultEntityClassName::entityInformation();
                     $entityClassNameToBeConnected = $defaultPropertyInformation->relationship->entityClassNameToBeConnected;
                     $joinKey = "{$defaultEntityClassName}->{$entityClassNameToBeConnected}";
                     $entityToBeConnectInformation = $entityClassNameToBeConnected::entityInformation();
 
                     if ($defaultPropertyInformation->relationship instanceof \obo\Relationships\One) {
-                        
+
                         $join = self::oneRelationshipJoinQuery(
                                     $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
                                     $joinKey,//$joinKey
@@ -274,11 +164,11 @@ class QueryCarrier extends \obo\Object {
                                     $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
                                     $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
                                 );
-                        
+
                     } elseif ($defaultPropertyInformation->relationship instanceof \obo\Relationships\Many) {
 
                         if (\is_null($defaultPropertyInformation->relationship->connectViaRepositoryWithName)) {
-                            
+
                             $join = self::manyViaPropertyRelationshipJoinQuery(
                                         $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
                                         $joinKey,//$joinKey
@@ -287,7 +177,7 @@ class QueryCarrier extends \obo\Object {
                                         $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
                                         $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
                                     );
-        
+
                             if (!\is_null($defaultPropertyInformation->relationship->ownerNameInProperty)) {
                                 $join .= self::manyViaPropertyRelationshipExtendsJoinQuery(
                                             $joinKey,//$joinKey
@@ -305,7 +195,7 @@ class QueryCarrier extends \obo\Object {
                                         $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownerPrimaryPropertyColumnName
                                         $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedPrimaryPropertyColumnName
                                         $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
-                                    );                                    
+                                    );
                         }
                     }
 
@@ -322,7 +212,7 @@ class QueryCarrier extends \obo\Object {
         }
 
     }
-    
+
     /**
      * @param string $ownedRepositoryName
      * @param string $joinKey
@@ -334,9 +224,9 @@ class QueryCarrier extends \obo\Object {
      */
     protected static function oneRelationshipJoinQuery($ownedRepositoryName, $joinKey, $ownerRepositoryName, $foreignKeyColumnName, $ownedEntityPrimaryColumnName, $columnNameForSoftDelete) {
         $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
-        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$ownerRepositoryName}].[{$foreignKeyColumnName}] = [{$joinKey}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";         
+        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$ownerRepositoryName}].[{$foreignKeyColumnName}] = [{$joinKey}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";
     }
-    
+
     /**
      * @param string $ownedRepositoryName
      * @param string $joinKey
@@ -350,7 +240,7 @@ class QueryCarrier extends \obo\Object {
         $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
         return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$joinKey}].[{$foreignKeyColumnName}] = [{$ownerRepositoryName}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";
     }
-    
+
     /**
      * @param type $joinKey
      * @param type $ownerNameInPropertyWithName
@@ -360,7 +250,7 @@ class QueryCarrier extends \obo\Object {
     protected static function manyViaPropertyRelationshipExtendsJoinQuery($joinKey, $ownerNameInPropertyWithName, $ownerClassName) {
         return " AND [{$joinKey}].[{$ownerNameInPropertyWithName}] = '{$ownerClassName}'";
     }
-    
+
     /**
      * @param string $joinKey
      * @param string $connectViaRepositoryWithName
@@ -375,17 +265,10 @@ class QueryCarrier extends \obo\Object {
         $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
         return "LEFT JOIN [{$connectViaRepositoryWithName}]
                 ON [{$connectViaRepositoryWithName}].[{$ownerRepositoryName}]
-                = [{$ownerRepositoryName}].[{$ownerPrimaryPropertyColumnName}] 
+                = [{$ownerRepositoryName}].[{$ownerPrimaryPropertyColumnName}]
                 LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}]
                 ON [{$connectViaRepositoryWithName}].[{$ownedRepositoryName}]
-                = [{$joinKey}].[{$ownedPrimaryPropertyColumnName}]{$softDeleteClausule}";   
-    }
-    
-    /**
-     * @return \obo\Carriers\QueryCarrier
-     */
-    public static function instance() {
-        return new QueryCarrier();
+                = [{$joinKey}].[{$ownedPrimaryPropertyColumnName}]{$softDeleteClausule}";
     }
 
 }

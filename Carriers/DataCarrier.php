@@ -27,7 +27,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function &variableForName($name) {
-       if (isset($this->variables[$name])) return $this->variables[$name];
+       if (isset($this->variables()[$name])) return $this->variables()[$name];
        throw new \obo\Exceptions\VariableNotFoundException("Variable with name '".$name."' does not exist");
     }
 
@@ -35,7 +35,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return array
      */
     public function asArray() {
-        return $this->variables;
+        return $this->variables();
     }
 
     /**
@@ -52,7 +52,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function setValueForVariableWithName($value, $variableName) {
-        $this->variables[$variableName] = $value;
+        $this->variables()[$variableName] = $value;
     }
 
     /**
@@ -61,7 +61,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      */
     public function unsetValueForVaraibleWithName($varibleName) {
         $this->variableForName($varibleName);
-        unset($this->variables[$varibleName]);
+        unset($this->variables()[$varibleName]);
     }
     
     /**
@@ -77,7 +77,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function changeVariableNameForValue($variableName, $value) {
-        if (\is_null($varibleName = \array_search($value, $this->variables))) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
+        if (\is_null($varibleName = \array_search($value, $this->variables()))) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
         $this->unsetValueForVaraibleWithName($varibleName);
         $this->setValueForVariableWithName($value, $variableName);
     }
@@ -121,8 +121,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return boolean
      */
     public function __isset($name) {
-        $variables = $this->variables();
-        return isset($variables[$name]);
+        return isset($this->variables()[$name]);
     }
 
     /**
@@ -188,7 +187,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return boolean
      */
     public function valid() {
-        return isset($this->variables[$this->key()]);
+        return isset($this->variables()[$this->key()]);
     }
 
     /**
@@ -198,9 +197,9 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      */
     public function offsetSet($offset, $value) {
         if (is_null($offset)) {
-            $this->variables[] = $value;
+            $this->variables()[] = $value;
         } else {
-            $this->variables[$offset] = $value;
+            $this->variables()[$offset] = $value;
         }
     }
 
@@ -209,7 +208,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return boolean
      */
     public function offsetExists($offset) {
-        return isset($this->variables[$offset]);
+        return isset($this->variables()[$offset]);
     }
 
     /**
@@ -217,7 +216,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function offsetUnset($offset) {
-        unset($this->variables[$offset]);
+        unset($this->variables()[$offset]);
     }
 
     /**
@@ -225,7 +224,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return mixed
      */
     public function offsetGet($offset) {
-        if (isset($this->variables[$offset])) return $this->variables[$offset];
+        if (isset($this->variables()[$offset])) return $this->variables()[$offset];
         return null;
     }
 

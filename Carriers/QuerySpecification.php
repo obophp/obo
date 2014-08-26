@@ -1,0 +1,163 @@
+<?php
+
+/**
+ * This file is part of framework Obo Development version (http://www.obophp.org/)
+ * @link http://www.obophp.org/
+ * @author Adam Suba, http://www.adamsuba.cz/
+ * @copyright (c) 2011 - 2013 Adam Suba
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
+ */
+
+namespace obo\Carriers;
+
+class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpecification {
+
+    protected $where = array("query" => "", "data" => array());
+    protected $orderBy = array("query" => "", "data" => array());
+    protected $limit = array("query" => "", "data" => array());
+    protected $offset = array("query" => "", "data" => array());
+
+    /**
+     * @return array
+     */
+    public function getWhere() {
+        return $this->where;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function where($arguments) {
+        $this->processArguments(func_get_args(), $this->where, " ");
+        return $this;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function rewriteWhere($arguments) {
+        $this->where = array("query" => "", "data" => array());
+        return $this->where(func_get_args());
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderBy() {
+        return $this->orderBy;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function orderBy($arguments) {
+        $this->processArguments(func_get_args(), $this->orderBy, " ", ",");
+        return $this;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function rewriteOrderBy($arguments) {
+        $this->orderBy = array("query" => "", "data" => array());
+        return $this->orderBy(func_get_args());
+    }
+
+    /**
+     * @return array
+     */
+    public function getLimit() {
+        return $this->limit;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function limit($arguments) {
+        $this->limit = array("query" => "", "data" => array());
+        $this->processArguments(func_get_args(), $this->limit);
+        return $this;
+    }
+
+    /**
+     * @return array()
+     */
+    public function getOffset() {
+        return $this->offset;
+    }
+
+    /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function offset($arguments) {
+        $this->offset = array("query" => "", "data" => array());
+        $this->processArguments(func_get_args(), $this->offset);
+        return $this;
+    }
+
+    /**
+     * @param \obo\Carriers\IQuerySpecification $specification
+     */
+    public function addSpecification(\obo\Carriers\IQuerySpecification $specification) {
+
+        $where = $specification->getWhere();
+
+        $this->where["query"] .= $where["query"];
+        $this->where["data"] += $where["data"];
+
+        $orderBy = $specification->getOrderBy();
+        $this->orderBy["query"] .= $orderBy["query"];
+        $this->orderBy["data"] += $orderBy["data"];
+
+        $offset = $specification->getOffset();
+        $this->offset["query"] = $offset["query"];
+        $this->offset["data"] = $offset["data"];
+
+        $limit = $specification->getLimit();
+        $this->limit["query"] = $limit["query"];
+        $this->limit["data"] = $limit["data"];
+
+        return $this;
+    }
+
+    /**
+     * @param array $arguments
+     * @param array $targetPart
+     * @param string $prefix
+     * @param string $sufix
+     */
+    protected function processArguments(array $arguments, array &$targetPart, $prefix = "", $sufix = "" ) {
+
+        $formatArguments = array();
+        $queryPosition = 0;
+        $matches = array();
+        if (count($arguments) == 1 AND is_array(\current($arguments))) $arguments = \current($arguments);
+
+        foreach ($arguments as $argument) {
+            if (\is_null($argument)) continue;
+            if (\is_array($argument)) {
+                $formatArguments += $argument;
+            } else {
+                $formatArguments[] = $argument;
+            }
+        }
+
+        foreach ($formatArguments as $key => $argument) {
+            if ($queryPosition == $key) {
+                $queryPosition = \preg_match_all("#%([a-zA-Z~][a-zA-Z0-9~]{0,5})#", $argument, $matches) + $key +1;
+                $targetPart["query"] .= $prefix . $argument .$sufix;
+            } else {
+                $targetPart["data"][] = $argument;
+            }
+        }
+
+    }
+
+    /**
+     * @return \obo\Carriers\QuerySpecification
+     */
+    public static function instance() {
+        return new static;
+    }
+
+}
