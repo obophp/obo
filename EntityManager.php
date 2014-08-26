@@ -140,9 +140,13 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
      */
-    public static function findEntity(\obo\Carriers\QueryCarrier $specification, $requiredEntity = true) {
-        $specification->limit(1);
-        $entity = self::findEntities($specification);
+    public static function findEntity(\obo\Carriers\IQuerySpecification $specification, $requiredEntity = true) {
+        if (!$specification instanceof \obo\Carriers\QueryCarrier) {
+           $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
+        }
+
+        $entity = self::findEntities($specification->limit(1));
+
         if (count($entity)) return $entity->current();
         if ($requiredEntity) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . self::repositoryMapper()->constructQuery($specification->constructQuery()) . "'");
         return null;
@@ -156,23 +160,24 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function findEntities(\obo\Carriers\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
 
-        $query = new \obo\Carriers\QueryCarrier;
-        $query->addSpecification($specification);
+        if (!$specification instanceof \obo\Carriers\QueryCarrier) {
+           $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
+        }
 
         if (!\is_null($filter)) {
-           $query->addSpecification($filter->getSpecification());
+           $specification->addSpecification($filter->getSpecification());
         }
 
         if (!\is_null($paginator)) {
-           $paginator->setItemCount(self::countRecords(clone $query));
-           $query->addSpecification($paginator->getSpecification());
+           $paginator->setItemCount(self::countRecords(clone $specification));
+           $specification->addSpecification($paginator->getSpecification());
         }
 
         $classNameEntity = self::classNameManagedEntity();
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;
 
-        $query->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
-        return self::entitiesFromRepositoryMapper($query);
+        $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
+        return self::entitiesFromRepositoryMapper($specification);
     }
 
     /**
