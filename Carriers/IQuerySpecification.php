@@ -8,19 +8,17 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-namespace obo\Interfaces;
+namespace obo\Carriers;
 
-interface IPaginator {
 
-    /**
-     * @param int $itemCount
-     * @return void
-     */
-    public function setItemCount($itemCount);
+interface IQuerySpecification {
+    
+    public function getWhere();
 
-    /**
-     * @return \obo\Carriers\QuerySpecification
-     */
-    public function getSpecification();
+    public function getOrderBy();
+
+    public function getLimit();
+
+    public function getOffset();
 
 }
