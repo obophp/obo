@@ -103,11 +103,11 @@ class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpec
         $where = $specification->getWhere();
 
         $this->where["query"] .= $where["query"];
-        $this->where["data"] += $where["data"];
+        $this->where["data"] = \array_merge($this->where["data"], $where["data"]);
 
         $orderBy = $specification->getOrderBy();
         $this->orderBy["query"] .= $orderBy["query"];
-        $this->orderBy["data"] += $orderBy["data"];
+        $this->orderBy["data"] = \array_merge($this->orderBy["data"], $orderBy["data"]);
 
         $offset = $specification->getOffset();
         $this->offset["query"] = $offset["query"];
