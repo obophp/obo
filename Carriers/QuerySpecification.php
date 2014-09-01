@@ -135,11 +135,7 @@ class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpec
 
         foreach ($arguments as $argument) {
             if (\is_null($argument)) continue;
-            if (\is_array($argument)) {
-                $formatArguments += $argument;
-            } else {
-                $formatArguments[] = $argument;
-            }
+            $formatArguments[] = $argument;
         }
 
         foreach ($formatArguments as $key => $argument) {
