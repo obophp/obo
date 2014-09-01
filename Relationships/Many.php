@@ -22,8 +22,10 @@ class Many extends \obo\Relationships\Relationship {
      * @return \obo\Relationships\EntitiesCollection
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
-        $this->owner = $owner;
-        return new \obo\Relationships\EntitiesCollection($owner, $this);
+        $relationship = clone $this;
+        $relationship->owner = $owner;
+
+        return new \obo\Relationships\EntitiesCollection($owner, $relationship);
     }
 
     /**
