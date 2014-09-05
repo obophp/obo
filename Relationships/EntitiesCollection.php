@@ -168,17 +168,17 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
             ));
         }
 
-        $primaryPropertyValue = $entity->primaryPropertyValue();
+        if ($this->loadEntities) {
+            $primaryPropertyValue = $entity->primaryPropertyValue();
 
-        if (isset($this->$primaryPropertyValue)) {
-            $key = $primaryPropertyValue;
-        } elseif($key = \array_search($entity, $this->asArray())) {
-            $key = $key;
-        } else {
-            throw new \obo\Exceptions\EntityNotFoundException("The entity, you want to delete does not exist in the collection");
+            if ($this->__isset($primaryPropertyValue)) {
+                $key = $primaryPropertyValue;
+            } elseif (!$key = \array_search($entity, $this->asArray())) {
+                throw new \obo\Exceptions\EntityNotFoundException("The entity you want to delete does not exist in the collection");
+            }
+
+            $this->unsetValueForVaraibleWithName($key);
         }
-
-        $this->unsetValueForVaraibleWithName($key);
 
         if ($removeEntity) $entity->delete();
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
