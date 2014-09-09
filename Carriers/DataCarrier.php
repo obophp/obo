@@ -52,7 +52,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function setValueForVariableWithName($value, $variableName) {
-        $this->variables()[$variableName] = $value;
+        return $this->variables()[$variableName] = $value;
     }
 
     /**
@@ -63,14 +63,14 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
         $this->variableForName($varibleName);
         unset($this->variables()[$varibleName]);
     }
-    
+
     /**
      * @return void
      */
     public function clear() {
         $this->variables = array();
     }
-    
+
     /**
      * @param mixed $variableName
      * @param mixed $value
