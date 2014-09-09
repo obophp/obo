@@ -19,7 +19,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
     protected $owner = null;
 
     /** @var boolean*/
-    protected $loadEntities = false;
+    protected $entitiesAreLoaded = false;
 
     /** @var boolean*/
     protected $savingInProgress = false;
@@ -64,8 +64,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return array
      */
     protected function &variables() {
-        if (!$this->loadEntities) {
-            $this->loadEntities = true;
+        if (!$this->entitiesAreLoaded) {
+            $this->entitiesAreLoaded = true;
             $this->loadEntities();
         }
         return parent::variables();
@@ -230,7 +230,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
      * @return void
      */
     public function save() {
-        if (!$this->loadEntities) return;
+        if (!$this->entitiesAreLoaded) return;
         $this->savingInProgress = true;
         foreach($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
         if ($this->afterSavingNeedReload) $this->reloadEntitites();
