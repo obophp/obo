@@ -168,7 +168,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
             ));
         }
 
-        if ($this->loadEntities) {
+        if ($this->entitiesAreLoaded) {
             $primaryPropertyValue = $entity->primaryPropertyValue();
 
             if ($this->__isset($primaryPropertyValue)) {
