@@ -74,7 +74,7 @@ class One extends \obo\Annotation\Base\Property {
                         "name" => "beforeSave",
                         "actionAnonymousFunction" => function($arguments) {
                             $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
-                            if (!$connectedEntity->isDeleted()) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->save();
+                            if ($connectedEntity && !$connectedEntity->isDeleted()) $connectedEntity->save();
                         },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name),
                     )));
@@ -82,7 +82,11 @@ class One extends \obo\Annotation\Base\Property {
                     \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
                         "onClassWithName" => $this->entityInformation->className,
                         "name" => "beforeDelete",
-                        "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]);},
+                        "actionAnonymousFunction" => function($arguments) {
+                            $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
+                            if ($connectedEntity)
+                                $connectedEntity->delete($arguments["removeEntity"]);                            
+                        },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => true),
                     )));
                 }
