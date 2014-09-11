@@ -393,12 +393,11 @@ abstract class Entity  extends \obo\Object {
                     "primaryPropertyName" => $connectedEntityInformation->primaryPropertyName,
                 );
 
-                if (!is_null($propertyValue) AND !($propertyValue instanceof obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
+                if (!is_null($propertyValue) AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
 
                     if (isset($arguments[0])
 
                         AND $arguments[0]->className() == $connectedEntityInformation->className
-                        AND !$propertyValue instanceof obo\Relationships\EntitiesCollection
                         AND $arguments[0]->valueForPropertyWithName($arguments[0]->entityInformation()->primaryPropertyName) == $propertyValue->valueForPropertyWithName($connectedEntityInformation->primaryPropertyName)
                     ) {
                         $relationshipInformation["entity"] = "**RECURSION**";
