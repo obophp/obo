@@ -68,7 +68,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeSave",
+            "name" => "beforeInsert",
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->serialize($arguments);
             },
@@ -77,7 +77,25 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "afterSave",
+            "name" => "beforeUpdate",
+            "actionAnonymousFunction" => function($arguments) {
+                $arguments["dataType"]->serialize($arguments);
+            },
+            "actionArguments" => array("dataType" => $this),
+        )));
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            "onClassWithName" => $this->propertyInformation->entityInformation->className,
+            "name" => "afterInsert",
+            "actionAnonymousFunction" => function($arguments) {
+                $arguments["dataType"]->unserialize($arguments);
+            },
+            "actionArguments" => array("dataType" => $this),
+        )));
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            "onClassWithName" => $this->propertyInformation->entityInformation->className,
+            "name" => "afterUpdate",
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->unserialize($arguments);
             },
