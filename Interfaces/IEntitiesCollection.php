@@ -2,7 +2,7 @@
 
 namespace obo\Interfaces;
 
-interface ICollection {
+interface IEntitiesCollection {
 
      public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null);
 
