@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Interfaces\IEntitiesCollection{
+class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Interfaces\IEntitiesCollection {
 
     protected $entitiesClassName = null;
     protected $defaultSpecification = null;
