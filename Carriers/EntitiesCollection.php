@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class EntitiesCollection extends \obo\Carriers\DataCarrier {
+class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Interfaces\ICollection{
 
     protected $entitiesClassName = null;
     protected $defaultSpecification = null;
@@ -111,7 +111,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier {
         $ownedEntityClassName = $this->entitiesClassName;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
 
-        return $ownedEntityManagerName::countRecords($defaultSpecification->addSpecification($specification));
+        return $ownedEntityManagerName::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($defaultSpecification->addSpecification($specification)));
     }
 
     /**
