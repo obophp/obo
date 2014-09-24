@@ -41,7 +41,7 @@ class Many extends \obo\Annotation\Base\Property {
     public function proccess($values) {
         parent::proccess($values);
 
-        if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built because it relies on a parameter 'connectViaProperty' or 'connectViaRepository' ");
+        if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built. Target entity class doesn't exist.");
 
         $this->targetEntity = $values["targetEntity"];
 
