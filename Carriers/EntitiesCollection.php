@@ -39,6 +39,22 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
+     * @return \obo\Carriers\QuerySpecification
+     */
+    public function getDefaultSpecification() {
+        return clone $this->defaultSpecification;
+    }
+
+    /**
+     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
+     * @return \obo\Carriers\QuerySpecification
+     */
+    public function getSpecification() {
+        return clone $this->specification;
+    }
+
+    /**
      * @return string
      */
     public function getEntitiesClassName() {
