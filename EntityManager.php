@@ -108,13 +108,12 @@ abstract class EntityManager  extends \obo\Object {
 
         if (!$entity->isInitialized() OR $overwriteOriginalData) {
             if ($overwriteOriginalData) {
-                $entity->setInitialized();
+                if (!$entity->isInitialized()) $entity->setInitialized();
                 $entity->changeValuesPropertiesFromArray($data);
             } else {
                 $entity->changeValuesPropertiesFromArray($data);
                 $entity->setInitialized();
             }
-
         }
 
         return $entity;
