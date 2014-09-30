@@ -47,7 +47,7 @@ class One extends \obo\Annotation\Base\Property {
             $this->targetEntityInProperty = \substr($this->targetEntity, 9);
         }
 
-        if (!$this->targetEntityInProperty AND !\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built because entity '{$this->targetEntity}' can not be connect because does not exist");
+        if (!$this->targetEntityInProperty AND !\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
 
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
 
@@ -85,7 +85,7 @@ class One extends \obo\Annotation\Base\Property {
                         "actionAnonymousFunction" => function($arguments) {
                             $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
                             if ($connectedEntity)
-                                $connectedEntity->delete($arguments["removeEntity"]);                            
+                                $connectedEntity->delete($arguments["removeEntity"]);
                         },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => true),
                     )));
