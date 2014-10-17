@@ -12,7 +12,7 @@ namespace obo\Services\EntitiesInformation;
 class Explorer extends \obo\Object {
 
     const ANNOTATION_PREFIX = "obo-";
-    
+
     /**
      * @var string[]
      */
@@ -137,19 +137,19 @@ class Explorer extends \obo\Object {
         $annotation->proccess($annotationValue);
         $propertyInformation->annotations[] = $annotation;
     }
-    
+
     /**
      * @param string $className
      * @return array
      */
     protected function ancestorsForClassWithName($className) {
         $classes = [$className];
-        
+
         foreach (\class_parents($className) as $class) {
             if ($class === "obo\Object") break;
             array_unshift($classes, $class);
         }
-        
+
         return $classes;
     }
 
@@ -159,21 +159,21 @@ class Explorer extends \obo\Object {
      */
     protected function loadEntityAnnotationForEntityWithClassName($entityClassName) {
         $annotations = array();
-        
+
         foreach($this->ancestorsForClassWithName($entityClassName) as $class) {
             $classAnnotations = array();
-            
+
             foreach($class::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue);
             }
-            
-            $annotations = array_replace($annotations, $classAnnotations); 
+
+            $annotations = array_replace_recursive($annotations, $classAnnotations);
         }
-        
+
         return $annotations;
     }
-    
+
     /**
      * @param string $methodName
      * @param string $entityClassName
@@ -181,22 +181,22 @@ class Explorer extends \obo\Object {
      */
     protected function loadMethodAnnotationForMethodWithNameAndEntityWithClassName($methodName, $entityClassName) {
         $annotations = array();
-                
+
         foreach($this->ancestorsForClassWithName($entityClassName) as $class) {
             if (!$class::getReflection()->hasMethod($methodName)) continue;
             $classAnnotations = array();
-            
+
             foreach($class::getReflection()->getMethod($methodName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue);
             }
-            
-            $annotations = array_replace($annotations, $classAnnotations); 
+
+            $annotations = array_replace_recursive($annotations, $classAnnotations);
         }
 
         return $annotations;
     }
-    
+
     /**
      * @param string $propertyName
      * @param string $entityPropertiesClassName
@@ -204,22 +204,22 @@ class Explorer extends \obo\Object {
      */
     protected function loadPropertyAnnotationForPropertyWithNameAndEntityPropertiesWithClassName($propertyName, $entityPropertiesClassName) {
         $annotations = array();
-        
+
         foreach($this->ancestorsForClassWithName($entityPropertiesClassName) as $class) {
             if (!$class::getReflection()->hasProperty($propertyName)) continue;
             $classAnnotations = array();
-            
+
             foreach($class::getReflection()->getProperty($propertyName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue);
             }
-            
-            $annotations = array_replace($annotations, $classAnnotations); 
+
+            $annotations = array_replace_recursive($annotations, $classAnnotations);
         }
-        
+
         return $annotations;
     }
-    
+
     /**
      * @param string $entityClassName
      * @return \obo\Carriers\EntityInformationCarrier
@@ -232,7 +232,7 @@ class Explorer extends \obo\Object {
             "managerName" => $entityClassName . "Manager",
             "repositoryName" => $this->defaultRepositoryNameForEntityWithClassName($entityClassName),
         ));
- 
+
         foreach ($this->loadEntityAnnotationForEntityWithClassName($entityClassName) as $annotationName => $annotationValue) {
             try {
                 $this->processAnnotationWithNameAndValueForEntity($annotationName, $annotationValue, $entityInformation);
@@ -244,7 +244,7 @@ class Explorer extends \obo\Object {
         }
 
         foreach ($entityClassName::getReflection()->getMethods() as $method) {
-            
+
             foreach ($this->loadMethodAnnotationForMethodWithNameAndEntityWithClassName($method->name, $entityClassName) as $annotationName => $annotationValue) {
                 try {
                     $this->processAnnotationWithNameAndValueForMethodWithName($annotationName, $annotationValue, $entityInformation, $method->name);
