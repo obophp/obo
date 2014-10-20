@@ -12,6 +12,6 @@ namespace obo\Interfaces;
 
 interface IUuidGenerator {
 
-    public function createUuid();
+    public function generateUuid();
 
 }
