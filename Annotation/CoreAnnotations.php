@@ -26,6 +26,7 @@ class CoreAnnotations extends \obo\Object {
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Method\Run");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\TimeStamp");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\DataType");
+        $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\StoreTo");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Uuid");
     }
 }
