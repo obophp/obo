@@ -25,6 +25,7 @@ class obo extends \obo\Object {
     const REPOSITORY_MAPPER = "obo-repositoryMapper";
     const REPOSITORY_LAYER = "obo-repositoryLayer";
     const CACHE = "obo-cache";
+    const UUID_GENERATOR = "obo-uuidGenerator";
 
     public static $developerMode = false;
 
@@ -37,6 +38,10 @@ class obo extends \obo\Object {
 
     public static function setCache(\obo\Interfaces\ICache $cache) {
         \obo\Services::registerServiceWithName($cache, self::CACHE);
+    }
+
+    public static function setUuidGenerator(\obo\Interfaces\IUuidGenerator $uuidGenerator) {
+        \obo\Services::registerServiceWithName($uuidGenerator, self::UUID_GENERATOR);
     }
 
     /**
