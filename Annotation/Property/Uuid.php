@@ -23,7 +23,7 @@ class Uuid extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => "?");
+        return array("numberOfParameters" => 0);
     }
 
     /**
