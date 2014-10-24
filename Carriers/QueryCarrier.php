@@ -16,13 +16,27 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carr
     protected $select = array("query" => "", "data" => array());
     protected $from = array("query" => "", "data" => array());
     protected $join = array("query" => "", "data" => array());
+
+    /**
+     * @return string
+     */
+    public function getDefaultEntityClassName() {
+        return $this->defaultEntityClassName;
+    }
+
     /**
      * @param string $defaultEntityClassName
-     * @return void
+     * @return string
      */
-
     public function setDefaultEntityClassName($defaultEntityClassName) {
-        $this->defaultEntityClassName = $defaultEntityClassName;
+        return $this->defaultEntityClassName = $defaultEntityClassName;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSelect() {
+        return $this->select;
     }
 
     /**
@@ -42,11 +56,25 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carr
     }
 
     /**
+     * @return array
+     */
+    public function getFrom() {
+        return $this->from;
+    }
+
+    /**
      * @return \obo\Carriers\QueryCarrier
      */
     public function from($arguments) {
         $this->processArguments(func_get_args(), $this->from, " ");
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getJoin() {
+        return $this->join;
     }
 
     /**
@@ -66,209 +94,13 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carr
     }
 
     /**
-     * @return void
+     * @return sgtring
+     * @throws \obo\Exceptions\Exception
      */
     public function dumpQuery() {
-       \obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->dumpQuery($this->constructQuery());
-    }
-
-    /**
-     * @return array
-     */
-    public function constructQuery() {
-        $query = "";
-        $data = array();
-        $clone = clone $this;
-
-        if (!is_null($clone->defaultEntityClassName)) {
-            $joins = array();
-
-            $this->convert($clone->select, $joins);
-            $this->convert($clone->where, $joins);
-            $this->convert($clone->orderBy, $joins);
-            $this->convert($clone->join, $joins);
-            $clone->join($joins);
-        }
-
-        $query.= "SELECT " . rtrim($clone->select["query"],",");
-        $data = \array_merge($data, $clone->select["data"]);
-
-        if ($clone->from["query"]=="") {
-            $defaultEntityClassName = $this->defaultEntityClassName;
-            $query.= " FROM [".$defaultEntityClassName::entityInformation()->repositoryName."]";
-        } else {
-            $query.= " FROM " . rtrim($clone->from["query"],",");
-            $data = \array_merge($data, $clone->from["data"]);
-        }
-
-        $query.= rtrim($clone->join["query"], ",");
-        $data = \array_merge($data, $clone->join["data"]);
-
-        if ($clone->where["query"] !="") {
-            $query.= " WHERE " . \preg_replace("#^ *(AND|OR) *#i", "", $clone->where["query"]);
-            $data = \array_merge($data, $clone->where["data"]);
-        }
-
-        if ($clone->orderBy["query"] !="") {
-            $query.= " ORDER BY " . rtrim($clone->orderBy["query"], ",");
-            $data = \array_merge($data, $clone->orderBy["data"]);
-        }
-
-        if ($clone->limit["query"] !="") {
-            $query.= " LIMIT " . $clone->limit["query"];
-            $data = \array_merge($data, $clone->limit["data"]);
-        }
-
-        if ($clone->offset["query"] !="") {
-            $query.= " OFFSET " . $clone->offset["query"];
-            $data = \array_merge($data, $clone->offset["data"]);
-        }
-
-        return \array_merge(array($query), $data);
-    }
-
-    /**
-     * @param array $part
-     * @param array $joins
-     * @return void
-     */
-    private function convert(array &$part, array &$joins) {
-        \preg_match_all("#(\{(.*?)\}\.?)+#", $part["query"], $blocks);
-        foreach ($blocks[0] as $block) {
-            $defaultEntityClassName = $this->defaultEntityClassName;
-            $joinKey = null;
-            $ownerRepositoryName = $defaultEntityClassName::entityInformation()->repositoryName;
-            $items = \explode("}.{", trim($block, "{}"));
-
-            if (count($items)>1) {
-                foreach ($items as $item) {
-                    $defaultPropertyInformation = $defaultEntityClassName::informationForPropertyWithName($item);
-                    if (\is_null(($defaultPropertyInformation->relationship))) break;
-
-                    if (isset($defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
-                            AND $defaultPropertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName)
-                        throw new \obo\Exceptions\AutoJoinException("Functionality autojoin can not be used in non-static relationship ONE for property with name '{$defaultPropertyInformation->name}'");
-
-                    $defaultEntityInformation = $defaultEntityClassName::entityInformation();
-                    $entityClassNameToBeConnected = $defaultPropertyInformation->relationship->entityClassNameToBeConnected;
-                    $joinKey = "{$defaultEntityClassName}->{$entityClassNameToBeConnected}";
-                    $entityToBeConnectInformation = $entityClassNameToBeConnected::entityInformation();
-
-                    if ($defaultPropertyInformation->relationship instanceof \obo\Relationships\One) {
-
-                        $join = self::oneRelationshipJoinQuery(
-                                    $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
-                                    $joinKey,//$joinKey
-                                    $ownerRepositoryName,//$ownerRepositoryName
-                                    $defaultEntityInformation->propertiesInformation[$defaultPropertyInformation->relationship->ownerPropertyName]->columnName,//$foreignKeyColumnName
-                                    $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
-                                    $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
-                                );
-
-                    } elseif ($defaultPropertyInformation->relationship instanceof \obo\Relationships\Many) {
-
-                        if (\is_null($defaultPropertyInformation->relationship->connectViaRepositoryWithName)) {
-
-                            $join = self::manyViaPropertyRelationshipJoinQuery(
-                                        $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
-                                        $joinKey,//$joinKey
-                                        $ownerRepositoryName,//$ownerRepositoryName
-                                        $entityToBeConnectInformation->propertiesInformation[$defaultPropertyInformation->relationship->connectViaPropertyWithName]->columnName,//$foreignKeyColumnName
-                                        $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownedEntityPrimaryColumnName
-                                        $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
-                                    );
-
-                            if (!\is_null($defaultPropertyInformation->relationship->ownerNameInProperty)) {
-                                $join .= self::manyViaPropertyRelationshipExtendsJoinQuery(
-                                            $joinKey,//$joinKey
-                                            $defaultPropertyInformation->relationship->ownerNameInProperty,//$ownerNameInPropertyWithName
-                                            $defaultPropertyInformation->entityInformation->className//$ownerClassName
-                                        );
-                            }
-
-                        } elseif (\is_null($defaultPropertyInformation->relationship->connectViaPropertyWithName)) {
-                            $join = self::manyViaRepostioryRelationshipJoinQuery(
-                                        $joinKey,//$joinKey
-                                        $defaultPropertyInformation->relationship->connectViaRepositoryWithName,//$connectViaRepositoryWithName
-                                        $ownerRepositoryName,//$ownerRepositoryName
-                                        $entityToBeConnectInformation->repositoryName,//$ownedRepositoryName
-                                        $defaultEntityClassName::informationForPropertyWithName($defaultEntityInformation->primaryPropertyName)->columnName,//$ownerPrimaryPropertyColumnName
-                                        $entityClassNameToBeConnected::informationForPropertyWithName($entityToBeConnectInformation->primaryPropertyName)->columnName,//$ownedPrimaryPropertyColumnName
-                                        $entityToBeConnectInformation->propertyNameForSoftDelete ? $entityToBeConnectInformation->informationForPropertyWithName($entityToBeConnectInformation->propertyNameForSoftDelete)->columnName : null//$propertyNameForSoftDelete
-                                    );
-                        }
-                    }
-
-                    $defaultEntityClassName = $entityClassNameToBeConnected;
-                    $ownerRepositoryName = $joinKey;
-                    $joins[$joinKey] = $join;
-                }
-            } else {
-                $defaultEntityInformation = $defaultEntityClassName::entityInformation();
-                $defaultPropertyInformation = $defaultEntityClassName::informationForPropertyWithName($items[0]);
-            }
-
-            $part["query"] = \preg_replace("#(\{(.*?)\}\.?)+#", "[{$ownerRepositoryName}].[{$defaultPropertyInformation->columnName}]", $part["query"], 1);
-        }
-
-    }
-
-    /**
-     * @param string $ownedRepositoryName
-     * @param string $joinKey
-     * @param string $ownerRepositoryName
-     * @param string $foreignKeyColumnName
-     * @param string $ownedEntityPrimaryColumnName
-     * @param string $columnNameForSoftDelete
-     * @return string
-     */
-    protected static function oneRelationshipJoinQuery($ownedRepositoryName, $joinKey, $ownerRepositoryName, $foreignKeyColumnName, $ownedEntityPrimaryColumnName, $columnNameForSoftDelete) {
-        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
-        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$ownerRepositoryName}].[{$foreignKeyColumnName}] = [{$joinKey}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";
-    }
-
-    /**
-     * @param string $ownedRepositoryName
-     * @param string $joinKey
-     * @param string $ownerRepositoryName
-     * @param string $foreignKeyColumnName
-     * @param string $ownedEntityPrimaryColumnName
-     * @param string $columnNameForSoftDelete
-     * @return string
-     */
-    protected static function manyViaPropertyRelationshipJoinQuery($ownedRepositoryName, $joinKey, $ownerRepositoryName, $foreignKeyColumnName, $ownedEntityPrimaryColumnName, $columnNameForSoftDelete) {
-        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
-        return "LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}] ON [{$joinKey}].[{$foreignKeyColumnName}] = [{$ownerRepositoryName}].[{$ownedEntityPrimaryColumnName}]{$softDeleteClausule}";
-    }
-
-    /**
-     * @param type $joinKey
-     * @param type $ownerNameInPropertyWithName
-     * @param type $ownerClassName
-     * @return type
-     */
-    protected static function manyViaPropertyRelationshipExtendsJoinQuery($joinKey, $ownerNameInPropertyWithName, $ownerClassName) {
-        return " AND [{$joinKey}].[{$ownerNameInPropertyWithName}] = '{$ownerClassName}'";
-    }
-
-    /**
-     * @param string $joinKey
-     * @param string $connectViaRepositoryWithName
-     * @param string $ownerRepositoryName
-     * @param string $ownedRepositoryName
-     * @param string $ownerPrimaryPropertyColumnName
-     * @param string $ownedPrimaryPropertyColumnName
-     * @param string $columnNameForSoftDelete
-     * @return string
-     */
-    protected static function manyViaRepostioryRelationshipJoinQuery($joinKey, $connectViaRepositoryWithName, $ownerRepositoryName, $ownedRepositoryName, $ownerPrimaryPropertyColumnName, $ownedPrimaryPropertyColumnName, $columnNameForSoftDelete) {
-        $softDeleteClausule = $columnNameForSoftDelete ? " AND [{$joinKey}].[{$columnNameForSoftDelete}] = 0" : "";
-        return "LEFT JOIN [{$connectViaRepositoryWithName}]
-                ON [{$connectViaRepositoryWithName}].[{$ownerRepositoryName}]
-                = [{$ownerRepositoryName}].[{$ownerPrimaryPropertyColumnName}]
-                LEFT JOIN [{$ownedRepositoryName}] as [{$joinKey}]
-                ON [{$connectViaRepositoryWithName}].[{$ownedRepositoryName}]
-                = [{$joinKey}].[{$ownedPrimaryPropertyColumnName}]{$softDeleteClausule}";
+       if(\is_null($this->defaultEntityClassName)) throw new \obo\Exceptions\Exception("Unable to dump because it does not set default entity");
+       $managerClass = $this->defaultEntityClassName->entityInformation()->managerName;
+       return $managerClass::dataStorage()->constructQuery();
     }
 
 }

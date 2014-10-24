@@ -22,20 +22,22 @@ class obo extends \obo\Object {
     const ENTITIES_INFORMATION = "obo-entitiesInformation";
     const IDENTITY_MAPPER = "obo-identityMapper";
     const EVENT_MANAGER = "obo-eventManager";
-    const REPOSITORY_MAPPER = "obo-repositoryMapper";
-    const REPOSITORY_LAYER = "obo-repositoryLayer";
+    const DEFAULT_DATA_STORAGE = "obo-defaultDataStorage";
     const CACHE = "obo-cache";
     const UUID_GENERATOR = "obo-uuidGenerator";
 
     public static $developerMode = false;
 
     /**
-     * @param \DibiConnection $repositoryLayer
+     * @return void
      */
-    public static function connectToRepositoryLayer(\DibiConnection $repositoryLayer) {
-        \obo\Services::registerServiceWithName($repositoryLayer, self::REPOSITORY_LAYER);
+    public static function setDefaultDataStorage(\obo\Interfaces\IDataStorage $defaultDataStorage) {
+        \obo\Services::registerServiceWithName($defaultDataStorage, self::DEFAULT_DATA_STORAGE);
     }
 
+    /**
+     * @return void
+     */
     public static function setCache(\obo\Interfaces\ICache $cache) {
         \obo\Services::registerServiceWithName($cache, self::CACHE);
     }
@@ -52,8 +54,6 @@ class obo extends \obo\Object {
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(), self::ENTITIES_INFORMATION);
         \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
-        \obo\Services::registerServiceWithName(new \obo\RepositoryMappers\DibiRepositoryMapper, self::REPOSITORY_MAPPER);
-
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
     }
 }

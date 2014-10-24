@@ -13,13 +13,7 @@ namespace obo;
 abstract class EntityManager  extends \obo\Object {
 
     private static $classNamesManagedEntities = array();
-
-    /**
-     * @return \obo\RepositoryMappers\DibiRepositoryMapper
-     */
-    public static function repositoryMapper() {
-        return \obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER);
-    }
+    protected static $dataSorages = array();
 
     /**
      * @return string
@@ -27,6 +21,22 @@ abstract class EntityManager  extends \obo\Object {
     public static function classNameManagedEntity() {
         if (isset(self::$classNamesManagedEntities[self::className()])) return self::$classNamesManagedEntities[self::className()];
         return self::$classNamesManagedEntities[self::className()] = \preg_replace("#Manager$#", "", self::className());
+    }
+
+    /**
+     * @return \obo\Interfaces\IDataStorage
+     */
+    public static function dataStorage() {
+        if (isset(self::$dataSorages[self::className()])) return self::$dataSorages[self::className()];
+        return self::setDataStorage(\obo\Services::serviceWithName(\obo\obo::DEFAULT_DATA_STORAGE));
+    }
+
+    /**
+     * @param \obo\Interfaces\IDataStorage $dataStorage
+     * @return \obo\Interfaces\IDataStorage
+     */
+    public static function setDataStorage(\obo\Interfaces\IDataStorage $dataStorage) {
+        return self::$dataSorages[self::className()] = $dataStorage;
     }
 
     /**
@@ -45,6 +55,7 @@ abstract class EntityManager  extends \obo\Object {
     protected static function emptyEntity() {
         $entityClassName = self::classNameManagedEntity();
         $entity = new $entityClassName;
+        $entity->setDataStorage(self::dataStorage());
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOnIgnoreNotificationForEntity($entity);
         return $entity;
     }
@@ -59,7 +70,7 @@ abstract class EntityManager  extends \obo\Object {
         $entity = self::emptyEntity();
 
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-        $entity->$primaryPropertyName = $primaryPropertyValue;
+        $entity->setValueForPropertyWithName($primaryPropertyValue, $primaryPropertyName);
 
         $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
 
@@ -147,7 +158,7 @@ abstract class EntityManager  extends \obo\Object {
         $entity = self::findEntities($specification->limit(1));
 
         if (count($entity)) return $entity->current();
-        if ($requiredEntity) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . self::repositoryMapper()->constructQuery($specification->constructQuery()) . "'");
+        if ($requiredEntity) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . self::dataStorage()->constructQuery($specification) . "'");
         return null;
     }
 
@@ -176,7 +187,7 @@ abstract class EntityManager  extends \obo\Object {
         $repositoryName = $classNameEntity::entityInformation()->repositoryName;
 
         $specification->select("DISTINCT [{$repositoryName}].[".\implode("], [{$repositoryName}].[", $classNameEntity::entityInformation()->repositoryColumnsForPersistableProperties)."]");
-        return self::entitiesFromRepositoryMapper($specification);
+        return self::entitiesFromDataStorage($specification);
     }
 
     /**
@@ -191,7 +202,7 @@ abstract class EntityManager  extends \obo\Object {
      * @param \obo\Carriers\QueryCarrier $specification
      * @return \obo\Entity[]
      */
-    protected static function entitiesFromRepositoryMapper(\obo\Carriers\QueryCarrier $specification) {
+    protected static function entitiesFromDataStorage(\obo\Carriers\QueryCarrier $specification) {
 
         $classNameEntity = self::classNameManagedEntity();
 
@@ -203,7 +214,7 @@ abstract class EntityManager  extends \obo\Object {
 
         foreach (self::rawDataForSpecification($specification) as $data) {
             $entity = self::entityFromRawData($data);
-            $entities->setValueForVariableWithName($entity, $entity->valueForPropertyWithName($entity->entityInformation()->primaryPropertyName, true));
+            $entities->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
         }
 
         return $entities;
@@ -231,12 +242,14 @@ abstract class EntityManager  extends \obo\Object {
      * @param \obo\Carriers\QueryCarrier $specification
      * @return array();
      */
-    protected static function rawDataForSpecification(\obo\Carriers\QueryCarrier $specification) {
+    protected static function rawDataForSpecification(\obo\Carriers\QueryCarrier $specification, \obo\Interfaces\IDataStorage $dataStorage = null) {
         $classNameManagedEntity = self::classNameManagedEntity();
         $specification->setDefaultEntityClassName($classNameManagedEntity);
         $rawData = array();
 
-        foreach(self::repositoryMapper()->dataFromQuery($specification->constructQuery()) as $data) {
+        $dataStorage = $dataStorage ? : self::dataStorage();
+
+        foreach($dataStorage->dataFromQuery($specification) as $data) {
             $rawData[] = $classNameManagedEntity::entityInformation()->columnsNamesToPropertiesNames($data);
         }
 
@@ -273,11 +286,12 @@ abstract class EntityManager  extends \obo\Object {
 
         $specification = clone $specification;
 
+        $specification->rewriteOrderBy(null);
+
         if (!is_null($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete)) {
             $specification->where("AND {{$propertyNameForSoftDelete}} = 0");
         }
-
-        return \obo\Services::serviceWithName(\obo\obo::REPOSITORY_LAYER)->fetchSingle($specification->select("COUNT(DISTINCT {{$primaryPropertyName}})")->constructQuery());
+        return (int) self::dataStorage()->countRecordsForQuery($specification, $primaryPropertyName);
     }
 
     /**
@@ -291,24 +305,24 @@ abstract class EntityManager  extends \obo\Object {
     public static function saveEntity(\obo\Entity $entity, $forced = false) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
         if (!$forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
-        
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);        
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
         if (count($entity->dataWhoNeedToStore($entity->entityInformation()->columnsNamesToPropertiesNames($entity->entityInformation()->repositoryColumns)))) {
             if ($entity->isBasedInRepository()) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeUpdate", $entity);
                 $entity->setSaveInProgress();
-                self::repositoryMapper()->updateEntityInRepository($entity);
+                $entity->dataStorage()->updateEntity($entity);
                 $entity->setSaveInProgress(false);
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterUpdate", $entity);
             } else {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInsert", $entity);
                 $entity->setSaveInProgress();
-                self::repositoryMapper()->insertEntityToRepository($entity);
+                $entity->dataStorage()->insertEntity($entity);
                 $entity->setBasedInRepository(true);
                 $entity->setSaveInProgress(false);
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInsert", $entity);
             }
-        }       
+        }
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
     }
 
@@ -322,7 +336,7 @@ abstract class EntityManager  extends \obo\Object {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDelete", $entity);
 
         if (\is_null($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete)) {
-            self::repositoryMapper()->removeEntityFromRepository($entity);
+            $entity->dataStorage()->removeEntity($entity);
         } else {
             $entity->setValueForPropertyWithName(true, $propertyNameForSoftDelete);
             self::saveEntity($entity, true);
