@@ -73,7 +73,7 @@ class One extends \obo\Annotation\Base\Property {
                         "onClassWithName" => $this->entityInformation->className,
                         "name" => "beforeSave",
                         "actionAnonymousFunction" => function($arguments) {
-                            $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
+                            $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false);
                             if ($connectedEntity && !$connectedEntity->isDeleted()) $connectedEntity->save();
                         },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name),
