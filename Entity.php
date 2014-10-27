@@ -11,12 +11,13 @@
 namespace obo;
 
 abstract class Entity  extends \obo\Object {
-    private $initialized = false;
+    private $initialized = false;   
     private $basedInRepository = null;
     private $entityIdentificationKey = null;
     private $propertiesObject = null;
     private $propertiesChanges = array();
-
+    private $saveInProgress = false;
+    
     public function __construct() {
 
     }
@@ -110,7 +111,8 @@ abstract class Entity  extends \obo\Object {
      */
     public function propertiesChanges() {
         return $this->propertiesChanges;
-    }
+    }    
+    
 
     /**
      * @return mixed
@@ -299,6 +301,20 @@ abstract class Entity  extends \obo\Object {
         $this->initialized = true;
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);
         return $this;
+    }
+    
+    /**
+     * @return boolean
+     */
+    public function isSaveInProggres(){
+        return $this->saveInProgress;
+    }
+    
+    /**
+     * @param boolean $value
+     */
+    public function setSaveInProgress($value = true){
+        $this->saveInProgress = (bool)$value;
     }
 
     /**

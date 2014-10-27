@@ -43,7 +43,7 @@ class One extends \obo\Relationships\Relationship {
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
         } else {
-            return $this->autoCreate ? $entityManagerName::entityFromArray(array()) : null;
+            return ($this->autoCreate && !$owner->isSaveInProggres()) ? $entityManagerName::entityFromArray(array()) : null;
         }
 
     }
