@@ -35,7 +35,7 @@ class Uuid extends \obo\Annotation\Base\Property {
         try {
             $uuidGenerator = \obo\Services::serviceWithName(\obo\obo::UUID_GENERATOR);
         } catch (\obo\Exceptions\ServicesException $e) {
-            throw new \obo\Exceptions\BadAnnotationException("UUID generator is not registered, registr it via obo::setUuidGenerator()", null, $e);
+            throw new \obo\Exceptions\BadAnnotationException("UUID generator is not registered, register it via obo::setUuidGenerator()", null, $e);
         }
 
         $arguments["entity"]->setValueForPropertyWithName($uuidGenerator->generateUuid(), $this->propertyInformation->name);
