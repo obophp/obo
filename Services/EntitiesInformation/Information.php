@@ -72,7 +72,7 @@ class Information extends \obo\Object {
                 "actionAnonymousFunction" => function($arguments) {
                     if ($arguments["entity"]->isInitialized()) {
                         $backTrace = \debug_backtrace();
-                        if ($backTrace[4]["function"] !== "insertEntityToRepository") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can not changed, the entity was marked as initialized");
+                        if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can not be changed, has been marked as initialized");
                     }},
                 )
             ));

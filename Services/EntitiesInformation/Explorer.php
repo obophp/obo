@@ -312,12 +312,10 @@ class Explorer extends \obo\Object {
             }
         }
 
-        try {
-            if (\obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->existRepositoryForEntity($entityInformation)) {
-                $entityInformation->repositoryColumns = \obo\Services::serviceWithName(\obo\obo::REPOSITORY_MAPPER)->columnsInRepositoryForEntity($entityInformation);
-            }
-        } catch (\obo\Exceptions\ServicesException $exc) {
-            $entityInformation->repositoryColumns = false;
+        $entityManagerName = $entityInformation->managerName;
+
+        if ($entityManagerName::dataStorage()->existsRepositoryWithName($entityInformation->repositoryName)) {
+            $entityInformation->repositoryColumns = $entityManagerName::dataStorage()->columnsInRepositoryWithName($entityInformation->repositoryName);
         }
 
         $entityInformation->processInformation();

@@ -59,7 +59,7 @@ class Many extends \obo\Annotation\Base\Property {
 
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
 
-        if(isset($values["sortVia"])) {
+        if (isset($values["sortVia"])) {
             $relationship->sortVia = $this->sortVia = $values["sortVia"];
         }
 
@@ -68,41 +68,41 @@ class Many extends \obo\Annotation\Base\Property {
 
     public function registerEvents() {
 
-            foreach ($this->cascadeOptions as $cascadeOption) {
-                    if ($cascadeOption == "save") {
-                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                            "onClassWithName" => $this->entityInformation->className,
-                            "name" => "afterSave",
-                            "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save();},
-                            "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                        )));
-                    } elseif ($cascadeOption == "delete") {
-                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                            "onClassWithName" => $this->entityInformation->className,
-                            "name" => "beforeDelete",
-                            "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]);},
-                            "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty),
-                        )));
+        foreach ($this->cascadeOptions as $cascadeOption) {
+                if ($cascadeOption == "save") {
+                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                        "onClassWithName" => $this->entityInformation->className,
+                        "name" => "afterSave",
+                        "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
+                        "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+                    )));
+                } elseif ($cascadeOption == "delete") {
+                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                        "onClassWithName" => $this->entityInformation->className,
+                        "name" => "beforeDelete",
+                        "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
+                        "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty),
+                    )));
+                }
+
+        }
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            "onClassWithName" => $this->entityInformation->className,
+            "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
+            "actionAnonymousFunction" => function($arguments) {
+                if ($arguments["entityAsPrimaryPropertyValue"]) return;
+
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
+
+                    if (!$currentPropertyValue instanceof $propertyInformation->relationship->entityClassNameToBeConnected AND !$currentPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                        $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"]);
                     }
 
-            }
-
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                "onClassWithName" => $this->entityInformation->className,
-                "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
-                "actionAnonymousFunction" => function($arguments) {
-                    if ($arguments["entityAsPrimaryPropertyValue"]) return;
-
-                        $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
-                        $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
-
-                        if (!$currentPropertyValue instanceof $propertyInformation->relationship->entityClassNameToBeConnected AND !$currentPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
-                            $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"]);
-                        }
-
-                    },
-                "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-            )));
+                },
+            "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+        )));
 
     }
 }

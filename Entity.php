@@ -11,13 +11,14 @@
 namespace obo;
 
 abstract class Entity  extends \obo\Object {
-    private $initialized = false;   
+    private $initialized = false;
     private $basedInRepository = null;
     private $entityIdentificationKey = null;
     private $propertiesObject = null;
     private $propertiesChanges = array();
     private $saveInProgress = false;
-    
+    private $dataStorage = null;
+
     public function __construct() {
 
     }
@@ -57,6 +58,23 @@ abstract class Entity  extends \obo\Object {
     public function __wakeup() {
         $this->entityInformation();
         \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($this);
+    }
+
+    /**
+     * @return \obo\Interfaces\IDataStorage
+     */
+    public function dataStorage() {
+        return $this->dataStorage;
+    }
+
+    /**
+     * @param \obo\Interfaces\IDataStorage $dataStorage
+     * @return \obo\Interfaces\IDataStorage
+     * @throws \obo\Exceptions\Exception
+     */
+    public function setDataStorage(\obo\Interfaces\IDataStorage $dataStorage) {
+        if ($this->isInitialized()) throw new \obo\Exceptions\Exception("You can not change datastorage, entity has been initialized");
+        return $this->dataStorage = $dataStorage;
     }
 
     /**
@@ -111,8 +129,8 @@ abstract class Entity  extends \obo\Object {
      */
     public function propertiesChanges() {
         return $this->propertiesChanges;
-    }    
-    
+    }
+
 
     /**
      * @return mixed
@@ -302,14 +320,14 @@ abstract class Entity  extends \obo\Object {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);
         return $this;
     }
-    
+
     /**
      * @return boolean
      */
     public function isSaveInProggres(){
         return $this->saveInProgress;
     }
-    
+
     /**
      * @param boolean $value
      */
