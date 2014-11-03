@@ -160,7 +160,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
 
-        if(!\is_null($this->relationShip->connectViaRepositoryWithName)) $this->removeRelationshipInRepositoryForEntity ($entity);
+        if (!\is_null($this->relationShip->connectViaRepositoryWithName)) $this->removeRelationshipInRepositoryForEntity($entity);
 
         if ($this->entitiesAreLoaded) {
             $primaryPropertyValue = $entity->primaryPropertyValue();

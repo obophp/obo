@@ -13,7 +13,7 @@ namespace obo;
 abstract class EntityManager  extends \obo\Object {
 
     private static $classNamesManagedEntities = array();
-    protected static $dataSorages = array();
+    protected static $dataStorages = array();
 
     /**
      * @return string
@@ -27,7 +27,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Interfaces\IDataStorage
      */
     public static function dataStorage() {
-        if (isset(self::$dataSorages[self::className()])) return self::$dataSorages[self::className()];
+        if (isset(self::$dataStorages[self::className()])) return self::$dataStorages[self::className()];
         return self::setDataStorage(\obo\Services::serviceWithName(\obo\obo::DEFAULT_DATA_STORAGE));
     }
 
@@ -36,7 +36,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Interfaces\IDataStorage
      */
     public static function setDataStorage(\obo\Interfaces\IDataStorage $dataStorage) {
-        return self::$dataSorages[self::className()] = $dataStorage;
+        return self::$dataStorages[self::className()] = $dataStorage;
     }
 
     /**
@@ -249,7 +249,7 @@ abstract class EntityManager  extends \obo\Object {
 
         $dataStorage = $dataStorage ? : self::dataStorage();
 
-        foreach($dataStorage->dataFromQuery($specification) as $data) {
+        foreach ($dataStorage->dataFromQuery($specification) as $data) {
             $rawData[] = $classNameManagedEntity::entityInformation()->columnsNamesToPropertiesNames($data);
         }
 

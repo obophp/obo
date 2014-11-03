@@ -73,7 +73,7 @@ abstract class Entity  extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     public function setDataStorage(\obo\Interfaces\IDataStorage $dataStorage) {
-        if ($this->isInitialized()) throw new \obo\Exceptions\Exception("You can not change datastorage, entity was already initialized");
+        if ($this->isInitialized()) throw new \obo\Exceptions\Exception("You can not change datastorage, entity has been initialized");
         return $this->dataStorage = $dataStorage;
     }
 
