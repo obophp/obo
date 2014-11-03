@@ -74,7 +74,7 @@ class One extends \obo\Annotation\Base\Property {
                         "name" => "beforeSave",
                         "actionAnonymousFunction" => function($arguments) {
                             $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false);
-                            if ($connectedEntity && !$connectedEntity->isDeleted()) $connectedEntity->save();
+                            if ($connectedEntity instanceof \obo\Entity && !$connectedEntity->isDeleted()) $connectedEntity->save();
                         },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name),
                     )));
@@ -84,8 +84,7 @@ class One extends \obo\Annotation\Base\Property {
                         "name" => "beforeDelete",
                         "actionAnonymousFunction" => function($arguments) {
                             $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
-                            if ($connectedEntity)
-                                $connectedEntity->delete($arguments["removeEntity"]);
+                            if ($connectedEntity instanceof \obo\Entity) $connectedEntity->delete($arguments["removeEntity"]);
                         },
                         "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => true),
                     )));

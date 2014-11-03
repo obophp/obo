@@ -274,7 +274,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     protected function removeRelationshipInRepositoryForEntity(\obo\Entity $entity) {
         $ownerManagerName = $this->owner->entityInformation()->managerName;
-        $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner,$entity]);
+        $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
     }
 
 }
