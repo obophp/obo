@@ -33,7 +33,7 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @return void
      */
     public function convertValue($arguments) {
-        if (!$arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) instanceof \DateTime) $arguments["entity"]->setValueForPropertyWithName(new \DateTime($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
+        if (!$arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) instanceof \DateTime  && !\is_null($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name))) $arguments["entity"]->setValueForPropertyWithName(new \DateTime($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
     }
 
     /**
