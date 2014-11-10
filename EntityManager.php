@@ -146,6 +146,14 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
+     * @param array|int $specification
+     * @return \obo\Entity
+     */
+    public static function instance($specification) {
+        return self::entity($specification);
+    }
+
+    /**
      * @param \obo\Carriers\QueryCarrier $specification
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
