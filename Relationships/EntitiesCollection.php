@@ -61,6 +61,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return string
+     */
+    public function getEntitiesClassName() {
+        return $this->relationShip->entityClassNameToBeConnected;
+    }
+
+    /**
      * @return array
      */
     protected function &variables() {
