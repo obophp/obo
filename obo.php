@@ -25,10 +25,12 @@ class obo extends \obo\Object {
     const DEFAULT_DATA_STORAGE = "obo-defaultDataStorage";
     const CACHE = "obo-cache";
     const UUID_GENERATOR = "obo-uuidGenerator";
+    const CHANGES_COLLECTOR = "obo-changesCollector";
 
     public static $developerMode = false;
 
     /**
+     * @param \obo\Interfaces\IDataStorage $defaultDataStorage
      * @return void
      */
     public static function setDefaultDataStorage(\obo\Interfaces\IDataStorage $defaultDataStorage) {
@@ -36,6 +38,7 @@ class obo extends \obo\Object {
     }
 
     /**
+     * @param \obo\Interfaces\ICache $cache
      * @return void
      */
     public static function setCache(\obo\Interfaces\ICache $cache) {
@@ -54,6 +57,7 @@ class obo extends \obo\Object {
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(), self::ENTITIES_INFORMATION);
         \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
+        \obo\Services::registerServiceWithName(new \obo\Services\ChangesCollector\ChangesCollector(), self::CHANGES_COLLECTOR);
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
     }
 }

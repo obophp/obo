@@ -23,6 +23,7 @@ class CoreAnnotations extends \obo\Object {
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Entity\PrimaryProperty");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Entity\RepositoryName");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Entity\SoftDeletable");
+        $entitiesExplorer->registerAnnotation("\obo\Annotation\Entity\Resource");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Method\Run");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\TimeStamp");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\DataType");
