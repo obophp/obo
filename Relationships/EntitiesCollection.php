@@ -216,6 +216,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function loadEntities() {
+        if (!$this->owner->isBasedInRepository()) return;
         foreach ($this->relationShip->findEntities() as $entity) $this->add($entity, false, false);
     }
 
