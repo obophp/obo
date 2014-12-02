@@ -71,7 +71,7 @@ class Many extends \obo\Relationships\Relationship {
             if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
         } elseif (!\is_null($this->connectViaRepositoryWithName)){
             if(!\is_null($ownerPropertyNameForSoftDelete)) {
-                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = 0";
+                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = FALSE";
             }
 
             $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName);
