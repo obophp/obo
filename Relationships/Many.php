@@ -62,7 +62,6 @@ class Many extends \obo\Relationships\Relationship {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $ownerPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
-        $softDeleteJoinQuery = "";
 
         $query = \is_null($specification) ? \obo\Carriers\QueryCarrier::instance() : $specification;
 
@@ -71,10 +70,11 @@ class Many extends \obo\Relationships\Relationship {
             if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
         } elseif (!\is_null($this->connectViaRepositoryWithName)){
             if(!\is_null($ownerPropertyNameForSoftDelete)) {
-                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = FALSE";
+                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = %b";
+                $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName, FALSE);
+            } else {
+                $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]", $this->owner->$ownerPrimaryPropertyName);
             }
-
-            $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName);
         }
 
         if (!\is_null($this->sortVia)) $query->orderBy($this->sortVia);
