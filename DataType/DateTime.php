@@ -25,7 +25,7 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @return void
      */
     public function validate($value) {
-        if (!$value instanceof \DateTime) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be instance of \DateTime, " . \gettype($value) . " given");
+        if (!\is_null($value) && !$value instanceof \DateTime) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be instance of \DateTime, " . \gettype($value) . " given");
     }
 
     /**
