@@ -167,8 +167,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
 
-        if (!\is_null($this->relationShip->connectViaRepositoryWithName)) $this->removeRelationshipInRepositoryForEntity($entity);
-
         if ($this->entitiesAreLoaded) {
             $primaryPropertyValue = $entity->primaryPropertyValue();
 
@@ -181,7 +179,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             $this->unsetValueForVaraibleWithName($key);
         }
 
+        $this->removeRelationshipFromRepositoryForEntity($entity);
         if ($removeEntity) $entity->delete();
+        
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
     }
 
@@ -280,9 +280,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Entity $entity
      * @return void
      */
-    protected function removeRelationshipInRepositoryForEntity(\obo\Entity $entity) {
-        $ownerManagerName = $this->owner->entityInformation()->managerName;
-        $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
+    protected function removeRelationshipFromRepositoryForEntity(\obo\Entity $entity) {
+
+        if (\is_null($this->relationShip->connectViaRepositoryWithName)) {
+            $entity->setValueForPropertyWithName(null, $this->relationShip->connectViaPropertyWithName);
+            $entity->save();
+        } else {
+            $ownerManagerName = $this->owner->entityInformation()->managerName;
+            $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
+        }
+
     }
 
 }
