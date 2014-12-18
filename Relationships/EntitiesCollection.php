@@ -181,8 +181,17 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         $this->removeRelationshipFromRepositoryForEntity($entity);
         if ($removeEntity) $entity->delete();
-        
+
         if ($notifyEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
+    }
+
+    /**
+     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
+     * @return \obo\Carriers\QuerySpecification
+     */
+
+    public function getSpecification() {
+        return clone $this->relationShip->constructSpecification();
     }
 
     /**

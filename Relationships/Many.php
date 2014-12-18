@@ -39,7 +39,7 @@ class Many extends \obo\Relationships\Relationship {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
 
-        return $ownedEntityManagerName::findEntities($this->constructQuery(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+        return $ownedEntityManagerName::findEntities($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
     }
 
     /**
@@ -51,14 +51,14 @@ class Many extends \obo\Relationships\Relationship {
 
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-        return $ownedEntityManagerName::countRecords($this->constructQuery(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+        return $ownedEntityManagerName::countRecords($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
     }
 
     /**
      * @param \obo\Carriers\QueryCarrier $specification
      * @return \obo\Carriers\QueryCarrier
      */
-    protected function constructQuery(\obo\Carriers\QueryCarrier $specification = null) {
+    public function constructSpecification(\obo\Carriers\QueryCarrier $specification = null) {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $ownerPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
