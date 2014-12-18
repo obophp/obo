@@ -34,6 +34,8 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
      */
     public function proccess($values) {
         parent::proccess($values);
+        $managerName = $this->entityInformation->managerName;
+        if (!$managerName::dataStorage()->existsRepositoryWithName($values[0])) throw new \obo\Exceptions\BadAnnotationException("Repository with name '{$values[0]}' does not exist in datastorage");
         $this->entityInformation->repositoryName = $this->repositoryName = $values[0];
     }
 

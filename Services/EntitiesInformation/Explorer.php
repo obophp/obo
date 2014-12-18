@@ -229,8 +229,8 @@ class Explorer extends \obo\Object {
         $entityInformation = new \obo\Carriers\EntityInformationCarrier(array(
             "className" => $entityClassName,
             "propertiesClassName" => $this->propertiesClassNameForEntityWithClassName($entityClassName),
-            "managerName" => $entityClassName . "Manager",
-            "repositoryName" => $this->defaultRepositoryNameForEntityWithClassName($entityClassName),
+            "managerName" => $managerName = $entityClassName . "Manager",
+            "repositoryName" => $managerName::dataStorage()->existsRepositoryWithName($this->defaultRepositoryNameForEntityWithClassName($entityClassName)) ? $this->defaultRepositoryNameForEntityWithClassName($entityClassName) : null,
         ));
 
         foreach ($this->loadEntityAnnotationForEntityWithClassName($entityClassName) as $annotationName => $annotationValue) {
@@ -314,7 +314,7 @@ class Explorer extends \obo\Object {
 
         $entityManagerName = $entityInformation->managerName;
 
-        if ($entityManagerName::dataStorage()->existsRepositoryWithName($entityInformation->repositoryName)) {
+        if (!\is_null($entityInformation->repositoryName)) {
             $entityInformation->repositoryColumns = $entityManagerName::dataStorage()->columnsInRepositoryWithName($entityInformation->repositoryName);
         }
 
