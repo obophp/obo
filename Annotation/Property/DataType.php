@@ -36,19 +36,19 @@ class DataType extends \obo\Annotation\Base\Property {
 
         switch ($values[0]) {
             case "boolean":
-                    $dataType = new \obo\DataType\Boolean($this->propertyInformation);
+                    $dataType = $this->createDataTypeBoolean();
                 break;
             case "number":
-                    $dataType = new \obo\DataType\Number($this->propertyInformation);
+                    $dataType = $this->createDataTypeNumber();
                 break;
             case "string":
-                    $dataType = new \obo\DataType\String($this->propertyInformation);
+                    $dataType = $this->createDataTypeString();
                 break;
             case "dateTime":
-                    $dataType = new \obo\DataType\DateTime($this->propertyInformation);
+                    $dataType = $this->createDataTypeDateTime();
                 break;
             case "array":
-                    $dataType = new \obo\DataType\ArrayDataType($this->propertyInformation);
+                    $dataType = $this->createDataTypeArray();
                 break;
             default :
                 throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime and array");
@@ -56,5 +56,25 @@ class DataType extends \obo\Annotation\Base\Property {
         }
 
         $this->propertyInformation->dataType = $dataType ;
+    }
+
+    protected function createDataTypeBoolean(){
+        return new \obo\DataType\Boolean($this->propertyInformation);
+    }
+
+    protected function createDataTypeNumber(){
+        return new \obo\DataType\Number($this->propertyInformation);
+    }
+
+    protected function createDataTypeString(){
+        return new \obo\DataType\String($this->propertyInformation);
+    }
+
+    protected function createDataTypeDateTime(){
+        return new \obo\DataType\DateTime($this->propertyInformation);
+    }
+
+    protected function createDataTypeArray(){
+        return new \obo\DataType\ArrayDataType($this->propertyInformation);
     }
 }
