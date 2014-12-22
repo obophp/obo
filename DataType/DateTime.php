@@ -51,15 +51,6 @@ class DateTime extends \obo\DataType\Base\DataType {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
             "name" => "afterInitialize",
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->convertValue($arguments);
