@@ -33,4 +33,7 @@ abstract class Property extends \obo\Annotation\Base\Definition {
         return self::PROPERTY_SCOPE;
     }
 
+    public function getPropertyInformation() {
+        return $this->propertyInformation;
+    }
 }
