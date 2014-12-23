@@ -79,6 +79,19 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return int
+     */
+    public function count() {
+        if ($this->entitiesAreLoaded) {
+            return parent::count();
+        } else {
+            $entityClass = $this->relationShip->entityClassNameToBeConnected;
+            $managerClass = $entityClass::entityInformation()->managerName;
+            return $managerClass::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()));
+        }
+    }
+
+    /**
      * @param \obo\Entity $entity
      * @param bool $createRelationshipInRepository
      * @param bool $notifyEvents

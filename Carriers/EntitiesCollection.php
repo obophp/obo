@@ -39,6 +39,19 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return int
+     */
+    public function count() {
+        if ($this->entitiesAreLoaded) {
+            return parent::count();
+        } else {
+            $entityClass = $this->entitiesClassName;
+            $managerClass = $entityClass::entityInformation()->managerName;
+            return $managerClass::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()));
+        }
+    }
+
+    /**
      * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
      * @return \obo\Carriers\QuerySpecification
      */
