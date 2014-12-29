@@ -101,7 +101,10 @@ class One extends \obo\Annotation\Base\Property {
                             $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
                             if (!\is_object($currentPropertyValue)) {
-                                $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"]);
+                                $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
+                                if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                                $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"]);
+                                if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
                             }
 
                         },
