@@ -137,8 +137,11 @@ abstract class Entity  extends \obo\Object {
      */
     public function clearPropertiesChanges() {
         $backTrace = \debug_backtrace(null, 2);
-        if ($backTrace[1]["class"] !== "obo\EntityManager" OR $backTrace[1]["function"] != "saveEntity") throw new \obo\Exceptions\Exception("ClearPropertiesChanges method can be only called from a method saveEntity in the entity manager");
-        $this->propertiesChanges = [];
+        if (($backTrace[1]["class"] === "obo\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\Entity" AND $backTrace[1]["function"] === "discardUnsavedChanges")) {
+            $this->propertiesChanges = [];
+        } else {
+            throw new \obo\Exceptions\Exception("ClearPropertiesChanges method can be only called from the obo framework");
+        }
     }
 
     /**
@@ -381,6 +384,16 @@ abstract class Entity  extends \obo\Object {
      */
     public function objectIdentificationKey() {
         return spl_object_hash($this);
+    }
+
+    /**
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
+    public function discardUnsavedChanges() {
+        if ($this->saveInProgress) throw new \obo\Exceptions\Exception("Can not discard changes, the entity is in the process of saving");
+        foreach ($this->propertiesChanges as $propertyName => $changes) $this->setValueForPropertyWithName($changes["oldValue"], $propertyName);
+        $this->clearPropertiesChanges();
     }
 
     /**
