@@ -314,6 +314,7 @@ abstract class EntityManager  extends \obo\Object {
                 $entity->setSaveInProgress();
                 $entity->dataStorage()->updateEntity($entity);
                 $entity->setSaveInProgress(false);
+                $entity->clearPropertiesChanges();
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterUpdate", $entity);
             } else {
@@ -322,6 +323,7 @@ abstract class EntityManager  extends \obo\Object {
                 $entity->dataStorage()->insertEntity($entity);
                 $entity->setBasedInRepository(true);
                 $entity->setSaveInProgress(false);
+                $entity->clearPropertiesChanges();
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInsert", $entity);
             }

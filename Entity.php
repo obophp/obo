@@ -131,6 +131,15 @@ abstract class Entity  extends \obo\Object {
         return $this->propertiesChanges;
     }
 
+    /**
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
+    public function clearPropertiesChanges() {
+        $backTrace = \debug_backtrace(null, 2);
+        if ($backTrace[1]["class"] !== "obo\EntityManager" OR $backTrace[1]["function"] != "saveEntity") throw new \obo\Exceptions\Exception("ClearPropertiesChanges method can be only called from a method saveEntity in the entity manager");
+        $this->propertiesChanges = [];
+    }
 
     /**
      * @return mixed
