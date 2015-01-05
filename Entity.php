@@ -225,10 +225,10 @@ abstract class Entity  extends \obo\Object {
                     }
                 }
             } else {
-                if (\is_scalar($this->valueForPropertyWithName($propertyName, true)) && \is_scalar($value)){
-                    if($this->valueForPropertyWithName($propertyName, true) != $value)  $change = true;
-                }else{
-                    if($this->valueForPropertyWithName($propertyName, true) !== $value) $change = true;
+                if (\is_scalar($this->valueForPropertyWithName($propertyName, true)) && \is_scalar($value)) {
+                    if ($this->valueForPropertyWithName($propertyName, true) != $value) $change = true;
+                } else {
+                    if ($this->valueForPropertyWithName($propertyName, true) !== $value) $change = true;
                 }
             }
 
@@ -258,11 +258,11 @@ abstract class Entity  extends \obo\Object {
                         $compareValue = $compareValue->valueForPropertyWithName($compareValue->entityInformation()->primaryPropertyName);
                     }
 
-                    if (isset($this->propertiesChanges[$propertyName]["oldValue"])){
-                        if(\is_scalar($oldValue = $this->propertiesChanges[$propertyName]["oldValue"]) && \is_scalar($compareValue)){
-                            if($oldValue == $compareValue) unset($this->propertiesChanges[$propertyName]);
-                        }else{
-                            if($oldValue === $compareValue)unset($this->propertiesChanges[$propertyName]);
+                    if (isset($this->propertiesChanges[$propertyName]["oldValue"])) {
+                        if (\is_scalar($oldValue = $this->propertiesChanges[$propertyName]["oldValue"]) && \is_scalar($compareValue)) {
+                            if ($oldValue == $compareValue) unset($this->propertiesChanges[$propertyName]);
+                        } else {
+                            if ($oldValue === $compareValue) unset($this->propertiesChanges[$propertyName]);
                         }
                     }
                     $this->propertiesChanges[$propertyName]["newValue"] = $value;
