@@ -11,7 +11,15 @@
 namespace obo\Relationships;
 
 abstract class Relationship extends \obo\Object {
+
+    /**
+     * @var \obo\Entity
+     */
     public $owner = null;
+
+    /**
+     * @var type
+     */
     public $entityClassNameToBeConnected = "";
     public $ownerPropertyName = "";
     public $cascade = array();
@@ -33,4 +41,5 @@ abstract class Relationship extends \obo\Object {
      * @param mixed $propertyValue
      */
     public abstract function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue);
+
 }

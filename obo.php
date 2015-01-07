@@ -26,6 +26,9 @@ class obo extends \obo\Object {
     const CACHE = "obo-cache";
     const UUID_GENERATOR = "obo-uuidGenerator";
 
+    /**
+     * @var boolean
+     */
     public static $developerMode = false;
 
     /**
@@ -42,6 +45,10 @@ class obo extends \obo\Object {
         \obo\Services::registerServiceWithName($cache, self::CACHE);
     }
 
+    /**
+     * @param \obo\Interfaces\IUuidGenerator $uuidGenerator
+     * @return void
+     */
     public static function setUuidGenerator(\obo\Interfaces\IUuidGenerator $uuidGenerator) {
         \obo\Services::registerServiceWithName($uuidGenerator, self::UUID_GENERATOR);
     }
@@ -56,4 +63,5 @@ class obo extends \obo\Object {
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
     }
+    
 }

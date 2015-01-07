@@ -38,7 +38,6 @@ class Object extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         if ((\is_null($this->className) AND !\is_object($value)) OR (!$value instanceof $this->className))
-
             throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be object". ((\is_null($this->className)) ? "" : " of class with name '{$this->className}'")  .", " . \gettype($value) . (\is_object($value) ? " of class with name '" . \get_class ($value) . "'" : "") ." given");
     }
 

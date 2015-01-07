@@ -23,6 +23,7 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
+     * @return void
      */
     public function __construct(\obo\Carriers\EntityInformationCarrier $entityInformation) {
         $this->entityInformation = $entityInformation;
@@ -67,7 +68,6 @@ abstract class Definition extends \obo\Object {
     /**
      * @param array $annotationValue
      * @throws \obo\Exceptions\BadAnnotationException
-     * @throws \LogicException
      * @return void
      */
     public function checkAnnotationValueStructure($annotationValue) {
@@ -85,18 +85,16 @@ abstract class Definition extends \obo\Object {
     /**
      * @param array $annotationValue
      * @throws \obo\Exceptions\BadAnnotationException
-     * @throws \LogicException
      * @return void
      */
     private function checkNumberOfParametersForAnnotationValue($annotationValue) {
         $parametersDefinition = self::parametersDefinition();
 
         switch (true) {
-            
             case $parametersDefinition["numberOfParameters"] == "?" :
                     if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects zero or one parameter, you send more parameters");
                 break;
-            
+
             case $parametersDefinition["numberOfParameters"] == 0 :
                     if (count($annotationValue)) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' does not accept any parameters, you sent " . count($annotationValue) . " parameters");
                 break;
@@ -110,7 +108,7 @@ abstract class Definition extends \obo\Object {
                 break;
 
             default:
-                throw new \LogicException("Bad numberOfParameters definition");
+                throw new \obo\Exceptions\BadAnnotationException("Bad numberOfParameters definition");
         }
     }
 
@@ -134,4 +132,5 @@ abstract class Definition extends \obo\Object {
             }
         }
     }
+    
 }

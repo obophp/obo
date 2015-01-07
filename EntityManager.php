@@ -12,7 +12,14 @@ namespace obo;
 
 abstract class EntityManager  extends \obo\Object {
 
+    /**
+     * @var array
+     */
     private static $classNamesManagedEntities = array();
+
+    /**
+     * @var array
+     */
     protected static $dataStorages = array();
 
     /**
@@ -147,6 +154,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Carriers\QueryCarrier $specification
+     * @param boolean $requiredEntity
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
      */
@@ -240,6 +248,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Carriers\QueryCarrier $specification
+     * @param \obo\Interfaces\IDataStorage $dataStorage
      * @return array();
      */
     protected static function rawDataForSpecification(\obo\Carriers\QueryCarrier $specification, \obo\Interfaces\IDataStorage $dataStorage = null) {
@@ -258,6 +267,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
+     * @param boolean $ignoreSoftDelete
      * @return array();
      */
     protected static function rawDataForEntity(\obo\Entity $entity, $ignoreSoftDelete = false) {
@@ -308,6 +318,7 @@ abstract class EntityManager  extends \obo\Object {
         if (\is_null($entity->entityInformation()->repositoryName)) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
+
         if (count($entity->dataWhoNeedToStore($entity->entityInformation()->columnsNamesToPropertiesNames($entity->entityInformation()->repositoryColumns)))) {
             if ($entity->isBasedInRepository()) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeUpdate", $entity);
@@ -330,7 +341,6 @@ abstract class EntityManager  extends \obo\Object {
         } else {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
         }
-
     }
 
     /**
@@ -351,4 +361,5 @@ abstract class EntityManager  extends \obo\Object {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDelete", $entity);
     }
+    
 }

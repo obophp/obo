@@ -11,6 +11,10 @@
 namespace obo\Services\IdentityMapper;
 
 class IdentityMapper extends \obo\Object {
+
+    /**
+     * @var \obo\Entity[]
+     */
     private $entities = array();
 
     /**

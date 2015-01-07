@@ -12,8 +12,16 @@ namespace obo\Interfaces;
 
 interface ICache {
 
+    /**
+     * @param string $key
+     * @return mixed
+     */
     public function load($key);
 
+    /**
+     * @param string $key
+     * @param mixed $value
+     */
     public function store($key, $value);
 
 }

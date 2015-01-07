@@ -139,7 +139,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         }
 
         if (!$entityKey = $entity->primaryPropertyValue()) {
-             $entityKey = "__" . ($this->count()+1);
+             $entityKey = "__" . ($this->count() + 1);
              $this->afterSavingNeedReload = true;
 
              \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
@@ -221,6 +221,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return \obo\Entity[]
+     */
+    public function find(\obo\Carriers\QuerySpecification $specification) {
+        return $this->relationShip->findEntities($specification);
+    }
+
+    /**
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity[]
@@ -237,14 +245,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         $specification->addSpecification($paginator->getSpecification());
 
         return $this->find($specification);
-    }
-
-    /**
-     * @param \obo\Carriers\QuerySpecification $specification
-     * @return \obo\Entity[]
-     */
-    public function find(\obo\Carriers\QuerySpecification $specification) {
-        return $this->relationShip->findEntities($specification);
     }
 
     /**
@@ -320,7 +320,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     protected function removeRelationshipFromRepositoryForEntity(\obo\Entity $entity) {
-
         if (\is_null($this->relationShip->connectViaRepositoryWithName)) {
             $entity->setValueForPropertyWithName(null, $this->relationShip->connectViaPropertyWithName);
             $entity->save();
@@ -328,7 +327,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             $ownerManagerName = $this->owner->entityInformation()->managerName;
             $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
         }
-
     }
 
 }

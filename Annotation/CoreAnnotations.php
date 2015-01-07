@@ -29,4 +29,5 @@ class CoreAnnotations extends \obo\Object {
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\StoreTo");
         $entitiesExplorer->registerAnnotation("\obo\Annotation\Property\Uuid");
     }
+    
 }

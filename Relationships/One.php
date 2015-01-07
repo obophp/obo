@@ -11,16 +11,28 @@
 namespace obo\Relationships;
 
 class One extends \obo\Relationships\Relationship {
+
+    /**
+     * @var boolean
+     */
     public $autoCreate = true;
+
+    /**
+     * @var string
+     */
     public $entityClassNameToBeConnectedInPropertyWithName = null;
 
+    /**
+     * @param string $entityClassNameToBeConnected
+     * @param string $ownerPropertyName
+     * @param array $cascade
+     * @return void
+     */
     public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = array()) {
-
         if (\strpos($entityClassNameToBeConnected, "property:") === 0) {
             $this->entityClassNameToBeConnectedInPropertyWithName = \substr($entityClassNameToBeConnected, 9);
             $entityClassNameToBeConnected = null;
         }
-
         parent::__construct($entityClassNameToBeConnected, $ownerPropertyName, $cascade);
     }
 
@@ -45,7 +57,6 @@ class One extends \obo\Relationships\Relationship {
         } else {
             return $this->autoCreate ? $entityManagerName::entityFromArray(array()) : null;
         }
-
     }
 
 }

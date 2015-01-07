@@ -52,29 +52,44 @@ class DataType extends \obo\Annotation\Base\Property {
                 break;
             default :
                 throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime and array");
-                break;
         }
 
         $this->propertyInformation->dataType = $dataType ;
     }
 
+    /**
+     * @return \obo\DataType\Boolean
+     */
     protected function createDataTypeBoolean(){
         return new \obo\DataType\Boolean($this->propertyInformation);
     }
 
+    /**
+     * @return \obo\DataType\Number
+     */
     protected function createDataTypeNumber(){
         return new \obo\DataType\Number($this->propertyInformation);
     }
 
+    /**
+     * @return \obo\DataType\String
+     */
     protected function createDataTypeString(){
         return new \obo\DataType\String($this->propertyInformation);
     }
 
+    /**
+     * @return \obo\DataType\DateTime
+     */
     protected function createDataTypeDateTime(){
         return new \obo\DataType\DateTime($this->propertyInformation);
     }
 
+    /**
+     * @return \obo\DataType\ArrayDataType
+     */
     protected function createDataTypeArray(){
         return new \obo\DataType\ArrayDataType($this->propertyInformation);
     }
+
 }

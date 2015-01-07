@@ -11,8 +11,20 @@
 namespace obo\Services\Events;
 
 class EventManager extends \obo\Object {
+
+    /**
+     * @var array
+     */
     private $events = array();
+
+    /**
+     * @var array
+     */
     private $ignoreEvents = array();
+
+    /**
+     * @var array
+     */
     private $ignoreNotificationEntities = array();
 
     /**
@@ -47,7 +59,6 @@ class EventManager extends \obo\Object {
                 foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
                 $this->removeIgnoreNotifyForEventWithKey($classEventKey);
             }
-
         }
     }
 
@@ -98,7 +109,7 @@ class EventManager extends \obo\Object {
      * @return void
      */
     public function turnOnIgnoreNotificationForEntity(\obo\Entity $entity) {
-        $this->ignoreNotificationEntities[$entity->objectIdentificationKey()] = true;;
+        $this->ignoreNotificationEntities[$entity->objectIdentificationKey()] = true;
     }
 
     /**
@@ -116,4 +127,5 @@ class EventManager extends \obo\Object {
     public function isActiveIgnoreNotificationForEntity(\obo\Entity $entity) {
         return isset($this->ignoreNotificationEntities[$entity->objectIdentificationKey()]);
     }
+
 }

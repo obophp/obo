@@ -12,6 +12,9 @@ namespace obo\Interfaces;
 
 interface IUuidGenerator {
 
+    /**
+     * @return string
+     */
     public function generateUuid();
 
 }

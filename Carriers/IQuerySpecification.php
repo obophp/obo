@@ -10,15 +10,26 @@
 
 namespace obo\Carriers;
 
-
 interface IQuerySpecification {
-    
+
+    /**
+     * @return array
+     */
     public function getWhere();
 
+    /**
+     * @return array
+     */
     public function getOrderBy();
 
+    /**
+     * @return array
+     */
     public function getLimit();
 
+    /**
+     * @return array
+     */
     public function getOffset();
 
 }

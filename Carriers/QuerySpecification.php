@@ -12,9 +12,24 @@ namespace obo\Carriers;
 
 class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpecification {
 
+    /**
+     * @var array
+     */
     protected $where = array("query" => "", "data" => array());
+
+    /**
+     * @var array
+     */
     protected $orderBy = array("query" => "", "data" => array());
+
+    /**
+     * @var array
+     */
     protected $limit = array("query" => "", "data" => array());
+
+    /**
+     * @var array
+     */
     protected $offset = array("query" => "", "data" => array());
 
     /**
@@ -140,7 +155,7 @@ class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpec
 
         foreach ($formatArguments as $key => $argument) {
             if ($queryPosition == $key) {
-                $queryPosition = \preg_match_all("#%([a-zA-Z~][a-zA-Z0-9~]{0,5})#", $argument, $matches) + $key +1;
+                $queryPosition = \preg_match_all("#%([a-zA-Z~][a-zA-Z0-9~]{0,5})#", $argument, $matches) + $key + 1;
                 $targetPart["query"] .= $prefix . $argument .$sufix;
             } else {
                 $targetPart["data"][] = $argument;

@@ -11,10 +11,15 @@
 namespace obo;
 
 class EntityProperties extends \obo\Object {
+
     /**
      * @deprecated
      */
     protected $ownerProperties = null;
+
+    /**
+     * @var \obo\Entity
+     */
     protected $_owner = null;
 
     /**
@@ -26,6 +31,7 @@ class EntityProperties extends \obo\Object {
     }
 
     /**
+     * @param mixed $name
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
     public function &__get($name) {
@@ -33,6 +39,8 @@ class EntityProperties extends \obo\Object {
     }
 
     /**
+     * @param string $name
+     * @param mixed $value
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
     public function __set($name, $value) {

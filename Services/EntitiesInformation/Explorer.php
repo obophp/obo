@@ -80,7 +80,7 @@ class Explorer extends \obo\Object {
     }
 
     /**
-     * @param \obo\Annotation\Definition $annotationDefinition
+     * @param string $annotationClassName
      * @return void
      */
     public function registerAnnotation($annotationClassName) {
@@ -88,7 +88,7 @@ class Explorer extends \obo\Object {
     }
 
     /**
-     * @param \obo\Annotation\Definition $annotationDefinition
+     * @param string $annotationClassName
      * @return void
      */
     public function unregisterAnnotation($annotationClassName) {
@@ -103,7 +103,6 @@ class Explorer extends \obo\Object {
      */
     private function processAnnotationWithNameAndValueForEntity($annotationName, array $annotationValue, \obo\Carriers\EntityInformationCarrier $entityInformation) {
         if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::ENTITY_SCOPE))) return;
-
         $annotation = new $annotationClass($entityInformation);
         $annotation->proccess($annotationValue);
         $entityInformation->annotations[] = $annotation;
@@ -118,7 +117,6 @@ class Explorer extends \obo\Object {
      */
     private function processAnnotationWithNameAndValueForMethodWithName($annotationName, array $annotationValue, \obo\Carriers\EntityInformationCarrier $entityInformation, $methodName) {
         if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::METHOD_SCOPE))) return;
-
         $annotation = new $annotationClass($entityInformation, $methodName);
         $annotation->proccess($annotationValue);
         $entityInformation->annotations[] = $annotation;
@@ -132,7 +130,6 @@ class Explorer extends \obo\Object {
      */
     private function processAnnotationWithNameAndValueForProperty($annotationName, array $annotationValue, \obo\Carriers\PropertyInformationCarrier $propertyInformation) {
         if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::PROPERTY_SCOPE))) return;
-
         $annotation = new $annotationClass($propertyInformation);
         $annotation->proccess($annotationValue);
         $propertyInformation->annotations[] = $annotation;
