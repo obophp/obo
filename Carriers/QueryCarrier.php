@@ -12,9 +12,24 @@ namespace obo\Carriers;
 
 class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carriers\IQuerySpecification {
 
+    /**
+     * @var string
+     */
     protected $defaultEntityClassName = null;
+
+    /**
+     * @var array
+     */
     protected $select = array("query" => "", "data" => array());
+
+    /**
+     * @var array
+     */
     protected $from = array("query" => "", "data" => array());
+
+    /**
+     * @var array
+     */
     protected $join = array("query" => "", "data" => array());
 
     /**

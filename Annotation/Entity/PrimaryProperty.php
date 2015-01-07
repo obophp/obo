@@ -12,6 +12,9 @@ namespace obo\Annotation\Entity;
 
 class PrimaryProperty extends \obo\Annotation\Base\Entity {
 
+    /**
+     * @var string
+     */
     protected $primaryPropertyName = "";
 
     /**
@@ -30,6 +33,7 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
 
     /**
      * @param array $values
+     * @return void
      */
     public function proccess($values) {
         parent::proccess($values);

@@ -12,6 +12,9 @@ namespace obo\Annotation\Property;
 
 class StoreTo extends \obo\Annotation\Base\Property {
 
+    /**
+     * @var string
+     */
     private $propertyToStore;
 
     /**
@@ -41,6 +44,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @param array $arguments
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
+     * @return void
      */
     public function fromArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
@@ -61,6 +65,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @param array $arguments
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
+     * @return void
      */
     public function toArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
@@ -76,6 +81,9 @@ class StoreTo extends \obo\Annotation\Base\Property {
         $arguments["entity"]->setValueForPropertyWithName($rawData, $this->propertyToStore);
     }
 
+    /**
+     * @return void
+     */
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->entityInformation->className,
@@ -95,4 +103,5 @@ class StoreTo extends \obo\Annotation\Base\Property {
             "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
         )));
     }
+
 }

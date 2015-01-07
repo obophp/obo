@@ -12,14 +12,30 @@ namespace obo\Carriers;
 
 class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Interfaces\IEntitiesCollection {
 
+    /**
+     * @var string
+     */
     protected $entitiesClassName = null;
+
+    /**
+     * @var \obo\Carriers\QuerySpecification
+     */
     protected $defaultSpecification = null;
+
+    /**
+     * @var \obo\Carriers\QuerySpecification
+     */
     protected $specification = null;
+
+    /**
+     * @var booleam
+     */
     protected $entitiesAreLoaded = false;
 
     /**
      * @param string $entitiesClassName
      * @param \obo\Carriers\QuerySpecification $specification
+     * @return void
      */
     public function __construct($entitiesClassName, \obo\Carriers\QuerySpecification $specification) {
         parent::__construct();
@@ -99,6 +115,19 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return \obo\Entity[]
+     */
+    public function find(\obo\Carriers\QuerySpecification $specification) {
+        $defaultSpecification = clone $this->specification;
+
+        $entitiesClassName = $this->entitiesClassName;
+        $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
+
+        return $entitiesManagerClassName::findEntities($defaultSpecification->addSpecification($specification));
+    }
+
+    /**
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity[]
@@ -115,19 +144,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         $specification->addSpecification($paginator->getSpecification());
 
         return $this->find($specification);
-    }
-
-    /**
-     * @param \obo\Carriers\QuerySpecification $specification
-     * @return \obo\Entity[]
-     */
-    public function find(\obo\Carriers\QuerySpecification $specification) {
-        $defaultSpecification = clone $this->specification;
-
-        $entitiesClassName = $this->entitiesClassName;
-        $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
-
-        return $entitiesManagerClassName::findEntities($defaultSpecification->addSpecification($specification));
     }
 
     /**

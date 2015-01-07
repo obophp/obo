@@ -12,6 +12,9 @@ namespace obo\Carriers;
 
 class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Countable {
 
+    /**
+     * @var array
+     */
     private $variables = array();
 
     /**
@@ -74,6 +77,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $variableName
      * @param mixed $value
+     * @return void
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function changeVariableNameForValue($variableName, $value) {
@@ -131,9 +135,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
         $data = array();
         foreach ($this->asArray() as $key => $variable) {
             if (\is_object($variable)) {
-
                 $data[$key] = clone $variable;
-
             } else {
                 $data[$key] = $variable;
             }

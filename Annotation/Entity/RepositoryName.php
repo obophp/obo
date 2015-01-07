@@ -12,6 +12,9 @@ namespace obo\Annotation\Entity;
 
 class RepositoryName extends \obo\Annotation\Base\Entity {
 
+    /**
+     * @var string
+     */
     protected $repositoryName = "";
 
     /**
@@ -45,4 +48,5 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
     public function registerEvents() {
 
     }
+    
 }

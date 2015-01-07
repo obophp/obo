@@ -12,6 +12,9 @@ namespace obo\Annotation\Property;
 
 class TimeStamp extends \obo\Annotation\Base\Property {
 
+    /**
+     * @var array
+     */
     protected $eventsNames = array();
 
     /**
@@ -42,7 +45,6 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-
         foreach ($this->eventsNames as $eventName) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
                 "onClassWithName" => $this->entityInformation->className,
@@ -52,4 +54,5 @@ class TimeStamp extends \obo\Annotation\Base\Property {
             )));
         }
     }
+
 }

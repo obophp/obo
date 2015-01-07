@@ -11,19 +11,67 @@
 namespace obo\Carriers;
 
 class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
+
+    /**
+     * @var string
+     */
     public $className = "";
+
+    /**
+     * @var string
+     */
     public $managerName = "";
+
+    /**
+     * @var string
+     */
     public $propertiesClassName = "";
+
+    /**
+     * @var string
+     */
     public $repositoryName = "";
+
+    /**
+     * @var array
+     */
     public $repositoryColumns = array();
+
+    /**
+     * @var array
+     */
     public $repositoryColumnsForPersistableProperties = array();
+
+    /**
+     * @var string
+     */
     public $primaryPropertyName = "id";
+
+    /**
+     * @var array
+     */
     public $propertiesInformation = array();
+
+    /**
+     * @var arry
+     */
     public $annotations = array();
+
+    /**
+     * @var array
+     */
     public $propertiesNames = array();
+
+    /**
+     * @var string
+     */
     public $propertyNameForSoftDelete = null;
 
+    /**
+     * @var array
+     */
     private $inversePropertiesInformationList = array();
+
     /**
      * @param array $information
      * @return \obo\Carriers\PropertyInformationCarrier
@@ -31,7 +79,6 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     public function addPropertyInformation(array $information) {
         $propertyInformation = new \obo\Carriers\PropertyInformationCarrier($information);
         $this->propertiesInformation[$propertyInformation->name] = $propertyInformation;
-
         $propertyInformation->entityInformation = $this;
         return $propertyInformation;
     }

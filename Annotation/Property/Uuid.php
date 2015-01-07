@@ -37,11 +37,15 @@ class Uuid extends \obo\Annotation\Base\Property {
         } catch (\obo\Exceptions\ServicesException $e) {
             throw new \obo\Exceptions\BadAnnotationException("UUID generator is not registered, register it via obo::setUuidGenerator()", null, $e);
         }
+
         if (\is_null($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name))){
             $arguments["entity"]->setValueForPropertyWithName($uuidGenerator->generateUuid(), $this->propertyInformation->name);
         }
     }
 
+    /**
+     * @return void
+     */
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
@@ -52,4 +56,5 @@ class Uuid extends \obo\Annotation\Base\Property {
             "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
         ]));
     }
+    
 }

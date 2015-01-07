@@ -29,7 +29,6 @@ class Information extends \obo\Object {
      * @param string $className
      * @return \obo\Carriers\EntityInformationCarrier
      */
-
     private function findClassInformationForEntityWithClassName($className) {
 
         if (\obo\obo::$developerMode === false AND \obo\Services::isRegisteredServiceWithName(\obo\obo::CACHE)) {
@@ -55,27 +54,26 @@ class Information extends \obo\Object {
      * @return void
      */
     private function registerCoreEventsForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
+        foreach($entityInformation->annotations as $annotation) $annotation->registerEvents();
 
-            foreach($entityInformation->annotations as $annotation) $annotation->registerEvents();
-
-            foreach($entityInformation->propertiesInformation as $propertyInformation) {
-                foreach($propertyInformation->annotations as $annotation) {
-                    $annotation->registerEvents();
-                }
-
-                if($propertyInformation->dataType instanceof \obo\DataType\Base\DataType) $propertyInformation->dataType->registerEvents();
+        foreach($entityInformation->propertiesInformation as $propertyInformation) {
+            foreach($propertyInformation->annotations as $annotation) {
+                $annotation->registerEvents();
             }
 
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                "onClassWithName" => $entityInformation->className,
-                "name" => "beforeChange".\ucfirst($entityInformation->primaryPropertyName),
-                "actionAnonymousFunction" => function($arguments) {
-                    if ($arguments["entity"]->isInitialized()) {
-                        $backTrace = \debug_backtrace();
-                        if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can not be changed, has been marked as initialized");
-                    }},
-                )
-            ));
+            if($propertyInformation->dataType instanceof \obo\DataType\Base\DataType) $propertyInformation->dataType->registerEvents();
+        }
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            "onClassWithName" => $entityInformation->className,
+            "name" => "beforeChange".\ucfirst($entityInformation->primaryPropertyName),
+            "actionAnonymousFunction" => function($arguments) {
+                if ($arguments["entity"]->isInitialized()) {
+                    $backTrace = \debug_backtrace();
+                    if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can not be changed, has been marked as initialized");
+                }},
+            )
+        ));
     }
 
 }

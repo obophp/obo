@@ -12,7 +12,14 @@ namespace obo;
 
 class Services extends \obo\Object {
 
+    /**
+     * @var array
+     */
     private static $services = array();
+
+    /**
+     * @var array
+     */
     private static $factories = array();
 
     /**
@@ -51,7 +58,12 @@ class Services extends \obo\Object {
         throw new \obo\Exceptions\ServicesException("Service with name '{$serviceName}' is not registered");
     }
 
+    /**
+     * @param string $serviceName
+     * @return boolean
+     */
     public static function isRegisteredServiceWithName($serviceName) {
         return isset(self::$services[$serviceName]) OR isset(self::$factories[$serviceName]);
     }
+
 }

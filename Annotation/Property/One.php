@@ -12,14 +12,27 @@ namespace obo\Annotation\Property;
 
 class One extends \obo\Annotation\Base\Property {
 
+    /**
+     * @var string
+     */
     protected $targetEntity = null;
+
+    /**
+     * @var string
+     */
     protected $targetEntityInProperty = false;
+
+    /**
+     * @var array
+     */
     protected $cascadeOptions = array();
+
+    /**
+     * @var boolean
+     */
     protected $autoCreate = false;
 
     /**
-     *
-
      * @return string
      */
     public static function name() {
@@ -57,9 +70,7 @@ class One extends \obo\Annotation\Base\Property {
         }
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name);
-
         $this->propertyInformation->relationship->autoCreate = $this->autoCreate;
-
     }
 
     /**
@@ -92,44 +103,43 @@ class One extends \obo\Annotation\Base\Property {
             }
 
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                        "onClassWithName" => $this->entityInformation->className,
-                        "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
-                        "actionAnonymousFunction" => function($arguments) {
-                            if ($arguments["entityAsPrimaryPropertyValue"]) return;
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
+                "actionAnonymousFunction" => function($arguments) {
+                    if ($arguments["entityAsPrimaryPropertyValue"]) return;
 
-                            $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
-                            $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
-                            if (!\is_object($currentPropertyValue)) {
-                                $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
-                                if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                                $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"]);
-                                if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                            }
+                    if (!\is_object($currentPropertyValue)) {
+                        $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
+                        if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                        $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"]);
+                        if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                    }
 
-                        },
-                        "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                    )));
+                },
+                "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+            )));
 
             if ($this->targetEntityInProperty) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                            "onClassWithName" => $this->entityInformation->className,
-                            "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
-                            "actionAnonymousFunction" => function($arguments) {
+                    "onClassWithName" => $this->entityInformation->className,
+                    "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
+                    "actionAnonymousFunction" => function($arguments) {
 
-                                $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                        $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
 
-                                if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                                    $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->className(), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
+                            $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->className(), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        } else {
+                            $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        }
 
-                                } else {
-                                    $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
-
-                                }
-
-                            },
-                            "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                        )));
+                    },
+                    "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+                )));
             }
         }
+
     }

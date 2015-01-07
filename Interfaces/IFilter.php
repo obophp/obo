@@ -12,6 +12,9 @@ namespace obo\Interfaces;
 
 interface IFilter {
 
+    /**
+     * @return \obo\Carriers\QuerySpecification
+     */
     public function getSpecification();
 
 }

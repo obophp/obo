@@ -24,16 +24,16 @@ interface IEntitiesCollection {
     public function getSpecification();
 
     /**
+     * @param \obo\Carriers\QuerySpecification $specification
+     * @return array
+     */
+    public function find(\obo\Carriers\QuerySpecification $specification);
+
+    /**
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return array
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null);
-
-    /**
-     * @param \obo\Carriers\QuerySpecification $specification
-     * @return array
-     */
-    public function find(\obo\Carriers\QuerySpecification $specification);
 
 }

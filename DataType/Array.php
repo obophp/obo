@@ -30,6 +30,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $arguments
+     * @return void
      */
     public function serialize($arguments) {
         $arguments["entity"]->setValueForPropertyWithName(serialize($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
@@ -37,6 +38,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $arguments
+     * @return void
      */
     public function unserialize($arguments) {
         $value = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name);
@@ -102,4 +104,5 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
             "actionArguments" => array("dataType" => $this),
         )));
     }
+    
 }

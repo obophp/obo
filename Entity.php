@@ -11,12 +11,40 @@
 namespace obo;
 
 abstract class Entity  extends \obo\Object {
+
+    /**
+     * @var boolean
+     */
     private $initialized = false;
+
+    /**
+     * @var boolean
+     */
     private $basedInRepository = null;
+
+    /**
+     * @var string
+     */
     private $entityIdentificationKey = null;
+
+    /**
+     * @var \obo\EntityProperties
+     */
     private $propertiesObject = null;
+
+    /**
+     * @var array
+     */
     private $propertiesChanges = array();
+
+    /**
+     * @var boolean
+     */
     private $saveInProgress = false;
+
+    /**
+     * @var \obo\Interfaces\IDataStorage
+     */
     private $dataStorage = null;
 
     public function __construct() {
@@ -137,6 +165,7 @@ abstract class Entity  extends \obo\Object {
      */
     public function clearPropertiesChanges() {
         $backTrace = \debug_backtrace(null, 2);
+
         if (($backTrace[1]["class"] === "obo\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\Entity" AND $backTrace[1]["function"] === "discardUnsavedChanges")) {
             $this->propertiesChanges = [];
         } else {
@@ -163,7 +192,7 @@ abstract class Entity  extends \obo\Object {
         if (!$this->hasPropertyWithName($propertyName)) {
 
             if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
-                return $entity->valueForPropertyWithName(substr($propertyName, $pos+1), $entityAsPrimaryPropertyValue, $triggerEvents);
+                return $entity->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsPrimaryPropertyValue, $triggerEvents);
             }
 
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can not be read, does not exist in entity '" . $this->className() . "'");
@@ -205,7 +234,7 @@ abstract class Entity  extends \obo\Object {
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
             if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
-                return $entity->setValueForPropertyWithName($value, substr($propertyName, $pos+1));
+                return $entity->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
             }
             throw new \obo\Exceptions\PropertyNotFoundException("Can not write to the property with name '{$propertyName}', does not exist in entity '".$this->className()."'");
         }
@@ -378,7 +407,7 @@ abstract class Entity  extends \obo\Object {
      * @return boolean
      */
     public function isDeleted() {
-        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);;
+        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
     }
 
     /**

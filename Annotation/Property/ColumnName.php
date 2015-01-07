@@ -12,6 +12,9 @@ namespace obo\Annotation\Property;
 
 class ColumnName extends \obo\Annotation\Base\Property {
 
+    /**
+     * @var string
+     */
     protected $columnName = "";
 
     /**
@@ -43,4 +46,5 @@ class ColumnName extends \obo\Annotation\Base\Property {
     public function registerEvents() {
 
     }
+
 }

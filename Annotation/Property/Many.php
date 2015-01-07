@@ -12,11 +12,34 @@ namespace obo\Annotation\Property;
 
 class Many extends \obo\Annotation\Base\Property {
 
+    /**
+     * @var string
+     */
     protected $targetEntity = "";
+
+    /**
+     * @var string
+     */
     protected $connectViaProperty = "";
+
+    /**
+     * @var string
+     */
     protected $ownerNameInProperty = "";
+
+    /**
+     * @var string
+     */
     protected $connectViaRepository = "";
+
+    /**
+     * @var string
+     */
     protected $sortVia = "";
+
+    /**
+     * @var array
+     */
     protected $cascadeOptions = array();
 
     /**
@@ -66,25 +89,27 @@ class Many extends \obo\Annotation\Base\Property {
         $this->propertyInformation->dataType = new \obo\DataType\Object($this->propertyInformation, "\obo\Relationships\EntitiesCollection");
     }
 
+    /**
+     * @return void
+     */
     public function registerEvents() {
 
         foreach ($this->cascadeOptions as $cascadeOption) {
-                if ($cascadeOption == "save") {
-                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                        "onClassWithName" => $this->entityInformation->className,
-                        "name" => "afterSave",
-                        "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
-                        "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                    )));
-                } elseif ($cascadeOption == "delete") {
-                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                        "onClassWithName" => $this->entityInformation->className,
-                        "name" => "beforeDelete",
-                        "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
-                        "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty),
-                    )));
-                }
-
+            if ($cascadeOption == "save") {
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                    "onClassWithName" => $this->entityInformation->className,
+                    "name" => "afterSave",
+                    "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
+                    "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+                )));
+            } elseif ($cascadeOption == "delete") {
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                    "onClassWithName" => $this->entityInformation->className,
+                    "name" => "beforeDelete",
+                    "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
+                    "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty),
+                )));
+            }
         }
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
@@ -105,4 +130,5 @@ class Many extends \obo\Annotation\Base\Property {
         )));
 
     }
+    
 }

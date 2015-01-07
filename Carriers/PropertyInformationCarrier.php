@@ -12,15 +12,59 @@ namespace obo\Carriers;
 
 class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
 
+    /**
+     * @var \obo\Carriers\EntityInformationCarrier
+     */
     public $entityInformation = null;
+
+    /**
+     * @var string
+     */
     public $name = "";
+
+    /**
+     * @var \obo\DataType\Base\DataType
+     */
     public $dataType = null;
+
+    /**
+     * @var boolean
+     */
     public $directAccessToRead = true;
+
+    /**
+     * @var boolean
+     */
     public $directAccessToWrite = true;
+
+    /**
+     * @var string
+     */
     public $getterName = null;
+
+    /**
+     * @var string
+     */
     public $setterName = null;
+
+    /**
+     * @var string
+     */
     public $access = "public";
+
+    /**
+     * @var string
+     */
     public $columnName = null;
+
+    /**
+     * @var \obo\Relationships\Relationship
+     */
     public $relationship = null;
+
+    /**
+     * @var \obo\Annotation\Base\Definition[]
+     */
     public $annotations = array();
+
 }

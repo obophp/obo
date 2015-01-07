@@ -11,12 +11,40 @@
 namespace obo\Services\Events;
 
 class Event extends \obo\Carriers\DataCarrier {
+
+    /**
+     * @var string
+     */
     public $onClassWithName = null;
+
+    /**
+     * @var \obo\Entity
+     */
     public $onObject = null;
+
+    /**
+     * @var string
+     */
     public $name = "";
+
+    /**
+     * @var callable
+     */
     public $actionAnonymousFunction = null;
+
+    /**
+     * @var string
+     */
     public $actionEntity = null;
+
+    /**
+     * @var string
+     */
     public $actionMessage = null;
+
+    /**
+     * @var array
+     */
     public $actionArguments = array();
 
     /**
@@ -34,4 +62,5 @@ class Event extends \obo\Carriers\DataCarrier {
         if (!\is_null($this->onClassWithName)) return $this->name.$this->onClassWithName;
         if (!\is_null($this->onObject)) return $this->name.$this->onObject->objectIdentificationKey();
     }
+    
 }

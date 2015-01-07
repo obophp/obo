@@ -12,6 +12,9 @@ namespace obo\Annotation\Base;
 
 abstract class Method extends \obo\Annotation\Base\Definition {
 
+    /**
+     * @var string
+     */
     protected $methodName;
 
     /**

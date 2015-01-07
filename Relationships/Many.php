@@ -11,20 +11,35 @@
 namespace obo\Relationships;
 
 class Many extends \obo\Relationships\Relationship {
+
+    /**
+     * @var string
+     */
     public $connectViaPropertyWithName = null;
+
+    /**
+     * @var string
+     */
     public $ownerNameInProperty = null;
+
+    /**
+     * @var string
+     */
     public $connectViaRepositoryWithName = null;
+
+    /**
+     * @var string
+     */
     public $sortVia = null;
 
     /**
      * @param \obo\Entity $owner
-     * @param mixed $ownerPropertyValue
+     * @param mixed $propertyValue
      * @return \obo\Relationships\EntitiesCollection
      */
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
         $relationship = clone $this;
         $relationship->owner = $owner;
-
         return new \obo\Relationships\EntitiesCollection($owner, $relationship);
     }
 
@@ -33,12 +48,9 @@ class Many extends \obo\Relationships\Relationship {
      * @return \obo\Entity
      */
     public function findEntities(\obo\Carriers\QuerySpecification $specification = null) {
-
         if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
-
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-
         return $ownedEntityManagerName::findEntities($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
     }
 
@@ -48,7 +60,6 @@ class Many extends \obo\Relationships\Relationship {
      */
     public function countEntities (\obo\Carriers\QuerySpecification $specification = null) {
         if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
-
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         return $ownedEntityManagerName::countRecords($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
