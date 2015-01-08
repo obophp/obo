@@ -123,57 +123,56 @@ class One extends \obo\Annotation\Base\Property {
             )));
 
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                        "onClassWithName" => $this->entityInformation->className,
-                        "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
-                        "actionAnonymousFunction" => function($arguments) {
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
+                "actionAnonymousFunction" => function($arguments) {
 
-                            $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
-                            if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $arguments["propertyValue"]["new"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                                if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $arguments["propertyValue"]["old"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                            } else {
-                                if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]), array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                            }
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
+                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $arguments["propertyValue"]["new"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                        if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $arguments["propertyValue"]["old"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                    } else {
+                        if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]), array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                    }
 
-                        },
-                        "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                    )));
-
+                },
+                "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+            )));
 
             if ($this->targetEntityInProperty) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                            "onClassWithName" => $this->entityInformation->className,
-                            "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
-                            "actionAnonymousFunction" => function($arguments) {
+                    "onClassWithName" => $this->entityInformation->className,
+                    "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
+                    "actionAnonymousFunction" => function($arguments) {
 
-                                $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                        $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
 
-                                if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                                    $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->className(), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
-                                } else {
-                                    $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
-                                }
+                        if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
+                            $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->className(), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        } else {
+                            $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        }
 
-                            },
-                            "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                        )));
+                    },
+                    "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+                )));
 	    }
 
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-                        "onClassWithName" => $this->entityInformation->className,
-                        "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
-                        "actionAnonymousFunction" => function($arguments) {
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
+                "actionAnonymousFunction" => function($arguments) {
 
-                            $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
-                            if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $arguments["propertyValue"]["new"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                                if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $arguments["propertyValue"]["old"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                            } else {
-                                if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]), array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                            }
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
+                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $arguments["propertyValue"]["new"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                        if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $arguments["propertyValue"]["old"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                    } else {
+                        if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]), array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
+                    }
 
-                        },
-                        "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                    )));
+                },
+                "actionArguments" => array("propertyName" => $this->propertyInformation->name),
+            )));
     }
 }
