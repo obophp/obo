@@ -59,8 +59,8 @@ class Event extends \obo\Carriers\DataCarrier {
      * @return string
      */
     public function eventIdentificationKey() {
-        if (!\is_null($this->onClassWithName)) return $this->name.$this->onClassWithName;
-        if (!\is_null($this->onObject)) return $this->name.$this->onObject->objectIdentificationKey();
+        if (!\is_null($this->onClassWithName)) return $this->name . \ltrim($this->onClassWithName, "\\");
+        if (!\is_null($this->onObject)) return $this->name . $this->onObject->objectIdentificationKey();
     }
-    
+
 }
