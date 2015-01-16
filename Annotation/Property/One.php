@@ -173,7 +173,7 @@ class One extends \obo\Annotation\Base\Property {
                             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->propertyInformation->name . "Disconnected", $arguments["entity"], array("columnName" => $propertyInformation->columnName, "disconnectedEntity" => $arguments["propertyValue"]["old"]));
                         }
 			\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $arguments["propertyValue"]["new"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
-                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->propertyInformation->name . "Connected", $arguments["entity"], array("columnName" => $propertyInformation->columnName, "connectedEntity" => $entityToBeConnected));
+                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->propertyInformation->name . "Connected", $arguments["entity"], array("columnName" => $propertyInformation->columnName, "connectedEntity" => $arguments["propertyValue"]["new"]));
                     } else {
                         if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) {
                             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $arguments["propertyValue"]["old"], array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
