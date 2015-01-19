@@ -156,7 +156,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if ($notifyEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, array("collection" => $this, "columnName" => $this->relationShip->ownerPropertyName));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Connected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "connectedEntity" => $entity));
         }
 
         return $entity;
@@ -267,6 +266,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function reloadEntitites() {
         $this->clear();
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
         $this->loadEntities();
     }
 
