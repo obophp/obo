@@ -35,8 +35,8 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @param array $values
      * @throws \obo\Exceptions\BadAnnotationException
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
         $this->propertyToStore = $values[0];
     }
 

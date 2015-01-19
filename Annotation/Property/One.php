@@ -51,8 +51,8 @@ class One extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadAnnotationException
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
 
         $this->targetEntity = $values["targetEntity"];
 

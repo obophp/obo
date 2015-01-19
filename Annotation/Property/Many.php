@@ -61,8 +61,8 @@ class Many extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadAnnotationException
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
 
         if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built. Target entity class doesn't exist.");
 

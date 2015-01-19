@@ -54,7 +54,7 @@ abstract class Definition extends \obo\Object {
      * @param mixed $values
      * @return void
      */
-    public function proccess($values) {
+    public function process($values) {
         $this->checkAnnotationValueStructure($values);
     }
 

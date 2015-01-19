@@ -35,8 +35,8 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      * @param array $values
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
         $this->propertyInformation->dataType = new \obo\DataType\DateTime($this->propertyInformation);
         $this->eventsNames = $values;
     }
