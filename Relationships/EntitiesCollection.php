@@ -264,9 +264,18 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /**
      * @return void
      */
+    public function clear() {
+        foreach ($entities = &parent::variables() as $entity) {
+            unset($entities[$entity->id]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
+        }
+    }
+
+    /**
+     * @return void
+     */
     public function reloadEntitites() {
         $this->clear();
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
         $this->loadEntities();
     }
 
