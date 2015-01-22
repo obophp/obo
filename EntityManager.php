@@ -178,9 +178,7 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function findEntities(\obo\Carriers\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
 
-        if (!$specification instanceof \obo\Carriers\QueryCarrier) {
-           $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
-        }
+        $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
 
         if (!\is_null($filter)) {
            $specification->addSpecification($filter->getSpecification());
@@ -361,5 +359,5 @@ abstract class EntityManager  extends \obo\Object {
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDelete", $entity);
     }
-    
+
 }
