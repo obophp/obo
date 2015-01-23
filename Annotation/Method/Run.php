@@ -31,8 +31,8 @@ class Run extends \obo\Annotation\Base\Method {
      * @param array $values
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
         $this->eventsNames = $values;
     }
 

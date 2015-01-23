@@ -31,8 +31,8 @@ class DataType extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadDataTypeException
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
 
         switch ($values[0]) {
             case "boolean":

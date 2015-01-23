@@ -35,8 +35,8 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
      * @param array $values
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
 
         if (isset($values[0])) {
             if ($values[0] === false) {

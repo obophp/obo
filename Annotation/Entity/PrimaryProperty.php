@@ -35,8 +35,8 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
      * @param array $values
      * @return void
      */
-    public function proccess($values) {
-        parent::proccess($values);
+    public function process($values) {
+        parent::process($values);
         $this->entityInformation->primaryPropertyName = $this->primaryPropertyName = $values[0];
     }
 
