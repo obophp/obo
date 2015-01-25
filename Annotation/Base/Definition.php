@@ -132,5 +132,5 @@ abstract class Definition extends \obo\Object {
             }
         }
     }
-    
+
 }

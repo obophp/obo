@@ -130,5 +130,5 @@ class Many extends \obo\Annotation\Base\Property {
         )));
 
     }
-    
+
 }

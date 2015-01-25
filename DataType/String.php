@@ -41,5 +41,5 @@ class String extends \obo\DataType\Base\DataType {
             "actionArguments" => array("dataType" => $this),
         )));
     }
-    
+
 }

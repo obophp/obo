@@ -104,5 +104,5 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
             "actionArguments" => array("dataType" => $this),
         )));
     }
-    
+
 }

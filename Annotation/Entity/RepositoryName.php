@@ -48,5 +48,5 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
     public function registerEvents() {
 
     }
-    
+
 }
