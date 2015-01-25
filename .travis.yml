@@ -25,7 +25,7 @@ matrix:
 before_script:
     # Update Composer to current version
     - composer self-update
-    - composer create-project nette/code-checker code-checker ~2.2 --no-interaction --prefer-source
+    - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
 
 script:
     - php code-checker/src/code-checker.php
