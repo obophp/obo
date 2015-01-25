@@ -86,7 +86,7 @@ class Many extends \obo\Annotation\Base\Property {
             $relationship->sortVia = $this->sortVia = $values["sortVia"];
         }
 
-        $this->propertyInformation->dataType = new \obo\DataType\Object($this->propertyInformation, "\obo\Relationships\EntitiesCollection");
+        $this->propertyInformation->dataType = new \obo\DataType\Object($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
     }
 
     /**
