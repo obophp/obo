@@ -109,6 +109,28 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carr
     }
 
     /**
+     * @param \obo\Carriers\QueryCarrier $queryCarrier
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function addQueryCarrier(\obo\Carriers\QueryCarrier $queryCarrier) {
+        parent::addSpecification($queryCarrier);
+
+        $join = $queryCarrier->getJoin();
+        $this->join["query"] .= $join["query"];
+        $this->join["data"] = \array_merge($this->join["data"], $join["data"]);
+
+        return $this;
+    }
+
+    /**
+     * @param \obo\Carriers\IQuerySpecification $specification
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function addSpecification(\obo\Carriers\IQuerySpecification $specification) {
+        return $specification instanceof \obo\Carriers\QueryCarrier ? $this->addQueryCarrier($specification) : parent::addSpecification($specification);
+    }
+
+    /**
      * @return string
      * @throws \obo\Exceptions\Exception
      */

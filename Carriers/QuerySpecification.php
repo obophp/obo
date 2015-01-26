@@ -116,7 +116,6 @@ class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpec
     public function addSpecification(\obo\Carriers\IQuerySpecification $specification) {
 
         $where = $specification->getWhere();
-
         $this->where["query"] .= $where["query"];
         $this->where["data"] = \array_merge($this->where["data"], $where["data"]);
 
