@@ -18,7 +18,7 @@ abstract class Object {
     final public static function className() {
         return get_called_class();
     }
-    
+
     /**
      * @return Nette\Reflection\ClassType
      */

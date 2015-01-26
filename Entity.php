@@ -166,7 +166,7 @@ abstract class Entity  extends \obo\Object {
     public function clearPropertiesChanges() {
         $backTrace = \debug_backtrace(null, 2);
 
-        if (($backTrace[1]["class"] === "obo\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\Entity" AND $backTrace[1]["function"] === "discardUnsavedChanges")) {
+        if (($backTrace[1]["class"] === "obo\\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\\Entity" AND $backTrace[1]["function"] === "discardUnsavedChanges")) {
             $this->propertiesChanges = [];
         } else {
             throw new \obo\Exceptions\Exception("ClearPropertiesChanges method can be only called from the obo framework");
@@ -497,7 +497,7 @@ abstract class Entity  extends \obo\Object {
                     ) {
                         $relationshipInformation["entity"] = "**RECURSION**";
                     } else {
-                        if($propertyInformation->relationship->className() == "obo\Relationships\One") {
+                        if($propertyInformation->relationship->className() == "obo\\Relationships\\One") {
                             $relationshipInformation["entity"] = $propertyValue->dump($this);
                         } else {
                             $relationshipInformation["entitiesColection"] = $propertyValue->dump($this);

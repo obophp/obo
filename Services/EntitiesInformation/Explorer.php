@@ -25,8 +25,8 @@ class Explorer extends \obo\Object {
     private function propertiesClassNameForEntityWithClassName($className) {
         if (!\class_exists($propertiesClassName = $className . "Properties")) {
             foreach ($className::ancestorsClass() as $ancestorClass) {
-                if ($ancestorClass === "obo\Object") {
-                    $propertiesClassName = "\obo\EntityProperties";
+                if ($ancestorClass === "obo\\Object") {
+                    $propertiesClassName = "\\obo\\EntityProperties";
                     break;
                 } elseif (\class_exists($ancestorClass::entityInformation()->propertiesClassName)) {
                     $propertiesClassName = $ancestorClass::entityInformation()->propertiesClassName;
@@ -143,7 +143,7 @@ class Explorer extends \obo\Object {
         $classes = [$className];
 
         foreach (\class_parents($className) as $class) {
-            if ($class === "obo\Object") break;
+            if ($class === "obo\\Object") break;
             array_unshift($classes, $class);
         }
 
@@ -261,7 +261,7 @@ class Explorer extends \obo\Object {
         foreach ($propertiesObjectClassName::getReflection()->getMethods() as $method) {
             $methodName = $method->name;
 
-            if ($method->class === "obo\EntityProperties" OR $method->class === "obo\Object" OR $method->class === "Nette\Object") continue;
+            if ($method->class === "obo\\EntityProperties" OR $method->class === "obo\\Object" OR $method->class === "Nette\\Object") continue;
 
             if (!\preg_match("#^((get)|(set))[A-Z].+#", $methodName)) continue;
 
@@ -273,7 +273,7 @@ class Explorer extends \obo\Object {
         if (!\class_exists($propertiesObjectClassName)) throw new \obo\Exceptions\DefinitionException("Properties class for entity with name '{$entityInformation->className}' does not exist");
 
         foreach ($propertiesObjectClassName::getReflection()->getProperties() as $property) {
-            if ($property->class === "obo\EntityProperties" OR $property->class === "obo\Object" OR $property->class === "Nette\Object") continue;
+            if ($property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object" OR $property->class === "Nette\\Object") continue;
 
             $propertyInformation = $entityInformation->addPropertyInformation(array(
                     "name" => $property->name,

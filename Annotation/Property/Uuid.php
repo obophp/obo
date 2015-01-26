@@ -56,5 +56,5 @@ class Uuid extends \obo\Annotation\Base\Property {
             "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
         ]));
     }
-    
+
 }

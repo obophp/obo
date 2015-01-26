@@ -1,16 +1,31 @@
 language: php
 php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - hhvm
-  - hhvm-nightly
+    - 5.4
+    - 5.5
+    - 5.6
+    - hhvm
+    - hhvm-nightly
+
+env:
+    - PHP_BIN=php
+    - PHP_BIN=php-cgi
 
 matrix:
     allow_failures:
         - php: hhvm
         - php: hhvm-nightly
 
+    exclude:
+        - php: hhvm
+          env: PHP_BIN=php-cgi
+
+        - php: hhvm-nightly
+          env: PHP_BIN=php-cgi
+
 before_script:
     # Update Composer to current version
     - composer self-update
+    - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
+
+script:
+    - php code-checker/src/code-checker.php
