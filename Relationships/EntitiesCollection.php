@@ -130,12 +130,29 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         }
 
         if (!\is_null($this->relationShip->connectViaPropertyWithName)) {
+
             $entity->setValueForPropertyWithName($this->owner, $this->relationShip->connectViaPropertyWithName);
             if (!\is_null($this->relationShip->ownerNameInProperty)) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
 
             if ($createRelationshipInRepository) {
-                $entity->save();
+
+                if ($this->owner->isBasedInRepository()) {
+                    $entity->save();
+                } else {
+                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                        new \obo\Services\Events\Event(array(
+                            "onObject" => $this->owner,
+                            "name" => "afterInsert",
+                            "actionAnonymousFunction" => function () use ($entity) {
+                                $entity->save();
+                            },
+                            "actionArguments" => array(),
+                        ))
+                    );
+                }
+
             }
+
         }
 
         if (!$entityKey = $entity->primaryPropertyValue()) {
@@ -169,9 +186,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function addNew($data = array(), $notifyEvents = true) {
         $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
         $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
-        $newEntity = $entityManager::entity($data);
-        $newEntity->save();
-        return $this->add($newEntity, true, $notifyEvents);
+        return $this->add($entityManager::entity($data), true, $notifyEvents);
     }
 
     /**
