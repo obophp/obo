@@ -27,12 +27,15 @@ matrix:
           env: PHP_BIN=php-cgi
 
 before_script:
-    # Update Composer to current version
+    # update Composer to current version, install Nette Tester & Code Checker
     - composer self-update
+    - composer install --no-interaction --dev --prefer-source
     - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
 
 script:
     - php code-checker/src/code-checker.php
+    - vendor/bin/tester -p $PHP_BIN tests -s
 
 after_success:
     - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $PHP_BIN = 'php' ] && [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then bash generate-api.sh; fi
+

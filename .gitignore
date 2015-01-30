@@ -23,3 +23,6 @@ web.config
 
 vendor/
 code-checker/
+tests/temp/*
+!tests/temp/.placeholder
+composer.lock

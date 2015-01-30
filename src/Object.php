@@ -20,7 +20,7 @@ abstract class Object {
     }
 
     /**
-     * @return Nette\Reflection\ClassType
+     * @return \Nette\Reflection\ClassType
      */
     public static function getReflection() {
         return new \Nette\Reflection\ClassType(get_called_class());
