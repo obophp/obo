@@ -18,16 +18,16 @@ interface IEntitiesCollection {
     public function getEntitiesClassName();
 
     /**
-     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
+     * return only clone original specification other modifications will not affect the original specification
      * @return \obo\Carriers\QuerySpecification
      */
     public function getSpecification();
 
     /**
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return array
      */
-    public function find(\obo\Carriers\QuerySpecification $specification);
+    public function find(\obo\Interfaces\IQuerySpecification $specification);
 
     /**
      * @param \obo\Interfaces\IPaginator $paginator

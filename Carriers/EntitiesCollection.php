@@ -18,12 +18,12 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     protected $entitiesClassName = null;
 
     /**
-     * @var \obo\Carriers\QuerySpecification
+     * @var \obo\Interfaces\IQuerySpecification
      */
     protected $defaultSpecification = null;
 
     /**
-     * @var \obo\Carriers\QuerySpecification
+     * @var \obo\Interfaces\IQuerySpecification
      */
     protected $specification = null;
 
@@ -34,13 +34,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
     /**
      * @param string $entitiesClassName
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return void
      */
-    public function __construct($entitiesClassName, \obo\Carriers\QuerySpecification $specification) {
+    public function __construct($entitiesClassName, \obo\Interfaces\IQuerySpecification $specification) {
         parent::__construct();
         $this->entitiesClassName = $entitiesClassName;
-        $this->specification = $specification;
+        $this->specification = $this->defaultSpecification = $specification;
     }
 
     /**
@@ -68,16 +68,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
-     * @return \obo\Carriers\QuerySpecification
+     * return only clone original specification other modifications will not affect the original specification
+     * @return \obo\Interfaces\IQuerySpecification
      */
     public function getDefaultSpecification() {
         return clone $this->defaultSpecification;
     }
 
     /**
-     * return only clone \obo\Carriers\QuerySpecification other modifications will not affect the original specification
-     * @return \obo\Carriers\QuerySpecification
+     * return only clone original specification other modifications will not affect the original specification
+     * @return \obo\Interfaces\IQuerySpecification
      */
     public function getSpecification() {
         return clone $this->specification;
@@ -98,10 +98,10 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return void
      */
-    public function addSpecification(\obo\Carriers\QuerySpecification $specification) {
+    public function addSpecification(\obo\Interfaces\IQuerySpecification $specification) {
         $this->specification->addSpecification($specification);
         $this->clear();
     }
@@ -115,16 +115,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Entity[]
      */
-    public function find(\obo\Carriers\QuerySpecification $specification) {
-        $defaultSpecification = clone $this->specification;
-
+    public function find(\obo\Interfaces\IQuerySpecification $specification) {
         $entitiesClassName = $this->entitiesClassName;
         $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
-
-        return $entitiesManagerClassName::findEntities($defaultSpecification->addSpecification($specification));
+        return $entitiesManagerClassName::findEntities(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification())->addSpecification($specification));
     }
 
     /**
@@ -134,7 +131,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
 
-        $specification = new \obo\Carriers\QuerySpecification();
+        $specification = new \obo\Carriers\QueryCarrier();
 
         if (!\is_null($filter)) {
             $specification->addSpecification($filter->getSpecification());
@@ -147,16 +144,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return int
      */
-    public function countEntities (\obo\Carriers\QuerySpecification $specification = null) {
-        $defaultSpecification = clone $this->specification;
-
+    public function countEntities (\obo\Interfaces\IQuerySpecification $specification = null) {
         $ownedEntityClassName = $this->entitiesClassName;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-
-        return $ownedEntityManagerName::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($defaultSpecification->addSpecification($specification)));
+        return $ownedEntityManagerName::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()->addSpecification($specification)));
     }
 
     /**
@@ -165,8 +159,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function loadEntities() {
         $entitiesClassName = $this->entitiesClassName;
         $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
-
-        foreach ($entitiesManagerClassName::findEntities($this->specification) as $entity) $this->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
+        foreach ($entitiesManagerClassName::findEntities($this->getSpecification()) as $entity) $this->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
         $this->entitiesAreLoaded  = true;
     }
 

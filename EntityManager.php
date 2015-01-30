@@ -197,10 +197,10 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Carriers\QuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Carriers\EntitiesCollection
      */
-    public static function findEntitiesAsCollection(\obo\Carriers\QuerySpecification $specification) {
+    public static function findEntitiesAsCollection(\obo\Interfaces\IQuerySpecification $specification) {
         return new \obo\Carriers\EntitiesCollection(self::classNameManagedEntity(), $specification);
     }
 
