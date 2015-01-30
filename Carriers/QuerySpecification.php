@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpecification {
+class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySpecification {
 
     /**
      * @var array
@@ -111,9 +111,9 @@ class QuerySpecification extends \obo\Object implements \obo\Carriers\IQuerySpec
     }
 
     /**
-     * @param \obo\Carriers\IQuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      */
-    public function addSpecification(\obo\Carriers\IQuerySpecification $specification) {
+    public function addSpecification(\obo\Interfaces\IQuerySpecification $specification) {
 
         $where = $specification->getWhere();
         $this->where["query"] .= $where["query"];

@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carriers\IQuerySpecification {
+class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Interfaces\IQuerySpecification {
 
     /**
      * @var string
@@ -123,10 +123,10 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Carr
     }
 
     /**
-     * @param \obo\Carriers\IQuerySpecification $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Carriers\QueryCarrier
      */
-    public function addSpecification(\obo\Carriers\IQuerySpecification $specification) {
+    public function addSpecification(\obo\Interfaces\IQuerySpecification $specification) {
         return $specification instanceof \obo\Carriers\QueryCarrier ? $this->addQueryCarrier($specification) : parent::addSpecification($specification);
     }
 

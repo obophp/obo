@@ -158,7 +158,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
      */
-    public static function findEntity(\obo\Carriers\IQuerySpecification $specification, $requiredEntity = true) {
+    public static function findEntity(\obo\Interfaces\IQuerySpecification $specification, $requiredEntity = true) {
         if (!$specification instanceof \obo\Carriers\QueryCarrier) {
            $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
         }
@@ -171,12 +171,12 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Carriers\IQuerySpecification $specification
+     * @param \obo\Interfacon $specification
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity
      */
-    public static function findEntities(\obo\Carriers\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
+    public static function findEntities(\obo\Interfaces\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
 
         $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
 
