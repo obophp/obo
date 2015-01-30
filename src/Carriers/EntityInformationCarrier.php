@@ -53,7 +53,7 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     public $propertiesInformation = array();
 
     /**
-     * @var arry
+     * @var array
      */
     public $annotations = array();
 
