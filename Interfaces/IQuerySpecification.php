@@ -8,7 +8,7 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-namespace obo\Carriers;
+namespace obo\Interfaces;
 
 interface IQuerySpecification {
 
