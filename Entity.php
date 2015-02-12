@@ -243,6 +243,7 @@ abstract class Entity  extends \obo\Object {
 
         if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             $change = false;
+            $oldValue = $this->valueForPropertyWithName($propertyName);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => &$value)));
 
             if (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
@@ -263,8 +264,7 @@ abstract class Entity  extends \obo\Object {
             }
 
             if ($change) {
-                $oldValue = $this->valueForPropertyWithName($propertyName);
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => &$oldValue, "new" => &$value)));
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => $value)));
             }
         }
 
@@ -278,7 +278,7 @@ abstract class Entity  extends \obo\Object {
         if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => $value)));
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  array("propertyValue" => array("old" => &$oldValue, "new" => &$value)));
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  array("propertyValue" => array("old" => $oldValue, "new" => $value)));
                 if(isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
 
