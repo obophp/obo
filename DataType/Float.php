@@ -29,7 +29,7 @@ class Float extends \obo\DataType\Base\DataType {
     }
 
     /**
-     * @param mixed $arguments
+     * @param mixed $value
      * @return void
      */
     public function convertValue($value) {
