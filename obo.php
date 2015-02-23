@@ -1,10 +1,10 @@
 <?php
 
 /**
- * This file is part of framework Obo Development version (http://www.obophp.org/)
- * @link http://www.obophp.org/
- * @author Adam Suba, http://www.adamsuba.cz/
- * @copyright (c) 2011 - 2013 Adam Suba
+ * This file is part of the Obo framework for application domain logic.
+ * Obo framework is based on voluntary contributions from different developers.
+ *
+ * @link https://github.com/obophp/obo
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
@@ -14,7 +14,6 @@ class obo extends \obo\Object {
 
     const _NAME = "obo";
     const _VERSION = "development";
-    const _AUTHOR = "Adam Suba";
     const _LICENCE = "Apache License, Version 2.0";
     const _WWW = "http://www.obophp.org/";
 
