@@ -47,13 +47,22 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public static function queryCarrier() {
+        $queryCarrier = new \obo\Carriers\QueryCarrier();
+        $queryCarrier->setDefaultEntityClassName(self::classNameManagedEntity());
+        return $queryCarrier;
+    }
+
+    /**
      * @param \obo\Entity $entity
      * @return boolean
      */
     public static function isEntityBasedInRepository(\obo\Entity $entity) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
         if (!$entity->valueForPropertyWithName($primaryPropertyName)) return false;
-        return (bool) self::countRecords(\obo\Carriers\QueryCarrier::instance()->where("AND [{$primaryPropertyName}] = %s", $entity->$primaryPropertyName));
+        return (bool) self::countRecords(self::queryCarrier()->where("AND [{$primaryPropertyName}] = %s", $entity->$primaryPropertyName));
     }
 
     /**
@@ -159,13 +168,12 @@ abstract class EntityManager  extends \obo\Object {
      * @throws \obo\Exceptions\EntityNotFoundException
      */
     public static function findEntity(\obo\Interfaces\IQuerySpecification $specification, $requiredEntity = true) {
-        if (!$specification instanceof \obo\Carriers\QueryCarrier) {
-           $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
-        }
+        $specification = self::queryCarrier()->addSpecification($specification);
 
         $entity = self::findEntities($specification->limit(1));
 
         if (count($entity)) return $entity->current();
+
         if ($requiredEntity) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . self::dataStorage()->constructQuery($specification) . "'");
         return null;
     }
@@ -178,7 +186,7 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function findEntities(\obo\Interfaces\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
 
-        $specification = \obo\Carriers\QueryCarrier::instance()->addSpecification($specification);
+        $specification = self::queryCarrier()->addSpecification($specification);
 
         if (!\is_null($filter)) {
            $specification->addSpecification($filter->getSpecification());
@@ -251,7 +259,6 @@ abstract class EntityManager  extends \obo\Object {
      */
     protected static function rawDataForSpecification(\obo\Carriers\QueryCarrier $specification, \obo\Interfaces\IDataStorage $dataStorage = null) {
         $classNameManagedEntity = self::classNameManagedEntity();
-        $specification->setDefaultEntityClassName($classNameManagedEntity);
         $rawData = array();
 
         $dataStorage = $dataStorage ? : self::dataStorage();
@@ -271,7 +278,7 @@ abstract class EntityManager  extends \obo\Object {
     protected static function rawDataForEntity(\obo\Entity $entity, $ignoreSoftDelete = false) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
 
-        $specification = \obo\Carriers\QueryCarrier::instance();
+        $specification = self::queryCarrier();
 
         $specification->select("[".\implode("], [", $entity->entityInformation()->repositoryColumnsForPersistableProperties)."]")->where("{{$primaryPropertyName}} = %s", $entity->valueForPropertyWithName($primaryPropertyName));
 
@@ -289,11 +296,9 @@ abstract class EntityManager  extends \obo\Object {
      * @return int
      */
     public static function countRecords(\obo\Carriers\QueryCarrier $specification) {
-        $specification->setDefaultEntityClassName($classNameManagedEntity = self::classNameManagedEntity());
+        $specification = self::queryCarrier()->addSpecification($specification);
+        $classNameManagedEntity = self::classNameManagedEntity();
         $primaryPropertyName = $classNameManagedEntity::informationForPropertyWithName($classNameManagedEntity::entityInformation()->primaryPropertyName)->name;
-
-        $specification = clone $specification;
-
         $specification->rewriteOrderBy(null);
 
         if (!is_null($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete)) {
