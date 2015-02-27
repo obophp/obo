@@ -84,8 +84,14 @@ abstract class Entity  extends \obo\Object {
      * @return void
      */
     public function __wakeup() {
-        $this->entityInformation();
-        \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($this);
+        throw new \obo\Exceptions\Exception('Obo entity is not unserializable');
+    }
+
+    /**
+     * @return void
+     */
+    public function __sleep() {
+        throw new \obo\Exceptions\Exception('Obo entity is not serializable');
     }
 
     /**
