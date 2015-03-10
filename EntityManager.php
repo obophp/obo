@@ -174,7 +174,10 @@ abstract class EntityManager  extends \obo\Object {
 
         if (count($entity)) return $entity->current();
 
-        if ($requiredEntity) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . self::dataStorage()->constructQuery($specification) . "'");
+        if ($requiredEntity) {
+            $query = self::dataStorage()->constructQuery($specification);
+            throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . (\is_string($query) ? $query : \var_export($query, true)) . "'");
+        }
         return null;
     }
 
