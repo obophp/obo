@@ -12,6 +12,9 @@ namespace obo\Annotation\Property;
 
 class Uuid extends \obo\Annotation\Base\Property {
 
+
+    protected $registerUuidGenerator = null;
+
     /**
      * @return string
      */
@@ -23,7 +26,16 @@ class Uuid extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => 0);
+        return array("numberOfParameters" => "?");
+    }
+
+    /**
+     * @param array $values
+     * @return void
+     */
+    public function process($values) {
+        parent::process($values);
+        $this->registerUuidGenerator = $values[0];
     }
 
     /**
@@ -47,6 +59,9 @@ class Uuid extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
+
+        if (!$this->registerUuidGenerator) return;
+
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeInsert",
