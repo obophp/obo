@@ -30,8 +30,18 @@ abstract class DataType extends \obo\Object {
     public abstract function name();
 
     /**
+     * @param mixed $value
+     * @return void|\obo\Exceptions\Exception
+     */
+    public function validate($value) {
+
+    }
+
+    /**
      * @return void
      */
-    public abstract function registerEvents();
+    public function registerEvents() {
+
+    }
 
 }

@@ -25,15 +25,17 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @return void
      */
     public function validate($value) {
-        if (!\is_null($value) && !$value instanceof \DateTime) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be instance of \\DateTime, " . \gettype($value) . " given");
+        parent::validate($value);
+        if (!\is_null($value) && !$value instanceof \DateTime) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of \\DateTime data type. Given value couldn't be converted.");
     }
 
     /**
-     * @param mixed $arguments
-     * @return void
+     * @param mixed $value
+     * @return \DateTime
      */
-    public function convertValue($arguments) {
-        if (!$arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) instanceof \DateTime  && !\is_null($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name))) $arguments["entity"]->setValueForPropertyWithName(new \DateTime($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
+    public function convertValue($value) {
+        if (!$value instanceof \DateTime && !\is_null($value)) return new \DateTime($value);
+        return $value;
     }
 
     /**
@@ -42,18 +44,10 @@ class DateTime extends \obo\DataType\Base\DataType {
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
+            "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "afterInitialize",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->convertValue($arguments);
+                $arguments["propertyValue"]["new"] = $arguments["dataType"]->convertValue($arguments["propertyValue"]["new"]);
             },
             "actionArguments" => array("dataType" => $this),
         )));

@@ -50,8 +50,20 @@ class DataType extends \obo\Annotation\Base\Property {
             case "array":
                     $dataType = $this->createDataTypeArray();
                 break;
+            case "smallint":
+                    $dataType = $this->createDataTypeSmallInt();
+                break;
+            case "integer":
+                    $dataType = $this->createDataTypeInteger();
+                break;
+            case "bigint":
+                    $dataType = $this->createDataTypeBigInt();
+                break;
+            case "float":
+                    $dataType = $this->createDataTypeFloat();
+                break;
             default :
-                throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime and array");
+                throw new \obo\Exceptions\BadDataTypeException("Data type '{$values[0]}' is not allowed.");
         }
 
         $this->propertyInformation->dataType = $dataType ;
@@ -65,7 +77,36 @@ class DataType extends \obo\Annotation\Base\Property {
     }
 
     /**
-     * @return \obo\DataType\Number
+     * @return \obo\DataType\SmallInt
+     */
+    protected function createDataTypeSmallInt(){
+        return new \obo\DataType\SmallInt($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Integer
+     */
+    protected function createDataTypeInteger(){
+        return new \obo\DataType\Integer($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\BigInt
+     */
+    protected function createDataTypeBigInt(){
+        return new \obo\DataType\BigInt($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Float
+     */
+    protected function createDataTypeFloat(){
+        return new \obo\DataType\Float($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Number\
+     * @deprecated
      */
     protected function createDataTypeNumber(){
         return new \obo\DataType\Number($this->propertyInformation);

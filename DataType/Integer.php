@@ -10,24 +10,13 @@
 
 namespace obo\DataType;
 
-class Object extends \obo\DataType\Base\DataType {
-
-    public $className = null;
-
-    /**
-     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
-     * @param string $className
-     */
-    function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, $className = null) {
-        parent::__construct($propertyInformation);
-        $this->className = $className;
-    }
+class Integer extends \obo\DataType\Base\DataType {
 
     /**
      * @return string
      */
     public function name() {
-        return "object";
+        return "integer";
     }
 
     /**
@@ -37,8 +26,15 @@ class Object extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         parent::validate($value);
-        if ((\is_null($this->className) AND !\is_object($value)) OR (!$value instanceof $this->className))
-            throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be object". ((\is_null($this->className)) ? "" : " of class with name '{$this->className}'")  .", " . \gettype($value) . (\is_object($value) ? " of class with name '" . \get_class ($value) . "'" : "") ." given");
+        if (!\is_numeric($value) && !\is_int($value * 1) && $value !== "") throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of integer data type. Given value couldn't be converted.");
+    }
+
+    /**
+     * @param mixed $value
+     * @return integer
+     */
+    public function convertValue($value) {
+        return (int) $value;
     }
 
     /**
@@ -50,9 +46,9 @@ class Object extends \obo\DataType\Base\DataType {
             "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
+                $arguments["propertyValue"]["new"] = $arguments["dataType"]->convertValue($arguments["propertyValue"]["new"]);
             },
             "actionArguments" => array("dataType" => $this),
         )));
     }
-
 }
