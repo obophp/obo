@@ -23,7 +23,6 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
-     * @return void
      */
     public function __construct(\obo\Carriers\EntityInformationCarrier $entityInformation) {
         $this->entityInformation = $entityInformation;
@@ -92,20 +91,16 @@ abstract class Definition extends \obo\Object {
 
         switch (true) {
             case $parametersDefinition["numberOfParameters"] == "?" :
-                    if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects zero or one parameter, you send more parameters");
-                break;
-
-            case $parametersDefinition["numberOfParameters"] == 0 :
-                    if (count($annotationValue)) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' does not accept any parameters, you sent " . count($annotationValue) . " parameters");
-                break;
+                if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects zero or one parameter, you send more parameters");
+            break;
 
             case $parametersDefinition["numberOfParameters"] == -1 :
-                    if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects one or more parameters, you did not send any parameters");
-                break;
+                if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects one or more parameters, you did not send any parameters");
+            break;
 
             case $parametersDefinition["numberOfParameters"] > 0 :
-                    if (count($annotationValue) != $parametersDefinition["numberOfParameters"]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects {$parametersDefinition["numberOfParameters"]} parameters, you sent " . count($annotationValue));
-                break;
+                if (count($annotationValue) != $parametersDefinition["numberOfParameters"]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects {$parametersDefinition["numberOfParameters"]} parameters, you sent " . count($annotationValue));
+            break;
 
             default:
                 throw new \obo\Exceptions\BadAnnotationException("Bad numberOfParameters definition");

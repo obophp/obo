@@ -38,7 +38,7 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
     public function process($values) {
         parent::process($values);
 
-        if (isset($values[0])) {
+        if (isset($values[0]) && $values[0] !== true) {
             if ($values[0] === false) {
                  $value = null;
             } else {
