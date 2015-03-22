@@ -1,4 +1,5 @@
 language: php
+
 php:
     - 5.4
     - 5.5
@@ -7,8 +8,11 @@ php:
     - hhvm-nightly
 
 env:
-    - PHP_BIN=php
-    - PHP_BIN=php-cgi
+    global:
+        secure: A2MqbdfarhYnXh9EqiMyWIE/iFDf8Rb9H5LksNFNUJ4GXVy2dUXlYp1nrO81zMNDFyWa4gV+ZrQ5yBe7Jeb9XdoU82HcALt+QejhX2cit7LOUi/346I8gTKLg11wzXsZJ5dmn+47kQ6ibv2MGVhfmPxhasMlmaoq2ZiEZbWUL/8=
+    matrix:
+        - PHP_BIN=php
+        - PHP_BIN=php-cgi
 
 matrix:
     allow_failures:
@@ -29,3 +33,6 @@ before_script:
 
 script:
     - php code-checker/src/code-checker.php
+
+after_success:
+    - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then bash generate-api.sh; fi
