@@ -35,4 +35,4 @@ script:
     - php code-checker/src/code-checker.php
 
 after_success:
-    - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then bash generate-api.sh; fi
+    - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $PHP_BIN = 'php' ] && [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then bash generate-api.sh; fi
