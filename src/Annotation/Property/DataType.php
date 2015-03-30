@@ -36,22 +36,31 @@ class DataType extends \obo\Annotation\Base\Property {
 
         switch ($values[0]) {
             case "boolean":
-                    $dataType = $this->createDataTypeBoolean();
+                $dataType = $this->createDataTypeBoolean();
                 break;
             case "number":
-                    $dataType = $this->createDataTypeNumber();
+                $dataType = $this->createDataTypeNumber();
                 break;
             case "string":
-                    $dataType = $this->createDataTypeString();
+                $dataType = $this->createDataTypeString();
                 break;
             case "dateTime":
-                    $dataType = $this->createDataTypeDateTime();
+                $dataType = $this->createDataTypeDateTime();
                 break;
             case "array":
-                    $dataType = $this->createDataTypeArray();
+                $dataType = $this->createDataTypeArray();
+                break;
+            case "integer":
+                $dataType = $this->createDataTypeInteger();
+                break;
+            case "float":
+                $dataType = $this->createDataTypeFloat();
+                break;
+            case "object":
+                $dataType = $this->createDataTypeObject();
                 break;
             default :
-                throw new \obo\Exceptions\BadDataTypeException("'{$values[0]}' is not allowed, permitted data types are boolean, number, string, dateTime and array");
+                throw new \obo\Exceptions\BadDataTypeException("Data type '{$values[0]}' is not allowed.");
         }
 
         $this->propertyInformation->dataType = $dataType ;
@@ -62,6 +71,20 @@ class DataType extends \obo\Annotation\Base\Property {
      */
     protected function createDataTypeBoolean(){
         return new \obo\DataType\Boolean($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Integer
+     */
+    protected function createDataTypeInteger(){
+        return new \obo\DataType\Integer($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Float
+     */
+    protected function createDataTypeFloat(){
+        return new \obo\DataType\Float($this->propertyInformation);
     }
 
     /**
@@ -90,6 +113,13 @@ class DataType extends \obo\Annotation\Base\Property {
      */
     protected function createDataTypeArray(){
         return new \obo\DataType\ArrayDataType($this->propertyInformation);
+    }
+
+    /**
+     * @return \obo\DataType\Object
+     */
+    protected function createDataTypeObject(){
+        return new \obo\DataType\Object($this->propertyInformation);
     }
 
 }

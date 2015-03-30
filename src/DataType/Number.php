@@ -25,7 +25,8 @@ class Number extends \obo\DataType\Base\DataType {
      * @return void
      */
     public function validate($value) {
-        if (!\is_numeric($value)) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be number, " . \gettype($value) . " given");
+        parent::validate($value);
+        if (!\is_numeric($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be numeric");
     }
 
     /**
