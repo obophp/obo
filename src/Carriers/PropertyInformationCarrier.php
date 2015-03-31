@@ -58,6 +58,16 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
     public $columnName = null;
 
     /**
+     * @var boolean
+     */
+    public $autoIncrement = null;
+
+    /**
+     * @var boolean
+     */
+    public $nullable = null;
+
+    /**
      * @var \obo\Relationships\Relationship
      */
     public $relationship = null;

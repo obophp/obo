@@ -25,7 +25,16 @@ class String extends \obo\DataType\Base\DataType {
      * @return void
      */
     public function validate($value) {
-        if (!\is_string($value)) throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be string, " . \gettype($value) . " given");
+        parent::validate($value);
+        if (!\is_scalar($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of string data type. Given value couldn't be converted.");
+    }
+
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    public function convertValue($value) {
+        return (string) $value;
     }
 
     /**
@@ -34,9 +43,10 @@ class String extends \obo\DataType\Base\DataType {
     public function registerEvents() {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
             "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
+            "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
+                $arguments["propertyValue"]["new"] = $arguments["dataType"]->convertValue($arguments["propertyValue"]["new"]);
             },
             "actionArguments" => array("dataType" => $this),
         )));
