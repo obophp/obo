@@ -26,10 +26,11 @@ class Boolean extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         parent::validate($value);
-        if ($value !== false
+        if (!\is_null($value)
+           && ($value !== false
            && $value !== "false"
            && $value !== true
-           && $value !== "true"
+           && $value !== "true")
         ) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of boolean data type. Given value couldn't be converted.");
     }
 

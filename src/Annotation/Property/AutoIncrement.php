@@ -39,7 +39,7 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
      */
     public function process($values) {
         parent::process($values);
-        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'nullable' annotation must be of boolean type");
+        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'autoIncrement' annotation must be of boolean type");
         $this->propertyInformation->autoIncrement = $values[0];
     }
 

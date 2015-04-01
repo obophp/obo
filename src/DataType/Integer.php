@@ -26,7 +26,7 @@ class Integer extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         parent::validate($value);
-        if (!\is_numeric($value) || !\is_int($value * 1)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of integer data type. Given value couldn't be converted.");
+        if (!\is_null($value) && ((!\is_numeric($value) || !\is_int($value * 1)))) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of integer data type. Given value couldn't be converted.");
     }
 
     /**

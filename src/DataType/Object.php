@@ -37,7 +37,7 @@ class Object extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         parent::validate($value);
-        if ((\is_null($this->className) && \is_object($value)) || (\is_object($value) && !\is_null($value) && $value instanceof $this->className)) return;
+        if (\is_null($value) || ((\is_null($this->className) && \is_object($value)) || (\is_object($value) && !\is_null($value) && $value instanceof $this->className))) return;
         else throw new \obo\Exceptions\BadDataTypeException("New value for property with name '{$this->propertyInformation->name}' must be object". ((\is_null($this->className)) ? "" : " of class with name '{$this->className}'")  .", " . \gettype($value) . (\is_object($value) ? " of class with name '" . \get_class ($value) . "'" : "") ." given");
     }
 

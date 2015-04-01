@@ -26,7 +26,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
      */
     public function validate($value) {
         parent::validate($value);
-        if (!\is_array($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of array data type.'");
+        if (!\is_null($value) && !\is_array($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of array data type.'");
     }
 
     /**
