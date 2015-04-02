@@ -72,7 +72,7 @@ class Many extends \obo\Relationships\Relationship {
     public function constructSpecification(\obo\Carriers\QueryCarrier $specification = null) {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
-        $ownerPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
+        $ownedPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
 
         $query = \is_null($specification) ? \obo\Carriers\QueryCarrier::instance() : $specification;
 
@@ -80,8 +80,8 @@ class Many extends \obo\Relationships\Relationship {
             $query->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->$ownerPrimaryPropertyName);
             if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
         } elseif (!\is_null($this->connectViaRepositoryWithName)){
-            if(!\is_null($ownerPropertyNameForSoftDelete)) {
-                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownerPropertyNameForSoftDelete)->columnName}] = %b";
+            if(!\is_null($ownedPropertyNameForSoftDelete)) {
+                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownedPropertyNameForSoftDelete)->columnName}] = %b";
                 $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName, FALSE);
             } else {
                 $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::entityInformation()->primaryPropertyName}]", $this->owner->$ownerPrimaryPropertyName);
