@@ -29,7 +29,7 @@ class Services extends \obo\Object {
      * @return void
      */
     public static function registerServiceWithName($service, $serviceName, $forced = false) {
-        if ($forced === true AND isset(self::$services[$serviceName])) throw new \obo\Exceptions\ServicesException("Service with name '{$serviceName}' is also registered");
+        if (!$forced AND isset(self::$services[$serviceName])) throw new \obo\Exceptions\ServicesException("Service with name '{$serviceName}' is also registered");
         self::$services[$serviceName] = $service;
     }
 
@@ -40,7 +40,7 @@ class Services extends \obo\Object {
      * @return void
      */
     public static function registerFactoryForServiceWithName($factory, $serviceName, $forced = false) {
-        if ($forced === true AND isset(self::$factories[$serviceName])) throw new \obo\Exceptions\ServicesException("Factory for service with name '{$serviceName}' is also registered");
+        if (!$forced AND isset(self::$factories[$serviceName])) throw new \obo\Exceptions\ServicesException("Factory for service with name '{$serviceName}' is also registered");
         self::$factories[$serviceName] = $factory;
     }
 
