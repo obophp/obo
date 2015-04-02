@@ -193,13 +193,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
     /**
      * @param \obo\Entity $entity
-     * @param bool $removeEntity
+     * @param bool $deleteEntity
      * @param bool $notifyEvents
      * @throws \obo\Exceptions\EntityNotFoundException
      * @throws \obo\Exceptions\ServicesException
      * @return void
      */
-    public function remove(\obo\Entity $entity, $removeEntity = false, $notifyEvents = true) {
+    public function remove(\obo\Entity $entity, $deleteEntity = false, $notifyEvents = true) {
 
         if ($notifyEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
@@ -218,7 +218,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             $this->unsetValueForVaraibleWithName($key);
         }
 
-        $this->removeRelationshipFromRepositoryForEntity($entity);
+        if (!$deleteEntity) $this->removeRelationshipFromRepositoryForEntity($entity);
 
         if ($notifyEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
@@ -226,7 +226,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
         }
 
-        if ($removeEntity) $entity->delete();
+        if ($deleteEntity) $entity->delete();
     }
 
     /**
