@@ -23,6 +23,11 @@ class One extends \obo\Annotation\Base\Property {
     protected $targetEntityInProperty = false;
 
     /**
+     * @var string
+     */
+    protected $connectViaProperty = null;
+
+    /**
      * @var array
      */
     protected $cascadeOptions = array();
@@ -43,7 +48,7 @@ class One extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("parameters" => array("targetEntity" => true, "cascade" => false, "autoCreate" => false));
+        return array("parameters" => array("targetEntity" => true, "connectViaProperty" => false, "cascade" => false, "autoCreate" => false));
     }
 
     /**
@@ -67,6 +72,10 @@ class One extends \obo\Annotation\Base\Property {
         if (isset($values["autoCreate"])) {
             if (!\is_bool($values["autoCreate"])) throw new \obo\Exceptions\BadAnnotationException("Parameter 'autoCreate' for relationship 'one' must be boolean");
             $this->autoCreate = $values["autoCreate"];
+        }
+
+        if (isset($values["connectViaProperty"])) {
+           $this->connectViaProperty = $values["connectViaProperty"];
         }
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name);
@@ -112,7 +121,13 @@ class One extends \obo\Annotation\Base\Property {
                 $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
                 if (!\is_object($currentPropertyValue)) {
-                    $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
+
+                    if (\is_null($this->connectViaProperty)) {
+                        $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
+                    } else {
+                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignProperty($arguments["entity"], $this->connectViaProperty);
+                    }
+
                     if (!\is_null($entityToBeConnected)) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, array("owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName));
                     $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"]);
                     if (!\is_null($entityToBeConnected)) {
