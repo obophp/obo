@@ -26,10 +26,11 @@ class Services extends \obo\Object {
      * @param mixed $service
      * @param string $serviceName
      * @param boolean $forced
+     * @throws \obo\Exceptions\ServicesException
      * @return void
      */
     public static function registerServiceWithName($service, $serviceName, $forced = false) {
-        if (!$forced AND isset(self::$services[$serviceName])) throw new \obo\Exceptions\ServicesException("Service with name '{$serviceName}' is also registered");
+        if (!$forced AND isset(self::$services[$serviceName])) throw new \obo\Exceptions\ServicesException("Service with name '{$serviceName}' is already registered");
         self::$services[$serviceName] = $service;
     }
 
@@ -37,15 +38,17 @@ class Services extends \obo\Object {
      * @param function $factory
      * @param string $serviceName
      * @param boolean $forced
+     * @throws \obo\Exceptions\ServicesException
      * @return void
      */
     public static function registerFactoryForServiceWithName($factory, $serviceName, $forced = false) {
-        if (!$forced AND isset(self::$factories[$serviceName])) throw new \obo\Exceptions\ServicesException("Factory for service with name '{$serviceName}' is also registered");
+        if (!$forced AND isset(self::$factories[$serviceName])) throw new \obo\Exceptions\ServicesException("Factory for service with name '{$serviceName}' is already registered");
         self::$factories[$serviceName] = $factory;
     }
 
     /**
      * @param string $serviceName
+     * @throws \obo\Exceptions\ServicesException
      * @return mixed
      */
     public static function serviceWithName($serviceName) {
