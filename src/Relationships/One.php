@@ -59,4 +59,24 @@ class One extends \obo\Relationships\Relationship {
         }
     }
 
+
+    /**
+     * @param \obo\Entity $owner
+     * @param strong $foreignPropertyName
+     * @return \obo\Entity|null
+     */
+    public function entityForOwnerForeignProperty(\obo\Entity $owner, $foreignPropertyName) {
+        if (\is_null($owner->primaryPropertyValue())) return null;
+        $this->owner = $owner;
+
+        if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {
+            $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
+        } else {
+            if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
+        }
+
+        $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
+
+        return $entityManagerName::findEntity($entityManagerName::querySpecification()->where("{{$foreignPropertyName}} = %s", $owner->primaryPropertyValue()), false);
+    }
 }
