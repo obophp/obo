@@ -25,15 +25,4 @@ abstract class Object {
     public static function getReflection() {
         return new \Nette\Reflection\ClassType(get_called_class());
     }
-
-    /**
-     * @param string $message
-     * @return boolean
-     */
-    final public static function respondToMessage($message) {
-        if (self::getReflection()->hasMethod($message)) return true;
-        if (self::getReflection()->getExtensionMethod($message)) return true;
-        return false;
-    }
-
 }

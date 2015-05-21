@@ -58,6 +58,14 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
+     * @param mixed $values
+     * @return void
+     */
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
+
+    }
+
+    /**
      * @return void
      */
     public function registerEvents() {

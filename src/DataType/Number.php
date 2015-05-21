@@ -21,26 +21,21 @@ class Number extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @param boolean $throwException
+     * @return boolean
      * @throws \obo\Exceptions\BadDataTypeException
-     * @return void
      */
-    public function validate($value) {
-        parent::validate($value);
-        if (!\is_null($value) && !\is_numeric($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be numeric");
+    public function validate($value, $throwException = true) {
+        if (\is_numeric($value) OR \is_null($value)) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'numeric' datatype.");
+        return false;
     }
 
     /**
-     * @return void
+     * @param mixed $value
+     * @return mixed
      */
-    public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
+    public static function convertValue($value) {
+        throw new \obo\Exceptions\Exception("Datatype 'Number' can't convert any value.");
     }
-
 }

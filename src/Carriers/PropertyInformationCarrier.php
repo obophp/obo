@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
+class PropertyInformationCarrier extends \obo\Object {
 
     /**
      * @var \obo\Carriers\EntityInformationCarrier
@@ -18,24 +18,39 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
     public $entityInformation = null;
 
     /**
+     * @var \obo\Annotation\Base\Definition[]
+     */
+    public $annotations = array();
+
+    /**
+     * @var \obo\Relationships\Relationship
+     */
+    public $relationship = null;
+
+    /**
      * @var string
      */
-    public $name = "";
+    public $name = null;
+
+    /**
+     * @var string
+     */
+    public $varName = null;
+
+    /**
+     * @var mixed
+     */
+    public $defaultValue = null;
+
+    /**
+     * @var string
+     */
+    public $access = "public";
 
     /**
      * @var \obo\DataType\Base\DataType
      */
     public $dataType = null;
-
-    /**
-     * @var boolean
-     */
-    public $directAccessToRead = true;
-
-    /**
-     * @var boolean
-     */
-    public $directAccessToWrite = true;
 
     /**
      * @var string
@@ -50,12 +65,12 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
     /**
      * @var string
      */
-    public $access = "public";
+    public $columnName = null;
 
     /**
-     * @var string
+     * @var boolean
      */
-    public $columnName = null;
+    public $persistable = null;
 
     /**
      * @var boolean
@@ -66,15 +81,4 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
      * @var boolean
      */
     public $nullable = null;
-
-    /**
-     * @var \obo\Relationships\Relationship
-     */
-    public $relationship = null;
-
-    /**
-     * @var \obo\Annotation\Base\Definition[]
-     */
-    public $annotations = array();
-
 }

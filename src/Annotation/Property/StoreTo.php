@@ -38,6 +38,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
     public function process($values) {
         parent::process($values);
         $this->propertyToStore = $values[0];
+        $this->propertyInformation->persistable = false;
     }
 
     /**
@@ -103,5 +104,4 @@ class StoreTo extends \obo\Annotation\Base\Property {
             "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
         )));
     }
-
 }

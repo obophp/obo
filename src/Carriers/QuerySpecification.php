@@ -169,5 +169,4 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
     public static function instance() {
         return new static;
     }
-
 }

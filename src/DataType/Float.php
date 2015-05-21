@@ -21,34 +21,30 @@ class Float extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @param boolean $throwException
+     * @return boolean
      * @throws \obo\Exceptions\BadDataTypeException
-     * @return void
      */
-    public function validate($value) {
-        parent::validate($value);
-        if (!\is_null($value) && (!\is_numeric($value) || !\is_float($value * 1))) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of float data type. Given value couldn't be converted.");
+    public function validate($value, $throwException = true) {
+        if (\is_float($value) OR \is_null($value)) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'float' datatype.");
+        return false;
     }
 
     /**
      * @param mixed $value
      * @return float
      */
-    public function convertValue($value) {
-        return (float) $value;
+    public static function convertValue($value) {
+        return (\is_null($value) OR $value === "") ? null : (float) $value;
     }
 
     /**
-     * @return void
+     * @param mixed $value
+     * @return float
      */
-    public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-                $arguments["propertyValue"]["new"] = $arguments["dataType"]->convertValue($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
+    public static function sanitizeValue($value) {
+        if ((\is_numeric($value) AND \is_float($value + 0.0)) OR \is_null($value) OR $value === "") return self::convertValue($value);
+        return $value;
     }
 }

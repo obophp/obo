@@ -10,12 +10,22 @@
 
 namespace obo\Carriers;
 
-class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
+class EntityInformationCarrier extends \obo\Object {
 
     /**
      * @var string
      */
     public $className = "";
+
+    /**
+     * @var boolean
+     */
+    public $isAbstract = null;
+
+    /**
+     * @var string
+     */
+    public $file = "";
 
     /**
      * @var string
@@ -28,59 +38,61 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
     public $propertiesClassName = "";
 
     /**
+     * @var boolean
+     */
+    public $isPropertiesAbstract = null;
+
+    /**
+     * @var string
+     */
+    public $propertiesFile = "";
+
+    /**
      * @var string
      */
     public $repositoryName = "";
 
     /**
-     * @var array
-     */
-    public $repositoryColumns = array();
-
-    /**
-     * @var array
-     */
-    public $repositoryColumnsForPersistableProperties = array();
-
-    /**
      * @var string
      */
-    public $primaryPropertyName = "id";
+    public $primaryPropertyName = null;
 
     /**
      * @var array
      */
-    public $propertiesInformation = array();
+    public $propertiesInformation = [];
+
+    /**
+     * @var arry
+     */
+    public $annotations = [];
 
     /**
      * @var array
      */
-    public $annotations = array();
+    public $propertiesNames = [];
 
     /**
      * @var array
      */
-    public $propertiesNames = array();
+    public $persistablePropertiesNames = [];
 
     /**
      * @var string
      */
     public $propertyNameForSoftDelete = null;
 
-    /**
-     * @var array
-     */
-    private $inversePropertiesInformationList = array();
 
-    /**
-     * @param array $information
-     * @return \obo\Carriers\PropertyInformationCarrier
-     */
-    public function addPropertyInformation(array $information) {
-        $propertyInformation = new \obo\Carriers\PropertyInformationCarrier($information);
-        $this->propertiesInformation[$propertyInformation->name] = $propertyInformation;
+    public function addPropertyInformation(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
         $propertyInformation->entityInformation = $this;
-        return $propertyInformation;
+        $this->propertiesInformation[$propertyInformation->name] = $propertyInformation;
+
+        $this->propertiesNames[$propertyInformation->name] = $propertyInformation->name;
+        if ($propertyInformation->persistable === true) $this->persistablePropertiesNames[$propertyInformation->name] = $propertyInformation->name;
+    }
+
+    public function existInformationForPropertyWithName($propertyName) {
+        return isset($this->propertiesInformation[$propertyName]);
     }
 
     /**
@@ -92,98 +104,4 @@ class EntityInformationCarrier extends \obo\Carriers\DataCarrier {
         if (!$this->existInformationForPropertyWithName($propertyName)) throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' does not exist in entity '{$this->className}'");
         return $this->propertiesInformation[$propertyName];
     }
-
-    /**
-     * @param string $columnName
-     * @return \obo\Carriers\PropertyInformationCarrier
-     * @throws \obo\Exceptions\PropertyNotFoundException
-     */
-    public function informationForPropertyThatIsMappedToColumnWithName($columnName) {
-        if (!$this->existInformationForPropertyThatIsMappedToColumnWithName($columnName)) throw new \obo\Exceptions\PropertyNotFoundException("Property that is mapped to column with name '{$columnName}' does not exist in entity '{$this->className}'");
-        return $this->inversePropertiesInformationList[$columnName];
-    }
-
-    /**
-     * @param string $propertyName
-     * @return boolean
-     */
-    public function existInformationForPropertyWithName($propertyName) {
-        return isset($this->propertiesInformation[$propertyName]);
-    }
-
-    /**
-     * @param string $columnName
-     * @return boolean
-     */
-    public function existInformationForPropertyThatIsMappedToColumnWithName($columnName) {
-        return isset($this->inversePropertiesInformationList[$columnName]);
-    }
-
-    /**
-     * @return void
-     */
-    public function processInformation() {
-        foreach($this->propertiesInformation as $propertyInformation) {
-
-            $this->propertiesNames[] = $propertyInformation->name;
-
-            if (\is_null($propertyInformation->columnName) AND isset($this->repositoryColumns[$propertyInformation->name])) {
-                $propertyInformation->columnName = $propertyInformation->name;
-            }
-
-            $this->inversePropertiesInformationList[$propertyInformation->columnName] = $propertyInformation;
-        }
-
-        $this->repositoryColumnsForPersistableProperties = $this->propertiesNamesToColumnsNames($this->propertiesNames, false, true);
-    }
-
-    /**
-     * @param array $propertiesNames
-     * @param boolean $convertKeys
-     * @return array
-     */
-    public function propertiesNamesToColumnsNames($propertiesNames, $convertKeys = true, $ignoreNonPersistProperties = false) {
-        $columnsNames = array();
-        if ($convertKeys) {
-            $convert = array();
-            foreach ($propertiesNames as $propertyName => $propertyValue) {
-                $convert[$this->informationForPropertyWithName($propertyName)->columnName] = $propertyValue;
-            }
-            return $convert;
-        }
-
-        foreach($propertiesNames as $key => $propertyName) {
-            if ($ignoreNonPersistProperties AND \is_null($this->informationForPropertyWithName($propertyName)->columnName)) continue;
-            $columnsNames[$key] = $this->informationForPropertyWithName($propertyName)->columnName;
-        }
-
-        return $columnsNames;
-    }
-
-    /**
-     * @param array $columnsNames
-     * @param boolean $convertKeys
-     * @return array
-     */
-    public function columnsNamesToPropertiesNames($columnsNames, $convertKeys = true) {
-        $propertiesNames = array();
-
-        if ($convertKeys) {
-            $convert = array();
-            foreach ($columnsNames as $columnName => $columnValue) {
-                if (!$this->existInformationForPropertyThatIsMappedToColumnWithName($columnName)) continue;
-                $convert[$this->informationForPropertyThatIsMappedToColumnWithName($columnName)->name] = $columnValue;
-            }
-
-            return $convert;
-        }
-
-        foreach ($columnsNames as $key => $column) {
-            if (!$this->existInformationForPropertyThatIsMappedToColumnWithName($column)) continue;
-            $propertiesNames[$key] = $this->informationForPropertyThatIsMappedToColumnWithName($column)->name;
-        }
-
-        return $propertiesNames;
-    }
-
 }

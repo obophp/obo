@@ -10,29 +10,28 @@
 
 namespace obo\Annotation\Property;
 
-class Nullable extends \obo\Annotation\Base\Property {
+class Persistable extends \obo\Annotation\Base\Property {
 
     /**
      * @return string
      */
     public static function name() {
-        return "nullable";
+        return "persistable";
     }
 
     /**
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => "?");
+        return array("numberOfParameters" => 1);
     }
 
     /**
      * @param array $values
-     * @throws \obo\Exceptions\BadAnnotationException
+     * @return void
      */
     public function process($values) {
         parent::process($values);
-        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'nullable' annotation must be of boolean type");
-        $this->propertyInformation->nullable = $values[0];
+        $this->propertyInformation->persistable = $values[0] ;
     }
 }

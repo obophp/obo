@@ -18,6 +18,11 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
     protected $defaultEntityClassName = null;
 
     /**
+     * @var \obo\Carriers\EntityInformationCarrier
+     */
+    protected $defaultEntityEntityInformation = null;
+
+    /**
      * @var array
      */
     protected $select = array("query" => "", "data" => array());
@@ -44,7 +49,15 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @return string
      */
     public function setDefaultEntityClassName($defaultEntityClassName) {
-        return $this->defaultEntityClassName = $defaultEntityClassName;
+        $this->defaultEntityClassName = $defaultEntityClassName;
+        $this->defaultEntityEntityInformation = $defaultEntityClassName::entityInformation();
+    }
+
+    /**
+     * @return \obo\Carriers\EntityInformationCarrier
+     */
+    public function getDefaultEntityEntityInformation() {
+        return $this->defaultEntityEntityInformation;
     }
 
     /**

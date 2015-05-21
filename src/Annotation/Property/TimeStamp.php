@@ -37,7 +37,7 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      */
     public function process($values) {
         parent::process($values);
-        $this->propertyInformation->dataType = new \obo\DataType\DateTime($this->propertyInformation);
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeDateTime($this->propertyInformation);
         $this->eventsNames = $values;
     }
 
@@ -54,5 +54,4 @@ class TimeStamp extends \obo\Annotation\Base\Property {
             )));
         }
     }
-
 }

@@ -21,36 +21,30 @@ class DateTime extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @param boolean $throwException
+     * @return boolean
      * @throws \obo\Exceptions\BadDataTypeException
-     * @return void
      */
-    public function validate($value) {
-        parent::validate($value);
-        if (!\is_null($value) && (!\is_null($value) && !$value instanceof \DateTime)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of \\DateTime data type. Given value couldn't be converted.");
+    public function validate($value, $throwException = true) {
+        if ($value instanceof \DateTime OR \is_null($value)) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'DateTime' datatype.");
+        return false;
     }
 
     /**
      * @param mixed $value
      * @return \DateTime
      */
-    public function convertValue($value) {
-        if (!$value instanceof \DateTime && !\is_null($value)) return new \DateTime($value);
-        return $value;
+    public static function convertValue($value) {
+        return \is_null($value) ? $value : new \DateTime($value);
     }
 
     /**
-     * @return void
+     * @param mixed $value
+     * @return mixed
      */
-    public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-                $arguments["propertyValue"]["new"] = $arguments["dataType"]->convertValue($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
+    public static function sanitizeValue($value) {
+        if (!$value instanceof \DateTime) return self::convertValue($value);
+        return $value;
     }
-
 }

@@ -27,9 +27,10 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
     }
 
     /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
      * @throws \obo\Exceptions\BadAnnotationException
      */
-    public function validate() {
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
         if (!$this->propertyInformation->dataType instanceof \obo\DataType\Integer) throw new \obo\Exceptions\BadAnnotationException("Annotation 'autoIncrement' can be used only with 'integer' dataType.");
     }
 

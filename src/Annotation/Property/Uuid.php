@@ -36,6 +36,7 @@ class Uuid extends \obo\Annotation\Base\Property {
     public function process($values) {
         parent::process($values);
         $this->registerUuidGenerator = $values[0];
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeString($this->propertyInformation);
     }
 
     /**
@@ -71,5 +72,4 @@ class Uuid extends \obo\Annotation\Base\Property {
             "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
         ]));
     }
-
 }

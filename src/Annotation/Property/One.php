@@ -20,7 +20,7 @@ class One extends \obo\Annotation\Base\Property {
     /**
      * @var string
      */
-    protected $targetEntityInProperty = false;
+    protected $targetEntityInProperty = null;
 
     /**
      * @var string
@@ -63,6 +63,7 @@ class One extends \obo\Annotation\Base\Property {
 
         if (\strpos($this->targetEntity, "property:") === 0) {
             $this->targetEntityInProperty = \substr($this->targetEntity, 9);
+            if ($this->entityInformation->existInformationForPropertyWithName($this->targetEntityInProperty)) $this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty)->dataType = \obo\DataType\Factory::createDataTypeString($this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty));
         }
 
         if (!$this->targetEntityInProperty AND !\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
@@ -76,10 +77,13 @@ class One extends \obo\Annotation\Base\Property {
 
         if (isset($values["connectViaProperty"])) {
            $this->connectViaProperty = $values["connectViaProperty"];
+           $this->propertyInformation->columnName = null;
+           $this->propertyInformation->persistable = false;
         }
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name);
         $this->propertyInformation->relationship->autoCreate = $this->autoCreate;
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeEntity($this->propertyInformation, is_null($this->targetEntityInProperty) ? null : $this->targetEntity);
     }
 
     /**
@@ -103,8 +107,9 @@ class One extends \obo\Annotation\Base\Property {
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeDelete",
                     "actionAnonymousFunction" => function($arguments) {
-                        $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
-                        if ($connectedEntity instanceof \obo\Entity) $connectedEntity->delete($arguments["removeEntity"]);
+                        if ($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) !== null) {
+                            if (($connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])) instanceof \obo\Entity) $connectedEntity->delete($arguments["removeEntity"]);
+                        }
                     },
                     "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => true),
                 )));

@@ -40,11 +40,4 @@ class ColumnName extends \obo\Annotation\Base\Property {
         $this->propertyInformation->columnName = $this->columnName = $values[0];
     }
 
-    /**
-     * @return void
-     */
-    public function registerEvents() {
-
-    }
-
 }
