@@ -10,6 +10,7 @@ php:
 env:
     global:
         secure: A2MqbdfarhYnXh9EqiMyWIE/iFDf8Rb9H5LksNFNUJ4GXVy2dUXlYp1nrO81zMNDFyWa4gV+ZrQ5yBe7Jeb9XdoU82HcALt+QejhX2cit7LOUi/346I8gTKLg11wzXsZJ5dmn+47kQ6ibv2MGVhfmPxhasMlmaoq2ZiEZbWUL/8=
+
     matrix:
         - PHP_BIN=php
         - PHP_BIN=php-cgi
@@ -27,12 +28,15 @@ matrix:
           env: PHP_BIN=php-cgi
 
 before_script:
-    # Update Composer to current version
+    # update Composer to current version, install Nette Tester & Code Checker
     - composer self-update
+    - composer install --no-interaction --prefer-source
     - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
 
 script:
     - php code-checker/src/code-checker.php
+    - vendor/bin/tester -p $PHP_BIN tests/obo/ -s
 
 after_success:
     - if  [ $TRAVIS_PHP_VERSION = '5.6' ] && [ $PHP_BIN = 'php' ] && [ $TRAVIS_BRANCH = 'master' ] && [ $TRAVIS_PULL_REQUEST = 'false' ]; then bash generate-api.sh; fi
+
