@@ -20,7 +20,7 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var \obo\Annotation\Base\Definition[]
      */
-    public $annotations = array();
+    public $annotations = [];
 
     /**
      * @var \obo\Relationships\Relationship
@@ -30,12 +30,12 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-    public $name = null;
+    public $name = "";
 
     /**
      * @var string
      */
-    public $varName = null;
+    public $varName = "";
 
     /**
      * @var mixed
@@ -55,17 +55,17 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-    public $getterName = null;
+    public $getterName = "";
 
     /**
      * @var string
      */
-    public $setterName = null;
+    public $setterName = "";
 
     /**
      * @var string
      */
-    public $columnName = null;
+    public $columnName = "";
 
     /**
      * @var boolean

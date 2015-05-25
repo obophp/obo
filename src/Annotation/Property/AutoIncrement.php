@@ -23,11 +23,12 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => "?");
+        return ["numberOfParameters" => "?"];
     }
 
     /**
      * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
      * @throws \obo\Exceptions\BadAnnotationException
      */
     public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
@@ -36,9 +37,10 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $values
+     * @return void
      * @throws \obo\Exceptions\BadAnnotationException
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'autoIncrement' annotation must be of boolean type");
         $this->propertyInformation->autoIncrement = $values[0];

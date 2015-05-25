@@ -79,11 +79,11 @@ class Explorer extends \obo\Object {
     public function analyze(array $dirPaths) {
         $entitiesClasses = [];
 
-        foreach($dirPaths as $dirPath) {
+        foreach ($dirPaths as $dirPath) {
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirPath), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
             $files = new \RegexIterator($iterator, '#^.+\.php$#', \RegexIterator::MATCH, \RegexIterator::USE_KEY);
 
-            foreach($files as $fileName) {
+            foreach ($files as $fileName) {
                 foreach ($this->findClasses(file_get_contents($fileName)) as $className) {
                     $reflection = new \ReflectionClass($className);
                     if ($reflection->isSubclassOf("\\obo\\Entity")) $entitiesClasses[] = $className;
@@ -94,7 +94,6 @@ class Explorer extends \obo\Object {
         foreach ($entitiesClasses as $entityClassName) {
             $this->entitiesInformations[$entityClassName] = $this->analyzeEntityWithClassName($entityClassName);
         }
-
 
         foreach ($entitiesClasses as $entityClassName) {
             $this->validateEntityWithClassName($entityClassName);
@@ -181,7 +180,7 @@ class Explorer extends \obo\Object {
             $propertiesInformations[$propertyInformation->name] = $propertyInformation;
         }
 
-        foreach($propertiesMethodAccess as $propertyName => $propertyAccess) {
+        foreach ($propertiesMethodAccess as $propertyName => $propertyAccess) {
             $propertyInformation = new \obo\Carriers\PropertyInformationCarrier();
             $propertyInformation->name = $propertyName;
             foreach ($propertyAccess as $methodType => $methodName) $propertyInformation->$methodType = $methodName;
@@ -217,7 +216,7 @@ class Explorer extends \obo\Object {
         }
 
         foreach ($this->entitiesInformations[$entityClassName]->propertiesInformation as $propertyInformation) {
-            if (\is_null($propertyInformation->dataType) AND (!is_null($propertyInformation->varName))) {
+            if (\is_null($propertyInformation->dataType) AND ($propertyInformation->varName !== "")) {
                 throw new \obo\Exceptions\Exception("Property with name '{$propertyInformation->name}' in entity '{$entityClassName}' have not set data type");
             }
         }
@@ -230,10 +229,10 @@ class Explorer extends \obo\Object {
     protected function loadEntityAnnotationForEntityWithClassName($entityClassName) {
         $annotations = [];
 
-        foreach($this->ancestorsForClassWithName($entityClassName) as $class) {
+        foreach ($this->ancestorsForClassWithName($entityClassName) as $class) {
             $classAnnotations = [];
 
-            foreach($class::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
+            foreach ($class::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
@@ -252,11 +251,11 @@ class Explorer extends \obo\Object {
     protected function loadMethodAnnotationForMethodWithNameAndEntityWithClassName($methodName, $entityClassName) {
         $annotations = [];
 
-        foreach($this->ancestorsForClassWithName($entityClassName) as $class) {
+        foreach ($this->ancestorsForClassWithName($entityClassName) as $class) {
             if (!$class::getReflection()->hasMethod($methodName)) continue;
             $classAnnotations = [];
 
-            foreach($class::getReflection()->getMethod($methodName)->getAnnotations() as $annotationName => $annotationValue) {
+            foreach ($class::getReflection()->getMethod($methodName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
@@ -275,11 +274,11 @@ class Explorer extends \obo\Object {
     protected function loadPropertyAnnotationForPropertyWithNameAndEntityPropertiesWithClassName($propertyName, $entityPropertiesClassName) {
         $annotations = [];
 
-        foreach($this->ancestorsForClassWithName($entityPropertiesClassName) as $class) {
+        foreach ($this->ancestorsForClassWithName($entityPropertiesClassName) as $class) {
             if (!$class::getReflection()->hasProperty($propertyName)) continue;
             $classAnnotations = [];
 
-            foreach($class::getReflection()->getProperty($propertyName)->getAnnotations() as $annotationName => $annotationValue) {
+            foreach ($class::getReflection()->getProperty($propertyName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
@@ -371,7 +370,7 @@ class Explorer extends \obo\Object {
      * @return type
      */
     protected function defaultDataTypeForProperty(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
-        if (\is_null($propertyInformation->varName)) return null;
+        if ($propertyInformation->varName === "") return null;
 
         if ($propertyInformation->defaultValue === false OR $propertyInformation->defaultValue === true) {
             return \obo\DataType\Factory::createDataTypeBoolean($propertyInformation);
@@ -402,7 +401,7 @@ class Explorer extends \obo\Object {
                 $namespace = "";
                 while($tokens[++$i][0] === T_STRING OR $tokens[$i][0] === T_NS_SEPARATOR) $namespace .= $tokens[$i][1];
             } elseif ($tokens[$i][0] === T_CLASS) {
-                $classes[] = $namespace . "\\" . $tokens[$i += 2][1];
+                $classes[] = ($namespace ? $namespace . "\\" : "") . $tokens[$i += 2][1];
             }
         }
 
@@ -418,7 +417,7 @@ class Explorer extends \obo\Object {
 
         foreach (\class_parents($className) as $class) {
             if ($class === "obo\\Object") break;
-            array_unshift($classes, $class);
+            \array_unshift($classes, $class);
         }
 
         return $classes;

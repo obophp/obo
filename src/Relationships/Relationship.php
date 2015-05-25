@@ -22,7 +22,7 @@ abstract class Relationship extends \obo\Object {
      */
     public $entityClassNameToBeConnected = "";
     public $ownerPropertyName = "";
-    public $cascade = array();
+    public $cascade = [];
 
     /**
      * @param string $entityClassNameToBeConnected
@@ -30,7 +30,7 @@ abstract class Relationship extends \obo\Object {
      * @param array $cascade
      * @return void
      */
-    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = array()){
+    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []){
         $this->entityClassNameToBeConnected = $entityClassNameToBeConnected;
         $this->ownerPropertyName = $ownerPropertyName;
         $this->cascade = new \obo\Carriers\DataCarrier($cascade);

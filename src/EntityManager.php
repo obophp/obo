@@ -15,12 +15,12 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @var array
      */
-    private static $classNamesManagedEntities = array();
+    private static $classNamesManagedEntities = [];
 
     /**
      * @var array
      */
-    protected static $dataStorages = array();
+    protected static $dataStorages = [];
 
     /**
      * @return string
@@ -123,14 +123,14 @@ abstract class EntityManager  extends \obo\Object {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
             $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
         } elseif (!$separately) {
-            $event = new \obo\Services\Events\Event(array(
+            $event = new \obo\Services\Events\Event([
                     "onObject" => $entity,
                     "name" => "afterInsert",
                     "actionAnonymousFunction" => function($arguments) {
                        \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($arguments["entity"]);
                        $arguments["entity"]->setBasedInRepository(true);
                     }
-            ));
+            ]);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent($event);
         }
 
@@ -229,7 +229,7 @@ abstract class EntityManager  extends \obo\Object {
 
         $classNameEntity = self::classNameManagedEntity();
 
-        if (!is_null($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete)) {
+        if (($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
             $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
         }
 
@@ -255,7 +255,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Carriers\QueryCarrier $specification
-     * @return array();
+     * @return array;
      */
     protected static function rawDataForSpecification(\obo\Carriers\QueryCarrier $specification) {
         return self::dataStorage()->dataForQuery($specification);
@@ -264,7 +264,7 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @param boolean $ignoreSoftDelete
-     * @return array();
+     * @return array;
      */
     protected static function rawDataForEntity(\obo\Entity $entity, $ignoreSoftDelete = false) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
@@ -273,13 +273,13 @@ abstract class EntityManager  extends \obo\Object {
 
         $specification->select("{" . \implode("}, {", $entity->entityInformation()->persistablePropertiesNames) . "}")->where("{{$primaryPropertyName}} = %s", $entity->valueForPropertyWithName($primaryPropertyName));
 
-        if (!$ignoreSoftDelete AND !is_null($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete)) {
+        if (!$ignoreSoftDelete AND ($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) !== "") {
             $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
         }
 
         $data = self::rawDataForSpecification($specification);
 
-        return isset($data[0]) ? $data[0] : array();
+        return isset($data[0]) ? $data[0] : [];
     }
 
     /**
@@ -292,7 +292,7 @@ abstract class EntityManager  extends \obo\Object {
         $primaryPropertyName = $classNameManagedEntity::informationForPropertyWithName($classNameManagedEntity::entityInformation()->primaryPropertyName)->name;
         $specification->rewriteOrderBy(null);
 
-        if (!is_null($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete)) {
+        if (($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
             $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
         }
 
@@ -347,7 +347,7 @@ abstract class EntityManager  extends \obo\Object {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot delete entity which is not initialized");
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDelete", $entity);
 
-        if (\is_null($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete)) {
+        if (($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) === "") {
             $entity->dataStorage()->removeEntity($entity);
         } else {
             $entity->setValueForPropertyWithName(true, $propertyNameForSoftDelete);

@@ -55,7 +55,7 @@ class Object extends \obo\DataType\Base\DataType {
      * @return mixed
      */
     public static function sanitizeValue($value) {
-        if (!\is_object($value) AND @ $object = \unserialize($value)) return $object;
+        if (!\is_object($value) AND @$object = \unserialize($value)) return $object;
         return $value;
     }
 }

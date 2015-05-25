@@ -62,7 +62,7 @@ class obo extends \obo\Object {
      * @return void
      */
     public static function addModelsDirs(array $modelsDirs) {
-        self::$modelsDirs = array_merge(self::$modelsDirs, $modelsDirs);
+        self::$modelsDirs = \array_merge(self::$modelsDirs, $modelsDirs);
     }
 
     /**

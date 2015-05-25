@@ -11,7 +11,7 @@
 namespace obo\Annotation\Method;
 
 class Run extends \obo\Annotation\Base\Method {
-    protected $eventsNames = array();
+    protected $eventsNames = [];
 
     /**
      * @return string
@@ -24,14 +24,14 @@ class Run extends \obo\Annotation\Base\Method {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => -1);
+        return ["numberOfParameters" => -1];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         $this->eventsNames = $values;
     }
@@ -41,11 +41,11 @@ class Run extends \obo\Annotation\Base\Method {
      */
     public function registerEvents() {
         foreach ($this->eventsNames as $eventName) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => $eventName,
                 "actionMessage" => $this->methodName,
-            )));
+            ]));
         }
     }
 

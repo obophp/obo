@@ -45,7 +45,7 @@ class Event extends \obo\Carriers\DataCarrier {
     /**
      * @var array
      */
-    public $actionArguments = array();
+    public $actionArguments = [];
 
     /**
      * @param array $specification

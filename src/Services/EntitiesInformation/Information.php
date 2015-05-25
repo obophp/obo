@@ -13,10 +13,9 @@ namespace obo\Services\EntitiesInformation;
 class Information extends \obo\Object {
 
     /** @var \obo\Carriers\EntityInformationCarrier[] */
-    protected $entitiesInformations = array();
+    protected $entitiesInformations = [];
     /** @var \obo\Services\EntitiesInformation\Explorer */
     protected $explorer = null;
-
     /** @var \obo\Interfaces\ICache */
     protected $cache = null;
     /** @var boolean */
@@ -57,11 +56,11 @@ class Information extends \obo\Object {
     protected function calculateChangesHash() {
         $lastChange = "";
 
-        foreach($this->modelsDirs as $dir) {
+        foreach ($this->modelsDirs as $dir) {
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
             $files = new \RegexIterator($iterator, '#^.+\.php$#', \RegexIterator::MATCH, \RegexIterator::USE_KEY);
 
-            foreach($files as $file) {
+            foreach ($files as $file) {
                 if ($lastChange < $changeTime = \filemtime($file)) $lastChange = $changeTime;
             }
         }
@@ -87,7 +86,7 @@ class Information extends \obo\Object {
     protected function loadClassInformationForEntityWithClassName($className) {
         if (!$this->cacheValidity OR \is_null($entityInformation = $this->cache->load($className))) {
             $this->createCache();
-            if (\is_null($entityInformation = $this->cache->load($className))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information");
+            if (\is_null($entityInformation = $this->cache->load($className))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
         }
         $this->registerRunTimeEventsForEntity($entityInformation = $this->cache->load($className));
         return $this->entitiesInformations[$className] = $entityInformation;
@@ -97,14 +96,14 @@ class Information extends \obo\Object {
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
      */
     private function registerRunTimeEventsForEntity(\obo\Carriers\EntityInformationCarrier $entityInformation) {
-        foreach($entityInformation->annotations as $annotation) $annotation->registerEvents();
+        foreach ($entityInformation->annotations as $annotation) $annotation->registerEvents();
 
         foreach ($entityInformation->propertiesInformation as $propertyInformation) {
-            foreach($propertyInformation->annotations as $annotation) $annotation->registerEvents();
+            foreach ($propertyInformation->annotations as $annotation) $annotation->registerEvents();
             if ($propertyInformation->dataType instanceof \obo\DataType\Base\DataType) $propertyInformation->dataType->registerEvents();
         }
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $entityInformation->className,
             "name" => "beforeChange".\ucfirst($entityInformation->primaryPropertyName),
             "actionAnonymousFunction" => function($arguments) {
@@ -112,7 +111,7 @@ class Information extends \obo\Object {
                     $backTrace = \debug_backtrace();
                     if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can't be changed, has been marked as initialized");
                 }},
-            )
+            ]
         ));
     }
 }

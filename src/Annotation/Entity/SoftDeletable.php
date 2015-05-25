@@ -28,14 +28,14 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => "?");
+        return ["numberOfParameters" => "?"];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
 
         if (isset($values[0]) AND $values[0] !== true) {

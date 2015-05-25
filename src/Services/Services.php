@@ -15,12 +15,12 @@ class Services extends \obo\Object {
     /**
      * @var array
      */
-    private static $services = array();
+    private static $services = [];
 
     /**
      * @var array
      */
-    private static $factories = array();
+    private static $factories = [];
 
     /**
      * @param mixed $service

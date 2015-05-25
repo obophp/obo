@@ -28,14 +28,14 @@ class ColumnName extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => 1);
+        return ["numberOfParameters" => 1];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         $this->propertyInformation->columnName = $this->columnName = $values[0];
     }

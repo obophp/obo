@@ -25,17 +25,17 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
     /**
      * @var array
      */
-    protected $select = array("query" => "", "data" => array());
+    protected $select = ["query" => "", "data" => []];
 
     /**
      * @var array
      */
-    protected $from = array("query" => "", "data" => array());
+    protected $from = ["query" => "", "data" => []];
 
     /**
      * @var array
      */
-    protected $join = array("query" => "", "data" => array());
+    protected $join = ["query" => "", "data" => []];
 
     /**
      * @return string
@@ -79,7 +79,7 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @return \obo\Carriers\QueryCarrier
      */
     public function rewriteSelect($arguments) {
-        $this->select = array("query" => "", "data" => array());
+        $this->select = ["query" => "", "data" => []];
         return $this->select(func_get_args());
     }
 
@@ -109,7 +109,7 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @return \obo\Carriers\QueryCarrier
      */
     public function join($arguments) {
-        $this->processArguments(func_get_args(), $this->join, " ");
+        $this->processArguments(\func_get_args(), $this->join, " ");
         return $this;
     }
 
@@ -117,8 +117,8 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @return \obo\Carriers\QueryCarrier
      */
     public function rewriteJoin($arguments) {
-        $this->join = array("query" => "", "data" => array());
-        return $this->join(func_get_args());
+        $this->join = ["query" => "", "data" => []];
+        return $this->join(\func_get_args());
     }
 
     /**

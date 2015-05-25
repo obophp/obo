@@ -23,7 +23,7 @@ class DataType extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => 1);
+        return ["numberOfParameters" => 1];
     }
 
     /**
@@ -31,7 +31,7 @@ class DataType extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadDataTypeException
      * @return void
      */
-    public function process($values) {
+    public function process(array  $values) {
         parent::process($values);
 
         switch ($values[0]) {
@@ -136,7 +136,7 @@ class DataType extends \obo\Annotation\Base\Property {
     }
 
     /**
-     * @return \obo\DataType\Entity
+     * @return \obo\DataType\Mixed
      */
     protected function createDataTypeMixed() {
         return \obo\DataType\Factory::createDataTypeMixed($this->propertyInformation);

@@ -55,7 +55,7 @@ class EntityInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-    public $primaryPropertyName = null;
+    public $primaryPropertyName = "";
 
     /**
      * @var array
@@ -63,7 +63,7 @@ class EntityInformationCarrier extends \obo\Object {
     public $propertiesInformation = [];
 
     /**
-     * @var arry
+     * @var array
      */
     public $annotations = [];
 
@@ -80,7 +80,7 @@ class EntityInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-    public $propertyNameForSoftDelete = null;
+    public $propertyNameForSoftDelete = "";
 
 
     public function addPropertyInformation(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {

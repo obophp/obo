@@ -35,7 +35,7 @@ abstract class Entity  extends \obo\Object {
     /**
      * @var array
      */
-    private $propertiesChanges = array();
+    private $propertiesChanges = [];
 
     /**
      * @var boolean
@@ -165,7 +165,7 @@ abstract class Entity  extends \obo\Object {
         $backTrace = \debug_backtrace(null, 2);
 
         if (($backTrace[1]["class"] === "obo\\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\\Entity" AND $backTrace[1]["function"] === "discardNonPersitedChanges")) {
-            foreach($this->propertiesChanges as $propertyName => $changeStatus) {
+            foreach ($this->propertiesChanges as $propertyName => $changeStatus) {
                 $this->propertiesChanges[$propertyName]["persisted"] = true;
                 $this->propertiesChanges[$propertyName]["lastPersistedValue"] = $this->propertiesChanges[$propertyName]["newValue"];
             }
@@ -202,17 +202,17 @@ abstract class Entity  extends \obo\Object {
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
         if ($triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
         }
 
-        if (\is_null($propertyInformation->getterName)) {
+        if ($propertyInformation->getterName === "") {
             $value = $this->propertiesObject()->$propertyName;
         } else {
             $value = $this->propertiesObject()->{$propertyInformation->getterName}();
         }
 
         if ($triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, array("entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
         }
 
         if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) $value = $value->primaryPropertyValue();
@@ -246,7 +246,7 @@ abstract class Entity  extends \obo\Object {
         if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
             $change = false;
             $oldValue = $this->valueForPropertyWithName($propertyName);
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => &$value)));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => &$value]]);
 
             if (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
                 if ($value instanceof \obo\Entity) {
@@ -262,20 +262,20 @@ abstract class Entity  extends \obo\Object {
             }
 
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => $value)));
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => $value]]);
             }
         }
 
-        if (\is_null($propertyInformation->setterName)) {
+        if ($propertyInformation->setterName === "") {
             $this->propertiesObject()->$propertyName = $value;
         } else {
             $this->propertiesObject()->{$propertyInformation->setterName}($value);
         }
 
         if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, array("propertyValue" => array("old" => $oldValue, "new" => $value)));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => $value]]);
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  array("propertyValue" => array("old" => $oldValue, "new" => $value)));
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyValue" => ["old" => $oldValue, "new" => $value]]);
                 if(isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
 
@@ -291,7 +291,7 @@ abstract class Entity  extends \obo\Object {
                     }
 
                 } else {
-                    $this->propertiesChanges[$propertyName] = array("originalValue" => $oldValue, "lastPersistedValue" => $oldValue, "newValue" => $value, "persisted" => false);
+                    $this->propertiesChanges[$propertyName] = ["originalValue" => $oldValue, "lastPersistedValue" => $oldValue, "newValue" => $value, "persisted" => false];
                 }
             }
         }
@@ -305,7 +305,7 @@ abstract class Entity  extends \obo\Object {
      * @return array
      */
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
-       $data = array();
+       $data = [];
 
        if (!\is_null($onlyFromList)) {
            $propertiesNames = \array_keys((array) $onlyFromList);
@@ -343,7 +343,7 @@ abstract class Entity  extends \obo\Object {
             $propertiesChanges = $this->propertiesChanges;
 
             if ($onlyNonPersitentChanges) {
-                foreach($propertiesChanges as $propertyName => $changeStatus) {
+                foreach ($propertiesChanges as $propertyName => $changeStatus) {
                     if ($changeStatus["persisted"]) unset($propertiesChanges[$propertyName]);
                 }
             }
@@ -412,7 +412,7 @@ abstract class Entity  extends \obo\Object {
      * @return boolean
      */
     public function isDeleted() {
-        return \is_null($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
+        return ($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) === "" ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
     }
 
     /**
@@ -474,13 +474,13 @@ abstract class Entity  extends \obo\Object {
         $classInformation = $this->entityInformation();
 
         if (!isset($arguments[0])) {
-            $dump = array(
+            $dump = [
                 "className" => $classInformation->className,
                 "managerName" => $classInformation->managerName,
                 "repositoryName" => $classInformation->repositoryName,
                 "primaryPropertyName" => $classInformation->primaryPropertyName,
-                "properties" => array()
-            );
+                "properties" => [],
+            ];
         }
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
@@ -494,13 +494,13 @@ abstract class Entity  extends \obo\Object {
                 }
 
                 $connectedEntityInformation = $connectedEntity::entityInformation();
-                $relationshipInformation = array(
+                $relationshipInformation = [
                     "relationship" => $propertyInformation->relationship->className(),
                     "className" => $connectedEntityInformation->className,
                     "managerName" => $connectedEntityInformation->managerName,
                     "repositoryName" => $connectedEntityInformation->repositoryName,
                     "primaryPropertyName" => $connectedEntityInformation->primaryPropertyName,
-                );
+                ];
 
                 if (!is_null($propertyValue) AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
 

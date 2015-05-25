@@ -15,7 +15,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @var array
      */
-    private $variables = array();
+    private $variables = [];
 
     /**
      * @return array
@@ -71,7 +71,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function clear() {
-        $this->variables = array();
+        $this->variables = [];
     }
 
     /**
@@ -90,7 +90,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @param array $data
      * @return void
      */
-    public function __construct($data = array()) {
+    public function __construct($data = []) {
         foreach ($data as $variableName => $variableValue) $this->$variableName = $variableValue;
     }
 
@@ -132,7 +132,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function __clone() {
-        $data = array();
+        $data = [];
         foreach ($this->asArray() as $key => $variable) {
             if (\is_object($variable)) {
                 $data[$key] = clone $variable;

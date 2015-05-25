@@ -50,10 +50,10 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
-     * @param mixed $values
+     * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         $this->checkAnnotationValueStructure($values);
     }
 
