@@ -82,7 +82,10 @@ class EntityInformationCarrier extends \obo\Object {
      */
     public $propertyNameForSoftDelete = "";
 
-
+    /**
+     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
+     * @return void
+     */
     public function addPropertyInformation(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
         $propertyInformation->entityInformation = $this;
         $this->propertiesInformation[$propertyInformation->name] = $propertyInformation;
@@ -91,6 +94,10 @@ class EntityInformationCarrier extends \obo\Object {
         if ($propertyInformation->persistable === true) $this->persistablePropertiesNames[$propertyInformation->name] = $propertyInformation->name;
     }
 
+    /**
+     * @param string $propertyName
+     * @return boolean
+     */
     public function existInformationForPropertyWithName($propertyName) {
         return isset($this->propertiesInformation[$propertyName]);
     }

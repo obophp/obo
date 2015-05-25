@@ -58,7 +58,7 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
-     * @param mixed $values
+     * @param \obo\Services\EntitiesInformation\Explorer $values
      * @return void
      */
     public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {

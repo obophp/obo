@@ -44,7 +44,7 @@ class Entity extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @throws \obo\Exceptions\Exception
      */
     public static function convertValue($value) {
         throw new \obo\Exceptions\Exception("Datatype 'Entity' can't convert any value.");
