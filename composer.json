@@ -22,7 +22,7 @@
         "nette/reflection": "~2.2"
     },
     "require-dev": {
-        "obo/data-storage-memory": "dev-master",
+        "obo/data-storage-memory": "@dev",
         "nette/tester": "~1.3",
         "nette/caching": "~2.2"
     },
