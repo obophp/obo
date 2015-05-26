@@ -25,5 +25,7 @@
         "obo/data-storage-memory": "dev-master",
         "nette/tester": "~1.3",
         "nette/caching": "~2.2"
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
