@@ -28,8 +28,8 @@ class DataType extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $values
-     * @throws \obo\Exceptions\BadDataTypeException
      * @return void
+     * @throws \obo\Exceptions\BadDataTypeException
      */
     public function process(array  $values) {
         parent::process($values);

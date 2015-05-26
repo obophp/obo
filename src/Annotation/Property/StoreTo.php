@@ -43,9 +43,9 @@ class StoreTo extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
-     * @return void
      */
     public function fromArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
@@ -64,9 +64,9 @@ class StoreTo extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
-     * @return void
      */
     public function toArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();

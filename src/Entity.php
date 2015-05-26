@@ -185,9 +185,9 @@ abstract class Entity  extends \obo\Object {
      * @param string $propertyName
      * @param boolean $entityAsPrimaryPropertyValue
      * @param bool $triggerEvents
+     * @return mixed
      * @throws Exceptions\PropertyNotFoundException
      * @throws Exceptions\ServicesException
-     * @return mixed
      */
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {

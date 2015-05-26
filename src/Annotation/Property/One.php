@@ -53,8 +53,8 @@ class One extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $values
-     * @throws \obo\Exceptions\BadAnnotationException
      * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
      */
     public function process(array $values) {
         parent::process($values);

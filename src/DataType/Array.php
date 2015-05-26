@@ -21,8 +21,8 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @throws \obo\Exceptions\BadDataTypeException
      * @return void
+     * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
         if (\is_array($value) OR \is_null($value)) return true;

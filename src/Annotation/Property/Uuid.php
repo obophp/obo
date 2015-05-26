@@ -41,6 +41,7 @@ class Uuid extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      */

@@ -97,10 +97,10 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Entity $entity
      * @param bool $createRelationshipInRepository
      * @param bool $notifyEvents
+     * @return \obo\Entity
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      * @throws \obo\Exceptions\ServicesException
-     * @return \obo\Entity
      */
     public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
@@ -195,9 +195,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Entity $entity
      * @param bool $deleteEntity
      * @param bool $notifyEvents
+     * @return void
      * @throws \obo\Exceptions\EntityNotFoundException
      * @throws \obo\Exceptions\ServicesException
-     * @return void
      */
     public function remove(\obo\Entity $entity, $deleteEntity = false, $notifyEvents = true) {
 

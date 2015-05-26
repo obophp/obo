@@ -154,8 +154,8 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param array|int $specification
-     * @throws \obo\Exceptions\EntityNotFoundException
      * @return \obo\Entity
+     * @throws \obo\Exceptions\EntityNotFoundException
      */
     public static function entity($specification) {
        if (is_array($specification) OR $specification instanceof \Traversable) {
@@ -302,10 +302,10 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @param bool $forced
+     * @return void
      * @throws \obo\Exceptions\EntityIsDeletedException
      * @throws \obo\Exceptions\EntityIsNotInitializedException
      * @throws \obo\Exceptions\ServicesException
-     * @return void
      */
     public static function saveEntity(\obo\Entity $entity, $forced = false) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
@@ -340,8 +340,8 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-     * @throws \obo\Exceptions\EntityIsNotInitializedException
      * @return void
+     * @throws \obo\Exceptions\EntityIsNotInitializedException
      */
     public static function deleteEntity(\obo\Entity $entity) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot delete entity which is not initialized");

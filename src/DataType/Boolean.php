@@ -21,8 +21,8 @@ class Boolean extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @throws \obo\Exceptions\BadDataTypeException
      * @return boolean
+     * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
         if (\is_bool($value) OR \is_null($value)) return true;

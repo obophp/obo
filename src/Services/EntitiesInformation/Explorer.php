@@ -34,6 +34,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $annotationClassName
      * @param boolen $forced
+     * @return void
      * @throws \obo\Exceptions\Exception
      */
     public function registerAnnotation($annotationClassName, $forced = false) {
@@ -43,6 +44,7 @@ class Explorer extends \obo\Object {
 
     /**
      * @param type $annotationClassName
+     * @return void
      * @throws \obo\Exceptions\Exception
      */
     public function unregisterAnnotation($annotationClassName) {
@@ -205,6 +207,7 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $entityClassName
+     * @return void
      * @throws \obo\Exceptions\Exception
      */
     protected function validateEntityWithClassName($entityClassName) {
