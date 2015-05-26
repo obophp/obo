@@ -62,5 +62,4 @@ interface IDataStorage {
      * @return void
      */
     public function removeRelationshipBetweenEntities($repositoryName, array $entities);
-    
 }
