@@ -97,17 +97,17 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Entity $entity
      * @param bool $createRelationshipInRepository
      * @param bool $notifyEvents
+     * @return \obo\Entity
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      * @throws \obo\Exceptions\ServicesException
-     * @return \obo\Entity
      */
     public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
         if ($notifyEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, array("collection" => $this, "columnName" => $this->relationShip->ownerPropertyName));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["addedEntity" => $entity]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
         if($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaRepositoryWithName)) {
@@ -119,14 +119,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                 $this->createRelationshipInRepositoryForEntity($entity);
             } else {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                    new \obo\Services\Events\Event(array(
+                    new \obo\Services\Events\Event([
                         "onObject" => $this->owner,
                         "name" => "afterInsert",
                         "actionAnonymousFunction" => function () use ($entity) {
                             $this->createRelationshipInRepositoryForEntity($entity);
                         },
-                        "actionArguments" => array(),
-                    ))
+                        "actionArguments" => [],
+                    ])
                 );
             }
         }
@@ -142,14 +142,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                     $entity->save();
                 } else {
                     \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                        new \obo\Services\Events\Event(array(
+                        new \obo\Services\Events\Event([
                             "onObject" => $this->owner,
                             "name" => "afterInsert",
                             "actionAnonymousFunction" => function () use ($entity) {
                                 $entity->save();
                             },
-                            "actionArguments" => array(),
-                        ))
+                            "actionArguments" => [],
+                        ])
                     );
                 }
 
@@ -162,19 +162,19 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
              $this->afterSavingNeedReload = true;
 
              \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                     new \obo\Services\Events\Event(array(
+                     new \obo\Services\Events\Event([
                          "onObject" => $entity,
                          "name" => "afterInsert",
                          "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress()) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
-                         "actionArguments" => array("entitiesCollection" => $this),
-                     )));
+                         "actionArguments" => ["entitiesCollection" => $this],
+                     ]));
         }
 
         $this->setValueForVariableWithName($entity, $entityKey);
 
         if ($notifyEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("addedEntity" => $entity));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["addedEntity" => $entity]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
         return $entity;
@@ -185,7 +185,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param boolean $notifyEvents
      * @return \obo\Entity
      */
-    public function addNew($data = array(), $notifyEvents = true) {
+    public function addNew($data = [], $notifyEvents = true) {
         $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
         $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
         return $this->add($entityManager::entity($data), true, $notifyEvents);
@@ -195,15 +195,15 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Entity $entity
      * @param bool $deleteEntity
      * @param bool $notifyEvents
+     * @return void
      * @throws \obo\Exceptions\EntityNotFoundException
      * @throws \obo\Exceptions\ServicesException
-     * @return void
      */
     public function remove(\obo\Entity $entity, $deleteEntity = false, $notifyEvents = true) {
 
         if ($notifyEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $entity, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["removedEntity" => $entity]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
         if ($this->entitiesAreLoaded) {
@@ -221,9 +221,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if (!$deleteEntity) $this->removeRelationshipFromRepositoryForEntity($entity);
 
         if ($notifyEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, array("removedEntity" => $entity));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $entity, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["removedEntity" => $entity]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity]);
         }
 
         if ($deleteEntity) $entity->delete();
@@ -271,10 +271,10 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function loadEntities() {
         if (!$this->owner->isBasedInRepository()) return;
         foreach ($this->relationShip->findEntities() as $entity) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
             $this->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName));
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Connected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "addedEntity" => $entity));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Connected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "addedEntity" => $entity]);
         }
     }
 
@@ -284,7 +284,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function clear() {
         foreach ($entities = &parent::variables() as $entity) {
             unset($entities[$entity->id]);
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, array("collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity));
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity]);
         }
     }
 
@@ -302,7 +302,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function save() {
         if (!$this->entitiesAreLoaded) return;
         $this->savingInProgress = true;
-        foreach($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
+        foreach ($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
         if ($this->afterSavingNeedReload) $this->reloadEntitites();
         $this->savingInProgress = false;
     }
@@ -313,7 +313,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function delete($removeEntity = false) {
         $this->deletingInProgress = true;
-        foreach($this->asArray() as $entity) {
+        foreach ($this->asArray() as $entity) {
             $this->remove($entity, $removeEntity);
         }
         $this->deletingInProgress = false;
@@ -323,7 +323,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return array
      */
     public function dump() {
-        $dump = array();
+        $dump = [];
         $arguments = func_get_args();
 
         if (isset ($arguments[0])) {

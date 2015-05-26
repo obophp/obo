@@ -28,23 +28,24 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => 1);
+        return ["numberOfParameters" => 1];
     }
 
     /**
      * @param array $values
      * @throws \obo\Exceptions\BadAnnotationException
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         $this->propertyToStore = $values[0];
+        $this->propertyInformation->persistable = false;
     }
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
-     * @return void
      */
     public function fromArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
@@ -63,9 +64,9 @@ class StoreTo extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
-     * @return void
      */
     public function toArray(array $arguments) {
         $propertiesInformation = $arguments["entity"]->propertiesInformation();
@@ -85,23 +86,22 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["annotation"]->fromArray($arguments);
             },
-            "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
-        )));
+            "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
+        ]));
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
                 $arguments["annotation"]->toArray($arguments);
             },
-            "actionArguments" => array("propertyName" => $this->propertyInformation->name, "annotation" => $this),
-        )));
+            "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
+        ]));
     }
-
 }

@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
+class PropertyInformationCarrier extends \obo\Object {
 
     /**
      * @var \obo\Carriers\EntityInformationCarrier
@@ -18,34 +18,29 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
     public $entityInformation = null;
 
     /**
+     * @var \obo\Annotation\Base\Definition[]
+     */
+    public $annotations = [];
+
+    /**
+     * @var \obo\Relationships\Relationship
+     */
+    public $relationship = null;
+
+    /**
      * @var string
      */
     public $name = "";
 
     /**
-     * @var \obo\DataType\Base\DataType
-     */
-    public $dataType = null;
-
-    /**
-     * @var boolean
-     */
-    public $directAccessToRead = true;
-
-    /**
-     * @var boolean
-     */
-    public $directAccessToWrite = true;
-
-    /**
      * @var string
      */
-    public $getterName = null;
+    public $varName = "";
 
     /**
-     * @var string
+     * @var mixed
      */
-    public $setterName = null;
+    public $defaultValue = null;
 
     /**
      * @var string
@@ -53,9 +48,29 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
     public $access = "public";
 
     /**
+     * @var \obo\DataType\Base\DataType
+     */
+    public $dataType = null;
+
+    /**
      * @var string
      */
-    public $columnName = null;
+    public $getterName = "";
+
+    /**
+     * @var string
+     */
+    public $setterName = "";
+
+    /**
+     * @var string
+     */
+    public $columnName = "";
+
+    /**
+     * @var boolean
+     */
+    public $persistable = null;
 
     /**
      * @var boolean
@@ -66,15 +81,4 @@ class PropertyInformationCarrier extends \obo\Carriers\DataCarrier {
      * @var boolean
      */
     public $nullable = null;
-
-    /**
-     * @var \obo\Relationships\Relationship
-     */
-    public $relationship = null;
-
-    /**
-     * @var \obo\Annotation\Base\Definition[]
-     */
-    public $annotations = array();
-
 }

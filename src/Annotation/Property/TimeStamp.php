@@ -15,7 +15,7 @@ class TimeStamp extends \obo\Annotation\Base\Property {
     /**
      * @var array
      */
-    protected $eventsNames = array();
+    protected $eventsNames = [];
 
     /**
      * @return string
@@ -28,16 +28,16 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => -1);
+        return ["numberOfParameters" => -1];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
-        $this->propertyInformation->dataType = new \obo\DataType\DateTime($this->propertyInformation);
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeDateTime($this->propertyInformation);
         $this->eventsNames = $values;
     }
 
@@ -46,13 +46,12 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      */
     public function registerEvents() {
         foreach ($this->eventsNames as $eventName) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => $eventName,
                 "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->setValueForPropertyWithName(new \DateTime, $arguments["propertyName"]);},
-                "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-            )));
+                "actionArguments" => ["propertyName" => $this->propertyInformation->name],
+            ]));
         }
     }
-
 }

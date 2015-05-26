@@ -178,5 +178,4 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         parent::clear();
         $this->entitiesAreLoaded = false;
     }
-
 }

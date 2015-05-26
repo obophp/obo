@@ -31,6 +31,11 @@ class obo extends \obo\Object {
     public static $developerMode = false;
 
     /**
+     * @var array
+     */
+    private static $modelsDirs = [];
+
+    /**
      * @return void
      */
     public static function setDefaultDataStorage(\obo\Interfaces\IDataStorage $defaultDataStorage) {
@@ -53,14 +58,22 @@ class obo extends \obo\Object {
     }
 
     /**
+     * @param array $modelsDirs
+     * @return void
+     */
+    public static function addModelsDirs(array $modelsDirs) {
+        self::$modelsDirs = \array_merge(self::$modelsDirs, $modelsDirs);
+    }
+
+    /**
      * @return void
      */
     public static function run() {
-        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);
-        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(), self::ENTITIES_INFORMATION);
-        \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
+        if (!count(self::$modelsDirs)) throw new \obo\Exceptions\Exception("Obo can't run, path for models is not defined");
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
+        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
+        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, \obo\Services::serviceWithName(self::ENTITIES_EXPLORER), \obo\Services::serviceWithName(self::CACHE)), self::ENTITIES_INFORMATION);
+        \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
     }
-
 }

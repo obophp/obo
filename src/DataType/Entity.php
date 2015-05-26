@@ -10,7 +10,7 @@
 
 namespace obo\DataType;
 
-class Object extends \obo\DataType\Base\DataType {
+class Entity extends \obo\DataType\Base\DataType {
 
     public $className = null;
 
@@ -27,7 +27,7 @@ class Object extends \obo\DataType\Base\DataType {
      * @return string
      */
     public function name() {
-        return "object";
+        return "entity";
     }
 
     /**
@@ -37,25 +37,16 @@ class Object extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if ((\is_object($value) AND (\is_null($this->className) OR $value instanceof $this->className)) OR \is_null($value)) return true;
-        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . (\is_object ($value)) ? \get_class($value) : print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of '" . ($this->className === null) ? "object" : $this->className . "' datatype.");
+        if (\is_null($value) OR \is_string($value) OR \is_integer($value) OR ($value instanceof \obo\Entity AND (\is_null($this->className) OR $value instanceof $this->className))) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . (\is_object ($value)) ? \get_class($value) : print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of '" . ($this->className === null) ? "entity" : $this->className . "' datatype.");
         return false;
     }
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @throws \obo\Exceptions\Exception
      */
     public static function convertValue($value) {
-        return \unserialize($value);
-    }
-
-    /**
-     * @param mixed $value
-     * @return mixed
-     */
-    public static function sanitizeValue($value) {
-        if (!\is_object($value) AND @$object = \unserialize($value)) return $object;
-        return $value;
+        throw new \obo\Exceptions\Exception("Datatype 'Entity' can't convert any value.");
     }
 }

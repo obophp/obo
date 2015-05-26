@@ -15,17 +15,17 @@ class EventManager extends \obo\Object {
     /**
      * @var array
      */
-    private $events = array();
+    private $events = [];
 
     /**
      * @var array
      */
-    private $ignoreEvents = array();
+    private $ignoreEvents = [];
 
     /**
      * @var array
      */
-    private $ignoreNotificationEntities = array();
+    private $ignoreNotificationEntities = [];
 
     /**
      * @param \obo\Services\Events\Event $event
@@ -33,7 +33,7 @@ class EventManager extends \obo\Object {
      */
     public function registerEvent(\obo\Services\Events\Event $event) {
         $eventIdentificationKey = $event->eventIdentificationKey();
-        if (!isset($this->events[$eventIdentificationKey])) $this->events[$eventIdentificationKey] = array();
+        if (!isset($this->events[$eventIdentificationKey])) $this->events[$eventIdentificationKey] = [];
         $this->events[$eventIdentificationKey][] = $event;
     }
 
@@ -43,7 +43,7 @@ class EventManager extends \obo\Object {
      * @param array $arguments
      * @return void
      */
-    public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = array()) {
+    public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = []) {
         if (!$this->isActiveIgnoreNotificationForEntity($entity)) {
             $objectEventKey = $eventName.$entity->objectIdentificationKey();
             $classEventKey =  $eventName.$entity->className();
@@ -70,7 +70,7 @@ class EventManager extends \obo\Object {
      */
     private function executeAction(\obo\Services\Events\Event $event, \obo\Entity $entity, array $arguments) {
         if (!is_null($event->actionAnonymousFunction)) {
-            $arguments = \array_merge ($event->actionArguments, $arguments, array("entity" => $entity));
+            $arguments = \array_merge ($event->actionArguments, $arguments, ["entity" => $entity]);
             $actionAnonymousFunction = $event->actionAnonymousFunction;
             $actionAnonymousFunction($arguments);
         } else {

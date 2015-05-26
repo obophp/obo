@@ -28,17 +28,16 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => 1);
+        return ["numberOfParameters" => 1];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         $managerName = $this->entityInformation->managerName;
-        if (!$managerName::dataStorage()->existsRepositoryWithName($values[0])) throw new \obo\Exceptions\BadAnnotationException("Repository with name '{$values[0]}' does not exist in datastorage");
         $this->entityInformation->repositoryName = $this->repositoryName = $values[0];
     }
 

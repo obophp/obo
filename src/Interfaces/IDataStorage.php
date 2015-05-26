@@ -13,34 +13,16 @@ namespace obo\Interfaces;
 interface IDataStorage {
 
     /**
-     * @param string $repositoryName
-     * @return boolean
-     */
-    public function existsRepositoryWithName($repositoryName);
-
-    /**
-     * @param string $repositoryName
-     * return array
-     */
-    public function columnsInRepositoryWithName($repositoryName);
-
-    /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
      * @return string
      */
     public function constructQuery(\obo\Carriers\QueryCarrier $queryCarrier);
 
     /**
-     * @param \obo\Entity $entity
-     * return array
-     */
-    public function dataForEntity(\obo\Entity $entity);
-
-    /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
      * return array
      */
-    public function dataFromQuery(\obo\Carriers\QueryCarrier $queryCarrier);
+    public function dataForQuery(\obo\Carriers\QueryCarrier $queryCarrier);
 
     /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
@@ -80,5 +62,5 @@ interface IDataStorage {
      * @return void
      */
     public function removeRelationshipBetweenEntities($repositoryName, array $entities);
-
+    
 }

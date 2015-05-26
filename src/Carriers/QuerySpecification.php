@@ -15,22 +15,22 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
     /**
      * @var array
      */
-    protected $where = array("query" => "", "data" => array());
+    protected $where = ["query" => "", "data" => []];
 
     /**
      * @var array
      */
-    protected $orderBy = array("query" => "", "data" => array());
+    protected $orderBy = ["query" => "", "data" => []];
 
     /**
      * @var array
      */
-    protected $limit = array("query" => "", "data" => array());
+    protected $limit = ["query" => "", "data" => []];
 
     /**
      * @var array
      */
-    protected $offset = array("query" => "", "data" => array());
+    protected $offset = ["query" => "", "data" => []];
 
     /**
      * @return array
@@ -51,7 +51,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @return \obo\Carriers\QueryCarrier
      */
     public function rewriteWhere($arguments) {
-        $this->where = array("query" => "", "data" => array());
+        $this->where = ["query" => "", "data" => []];
         return $this->where(func_get_args());
     }
 
@@ -74,7 +74,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @return \obo\Carriers\QueryCarrier
      */
     public function rewriteOrderBy($arguments) {
-        $this->orderBy = array("query" => "", "data" => array());
+        $this->orderBy = ["query" => "", "data" => []];
         return $this->orderBy(func_get_args());
     }
 
@@ -89,13 +89,13 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @return \obo\Carriers\QueryCarrier
      */
     public function limit($arguments) {
-        $this->limit = array("query" => "", "data" => array());
+        $this->limit = ["query" => "", "data" => []];
         $this->processArguments(func_get_args(), $this->limit);
         return $this;
     }
 
     /**
-     * @return array()
+     * @return array
      */
     public function getOffset() {
         return $this->offset;
@@ -105,7 +105,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @return \obo\Carriers\QueryCarrier
      */
     public function offset($arguments) {
-        $this->offset = array("query" => "", "data" => array());
+        $this->offset = ["query" => "", "data" => []];
         $this->processArguments(func_get_args(), $this->offset);
         return $this;
     }
@@ -142,9 +142,9 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      */
     protected function processArguments(array $arguments, array &$targetPart, $prefix = "", $sufix = "" ) {
 
-        $formatArguments = array();
+        $formatArguments = [];
         $queryPosition = 0;
-        $matches = array();
+        $matches = [];
         if (count($arguments) == 1 AND is_array(\current($arguments))) $arguments = \current($arguments);
 
         foreach ($arguments as $argument) {
@@ -169,5 +169,4 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
     public static function instance() {
         return new static;
     }
-
 }

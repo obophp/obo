@@ -21,88 +21,20 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
-     * @return void
      */
-    public function validate($value) {
-        parent::validate($value);
-        if (!\is_null($value) && !\is_array($value)) throw new \obo\Exceptions\BadDataTypeException("Value for property with name '{$this->propertyInformation->name}' must be of array data type.'");
+    public function validate($value, $throwException = true) {
+        if (\is_array($value) OR \is_null($value)) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'array' datatype.");
+        return false;
     }
 
     /**
-     * @param mixed $arguments
-     * @return void
+     * @param mixed $value
+     * @return array
      */
-    public function serialize($arguments) {
-        $arguments["entity"]->setValueForPropertyWithName(serialize($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name)), $this->propertyInformation->name, false);
-    }
-
-    /**
-     * @param mixed $arguments
-     * @return void
-     */
-    public function unserialize($arguments) {
-        $value = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name);
-        if ($value === "" || !is_string($value)) $value = serialize(array());
-        $arguments["entity"]->setValueForPropertyWithName(unserialize($value), $this->propertyInformation->name, false);
-    }
-
-    /**
-     * @return void
-     */
-    public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeInitialize",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->unserialize($arguments);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->validate($arguments["propertyValue"]["new"]);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeInsert",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->serialize($arguments);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "beforeUpdate",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->serialize($arguments);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "afterInsert",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->unserialize($arguments);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
-
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
-            "onClassWithName" => $this->propertyInformation->entityInformation->className,
-            "name" => "afterUpdate",
-            "actionAnonymousFunction" => function($arguments) {
-                $arguments["dataType"]->unserialize($arguments);
-            },
-            "actionArguments" => array("dataType" => $this),
-        )));
+    public static function convertValue($value) {
+        return \is_null($value) ? $value : (array) $value;
     }
 }

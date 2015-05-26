@@ -50,11 +50,19 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
-     * @param mixed $values
+     * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         $this->checkAnnotationValueStructure($values);
+    }
+
+    /**
+     * @param \obo\Services\EntitiesInformation\Explorer $values
+     * @return void
+     */
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
+
     }
 
     /**
@@ -66,8 +74,8 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @param array $annotationValue
-     * @throws \obo\Exceptions\BadAnnotationException
      * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
      */
     public function checkAnnotationValueStructure($annotationValue) {
         $parametersDefinition = self::parametersDefinition();
@@ -83,8 +91,8 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @param array $annotationValue
-     * @throws \obo\Exceptions\BadAnnotationException
      * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
      */
     private function checkNumberOfParametersForAnnotationValue($annotationValue) {
         $parametersDefinition = self::parametersDefinition();
@@ -109,8 +117,8 @@ abstract class Definition extends \obo\Object {
 
     /**
      * @param array $annotationValue
-     * @throws \obo\Exceptions\BadAnnotationException
      * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
      */
     private function checkParametersForAnnotationValue($annotationValue) {
         $parametersDefinition = self::parametersDefinition();

@@ -8,20 +8,15 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-namespace obo\Annotation\Entity;
+namespace obo\Annotation\Property;
 
-class PrimaryProperty extends \obo\Annotation\Base\Entity {
-
-    /**
-     * @var string
-     */
-    protected $primaryPropertyName = "";
+class Persistable extends \obo\Annotation\Base\Property {
 
     /**
      * @return string
      */
     public static function name() {
-        return "primaryProperty";
+        return "persistable";
     }
 
     /**
@@ -37,14 +32,6 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->entityInformation->primaryPropertyName = $this->primaryPropertyName = $values[0];
+        $this->propertyInformation->persistable = $values[0] ;
     }
-
-    /**
-     * @return void
-     */
-    public function registerEvents() {
-
-    }
-
 }

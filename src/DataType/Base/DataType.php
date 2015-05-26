@@ -31,10 +31,26 @@ abstract class DataType extends \obo\Object {
 
     /**
      * @param mixed $value
-     * @return void|\obo\Exceptions\Exception
+     * @param bolean $throwException
+     * @return boolean
+     * @throws \obo\Exceptions\BadDataTypeException
      */
-    public function validate($value) {
+    public abstract function validate($value, $throwException = true);
 
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function convertValue($value) {
+        return $value;
+    }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public static function sanitizeValue($value) {
+        return $value;
     }
 
     /**
@@ -43,5 +59,4 @@ abstract class DataType extends \obo\Object {
     public function registerEvents() {
 
     }
-
 }

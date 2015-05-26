@@ -15,7 +15,7 @@ class IdentityMapper extends \obo\Object {
     /**
      * @var \obo\Entity[]
      */
-    private $entities = array();
+    private $entities = [];
 
     /**
      * @param \obo\Entity $entity
@@ -34,7 +34,7 @@ class IdentityMapper extends \obo\Object {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOffIgnoreNotificationForEntity($entity);
             return $this->entities[$entity->entityIdentificationKey()]["entity"];
         } else {
-            $this->entities[$entity->entityIdentificationKey()] = array("entity" => $entity);
+            $this->entities[$entity->entityIdentificationKey()] = ["entity" => $entity];
             return $entity;
         }
     }
@@ -46,5 +46,4 @@ class IdentityMapper extends \obo\Object {
     public function isMappedEntity(\obo\Entity $entity) {
         return isset($this->entities[$entity->entityIdentificationKey()]);
     }
-
 }

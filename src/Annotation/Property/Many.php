@@ -40,7 +40,7 @@ class Many extends \obo\Annotation\Base\Property {
     /**
      * @var array
      */
-    protected $cascadeOptions = array();
+    protected $cascadeOptions = [];
 
     /**
      * @return string
@@ -53,15 +53,15 @@ class Many extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("parameters" => array("targetEntity" => true, "connectViaProperty" => false, "ownerNameInProperty" => false, "connectViaRepository" => false, "sortVia" => false, "cascade" => false));
+        return ["parameters" => ["targetEntity" => true, "connectViaProperty" => false, "ownerNameInProperty" => false, "connectViaRepository" => false, "sortVia" => false, "cascade" => false]];
     }
 
     /**
      * @param array $values
-     * @throws \obo\Exceptions\BadAnnotationException
      * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
 
         if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built. Target entity class doesn't exist.");
@@ -86,7 +86,9 @@ class Many extends \obo\Annotation\Base\Property {
             $relationship->sortVia = $this->sortVia = $values["sortVia"];
         }
 
-        $this->propertyInformation->dataType = new \obo\DataType\Object($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeObject($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
+        $this->propertyInformation->columnName = "";
+        $this->propertyInformation->persistable = false;
     }
 
     /**
@@ -96,23 +98,23 @@ class Many extends \obo\Annotation\Base\Property {
 
         foreach ($this->cascadeOptions as $cascadeOption) {
             if ($cascadeOption == "save") {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "afterSave",
                     "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
-                    "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-                )));
+                    "actionArguments" => ["propertyName" => $this->propertyInformation->name],
+                ]));
             } elseif ($cascadeOption == "delete") {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeDelete",
                     "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
-                    "actionArguments" => array("propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty),
-                )));
+                    "actionArguments" => ["propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty],
+                ]));
             }
         }
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event(array(
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
@@ -126,8 +128,8 @@ class Many extends \obo\Annotation\Base\Property {
                     }
 
                 },
-            "actionArguments" => array("propertyName" => $this->propertyInformation->name),
-        )));
+            "actionArguments" => ["propertyName" => $this->propertyInformation->name],
+        ]));
 
     }
 

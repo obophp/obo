@@ -26,20 +26,22 @@ class Uuid extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return array("numberOfParameters" => "?");
+        return ["numberOfParameters" => "?"];
     }
 
     /**
      * @param array $values
      * @return void
      */
-    public function process($values) {
+    public function process(array $values) {
         parent::process($values);
         $this->registerUuidGenerator = $values[0];
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeString($this->propertyInformation);
     }
 
     /**
      * @param array $arguments
+     * @return void
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
@@ -71,5 +73,4 @@ class Uuid extends \obo\Annotation\Base\Property {
             "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
         ]));
     }
-
 }

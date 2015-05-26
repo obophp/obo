@@ -28,7 +28,7 @@ class One extends \obo\Relationships\Relationship {
      * @param array $cascade
      * @return void
      */
-    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = array()) {
+    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []) {
         if (\strpos($entityClassNameToBeConnected, "property:") === 0) {
             $this->entityClassNameToBeConnectedInPropertyWithName = \substr($entityClassNameToBeConnected, 9);
             $entityClassNameToBeConnected = null;
@@ -55,7 +55,7 @@ class One extends \obo\Relationships\Relationship {
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
         } else {
-            return $this->autoCreate ? $entityManagerName::entityFromArray(array()) : null;
+            return $this->autoCreate ? $entityManagerName::entityFromArray([]) : null;
         }
     }
 

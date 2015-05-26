@@ -17,12 +17,9 @@ abstract class Property extends \obo\Annotation\Base\Definition {
      */
     protected $propertyInformation;
 
-    /**
-     * @param \obo\Carriers\EntityInformationCarrier $entityInformation
-     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
-     */
-    public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
-        parent::__construct($propertyInformation->entityInformation);
+
+    public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, \obo\Carriers\EntityInformationCarrier $entityInformation) {
+        parent::__construct($entityInformation);
         $this->propertyInformation = $propertyInformation;
     }
 
