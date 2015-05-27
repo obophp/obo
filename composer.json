@@ -1,7 +1,7 @@
 {
     "name": "obo/obo",
     "type": "library",
-    "description": "",
+    "description": "Event driven ORM and domain logic library",
     "keywords": ["framework", "domain logic", "orm", "database"],
     "homepage": "http://obophp.org",
     "license": ["Apache-2.0"],
