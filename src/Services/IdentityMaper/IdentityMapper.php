@@ -31,7 +31,6 @@ class IdentityMapper extends \obo\Object {
      */
     public function mappedEntity(\obo\Entity $entity) {
         if (isset($this->entities[$entity->entityIdentificationKey()])) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOffIgnoreNotificationForEntity($entity);
             return $this->entities[$entity->entityIdentificationKey()]["entity"];
         } else {
             $this->entities[$entity->entityIdentificationKey()] = ["entity" => $entity];

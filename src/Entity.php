@@ -243,7 +243,7 @@ abstract class Entity  extends \obo\Object {
             $dataType->validate($value);
         }
 
-        if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
+        if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
             $change = false;
             $oldValue = $this->valueForPropertyWithName($propertyName);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => &$value]]);
@@ -258,7 +258,7 @@ abstract class Entity  extends \obo\Object {
                     }
                 }
             } else {
-                if ($this->valueForPropertyWithName($propertyName, true) !== $value) $change = true;
+                $change = $this->valueForPropertyWithName($propertyName, true) !== $value;
             }
 
             if ($change) {
@@ -272,7 +272,7 @@ abstract class Entity  extends \obo\Object {
             $this->propertiesObject()->{$propertyInformation->setterName}($value);
         }
 
-        if (!\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isActiveIgnoreNotificationForEntity($this) AND $triggerEvents) {
+        if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => $value]]);
             if ($change) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyValue" => ["old" => $oldValue, "new" => $value]]);
@@ -370,7 +370,7 @@ abstract class Entity  extends \obo\Object {
      * @return \obo\Entity
      */
     public function setInitialized() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOffIgnoreNotificationForEntity($this);
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEntity($this);
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInitialize", $this);
         $this->initialized = true;
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);

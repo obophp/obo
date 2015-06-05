@@ -25,7 +25,7 @@ class EventManager extends \obo\Object {
     /**
      * @var array
      */
-    private $ignoreNotificationEntities = [];
+    private $registeredEntities = [];
 
     /**
      * @param \obo\Services\Events\Event $event
@@ -44,20 +44,30 @@ class EventManager extends \obo\Object {
      * @return void
      */
     public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = []) {
-        if (!$this->isActiveIgnoreNotificationForEntity($entity)) {
+        if ($this->isRegisteredEntity($entity)) {
             $objectEventKey = $eventName.$entity->objectIdentificationKey();
             $classEventKey =  $eventName.$entity->className();
 
             if (isset($this->events[$objectEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
-                $this->addIgnoreNotifyForEventWithKey($objectEventKey);
-                foreach ($this->events[$objectEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
-                $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                try {
+                    $this->addIgnoreNotifyForEventWithKey($objectEventKey);
+                    foreach ($this->events[$objectEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
+                    $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                } catch (\Exception $exc) {
+                    $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                    throw $exc;
+                }
             }
 
-            if (isset($this->events[$classEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($classEventKey)) {
-                $this->addIgnoreNotifyForEventWithKey($classEventKey);
+            if (isset($this->events[$classEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
+                try {
+                    $this->addIgnoreNotifyForEventWithKey($objectEventKey);
                 foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
-                $this->removeIgnoreNotifyForEventWithKey($classEventKey);
+                $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                } catch (\Exception $exc) {
+                    $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                    throw $exc;
+                }
             }
         }
     }
@@ -104,21 +114,15 @@ class EventManager extends \obo\Object {
         return isset($this->ignoreEvents[$eventKey]);
     }
 
-    /**
-     * @param \obo\Entity $entity
-     * @return void
-     */
-    public function turnOnIgnoreNotificationForEntity(\obo\Entity $entity) {
-        $this->ignoreNotificationEntities[$entity->objectIdentificationKey()] = true;
+    public function registerEntity(\obo\Entity $entity) {
+        $this->registeredEntities[$entity->objectIdentificationKey()] = true;
     }
 
-    /**
-     * @param \obo\Entity $entity
-     * @return void
-     */
-    public function turnOffIgnoreNotificationForEntity(\obo\Entity $entity) {
-        unset($this->ignoreNotificationEntities[$entity->objectIdentificationKey()]);
+    public function isRegisteredEntity(\obo\Entity $entity) {
+        return isset($this->registeredEntities[$entity->objectIdentificationKey()]);
     }
+
+
 
     /**
      * @param \obo\Entity $entity
@@ -127,5 +131,4 @@ class EventManager extends \obo\Object {
     public function isActiveIgnoreNotificationForEntity(\obo\Entity $entity) {
         return isset($this->ignoreNotificationEntities[$entity->objectIdentificationKey()]);
     }
-
 }

@@ -80,7 +80,6 @@ abstract class EntityManager  extends \obo\Object {
         $entityClassName = self::classNameManagedEntity();
         $entity = new $entityClassName;
         $entity->setDataStorage(self::dataStorage());
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->turnOnIgnoreNotificationForEntity($entity);
         return $entity;
     }
 
