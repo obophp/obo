@@ -27,7 +27,7 @@ class Integer extends \obo\DataType\Base\DataType {
      */
     public function validate($value, $throwException = true) {
         if (\is_int($value) OR \is_null($value)) return true;
-        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'integer' datatype.");
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'integer' datatype.");
         return false;
     }
 

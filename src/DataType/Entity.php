@@ -38,7 +38,7 @@ class Entity extends \obo\DataType\Base\DataType {
      */
     public function validate($value, $throwException = true) {
         if (\is_null($value) OR \is_string($value) OR \is_integer($value) OR ($value instanceof \obo\Entity AND (\is_null($this->className) OR $value instanceof $this->className))) return true;
-        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . (\is_object ($value)) ? \get_class($value) : print_r($value, true) . "' of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of '" . ($this->className === null) ? "entity" : $this->className . "' datatype.");
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value '" . (\is_object($value) ? \get_class($value) : print_r($value, true) . "' of '" . \gettype($value)) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of '" . ($this->className === null) ? "entity" : $this->className . "' datatype.");
         return false;
     }
 
