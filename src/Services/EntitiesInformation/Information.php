@@ -44,6 +44,23 @@ class Information extends \obo\Object {
     }
 
     /**
+     * @return array
+     * @throws \obo\Exceptions\Exception
+     */
+    public function entitiesInformations() {
+        $entitiesInformations = [];
+
+        if (null === ($entitiesList = $this->cache->load("entitiesList"))) {
+            $this->createCache();
+            if (null === ($entitiesList = $this->cache->load("entitiesList"))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+        }
+
+        foreach($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName ($entityClassName);
+
+        return $entitiesInformations;
+    }
+
+    /**
      * @return void
      */
     protected function validateCache() {
@@ -71,10 +88,15 @@ class Information extends \obo\Object {
     /**
      * @return voide
      */
-    protected function createCache() {
+    public function createCache() {
+        $entitiesList = [];
+
         foreach ($this->explorer->analyze($this->modelsDirs) as $className => $entityInformation){
             $this->cache->store($className, $entityInformation);
+            $entitiesList[] = $className;
         }
+
+        $this->cache->store("entitiesList", $entitiesList);
         $this->cache->store("changesHash", $this->calculateChangesHash());
     }
 
