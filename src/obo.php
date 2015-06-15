@@ -33,7 +33,12 @@ class obo extends \obo\Object {
     /**
      * @var array
      */
-    private static $modelsDirs = [];
+    protected static $modelsDirs = [];
+
+    /**
+     * @var string
+     */
+    protected static $tempDir = "";
 
     /**
      * @return void
@@ -66,14 +71,37 @@ class obo extends \obo\Object {
     }
 
     /**
+     * @param string $tempDir
+     */
+    public static function setTempDir($tempDir) {
+        self::$tempDir = $tempDir;
+    }
+
+    /**
+     * @return type
+     */
+    public static function tempDir() {
+        return self::$tempDir;
+    }
+
+    /**
      * @return void
      */
     public static function run() {
-        if (!count(self::$modelsDirs)) throw new \obo\Exceptions\Exception("Obo can't run, path for models is not defined");
+        self::checkConfiguration();
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, \obo\Services::serviceWithName(self::ENTITIES_EXPLORER), \obo\Services::serviceWithName(self::CACHE)), self::ENTITIES_INFORMATION);
         \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
+    }
+
+    /**
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
+    public static function checkConfiguration() {
+        if (!count(self::$modelsDirs)) throw new \obo\Exceptions\Exception("Obo can't run, path for models is not defined");
+        if (self::$tempDir === "") throw new \obo\Exceptions\Exception("Obo can't run, path for temp dir is not defined");
     }
 }

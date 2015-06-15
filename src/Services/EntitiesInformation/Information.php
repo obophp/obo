@@ -12,16 +12,18 @@ namespace obo\Services\EntitiesInformation;
 
 class Information extends \obo\Object {
 
-    /** @var \obo\Carriers\EntityInformationCarrier[] */
-    protected $entitiesInformations = [];
+    /** @var array */
+    protected $modelsDirs = [];
     /** @var \obo\Services\EntitiesInformation\Explorer */
     protected $explorer = null;
     /** @var \obo\Interfaces\ICache */
     protected $cache = null;
+    /** @var \obo\Carriers\EntityInformationCarrier[] */
+    protected $entitiesInformations = [];
     /** @var boolean */
     protected $cacheValidity = true;
-    /** @var array */
-    protected $modelsDirs = [];
+    /** @var string */
+    protected $lockFilePath = "";
 
     /**
      * @param array $modelsDirs
@@ -32,6 +34,7 @@ class Information extends \obo\Object {
         $this->explorer = $explorer;
         $this->cache = $cache;
         $this->modelsDirs = $modelsDirs;
+        $this->lockFilePath = \obo\obo::tempDir() . "/cache.lock";
         if (\obo\obo::$developerMode) $this->validateCache();
     }
 
@@ -40,6 +43,7 @@ class Information extends \obo\Object {
      * @return \obo\Carriers\EntityInformationCarrier
      */
     public function informationForEntityWithClassName($className) {
+       $className = \ltrim($className, "\\");
        return isset($this->entitiesInformations[$className]) ? $this->entitiesInformations[$className] : $this->loadClassInformationForEntityWithClassName($className);
     }
 
@@ -50,12 +54,20 @@ class Information extends \obo\Object {
     public function entitiesInformations() {
         $entitiesInformations = [];
 
-        if (null === ($entitiesList = $this->cache->load("entitiesList"))) {
-            $this->createCache();
-            if (null === ($entitiesList = $this->cache->load("entitiesList"))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+        if (\is_file($this->lockFilePath)) {
+            $fp = \fopen($this->lockFilePath, "c+" );
+            if (!\flock($fp, \LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
+            $this->cacheValidity = true;
+            \flock($fp, \LOCK_UN);
+            \fclose($fp);
         }
 
-        foreach($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName ($entityClassName);
+        if (($entitiesList = $this->cache->load("entitiesList")) === null) {
+            $this->createCache();
+            if (($entitiesList = $this->cache->load("entitiesList")) === null) throw new \obo\Exceptions\Exception("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+        }
+
+        foreach($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName($entityClassName);
 
         return $entitiesInformations;
     }
@@ -86,18 +98,24 @@ class Information extends \obo\Object {
     }
 
     /**
-     * @return voide
+     * @return void
      */
     public function createCache() {
         $entitiesList = [];
+        $fp = \fopen($this->lockFilePath, "c+" );
+        if (!\flock($fp, LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
 
-        foreach ($this->explorer->analyze($this->modelsDirs) as $className => $entityInformation){
+        foreach ($this->explorer->analyze($this->modelsDirs) as $className => $entityInformation) {
             $this->cache->store($className, $entityInformation);
             $entitiesList[] = $className;
         }
 
         $this->cache->store("entitiesList", $entitiesList);
         $this->cache->store("changesHash", $this->calculateChangesHash());
+        $this->cacheValidity = true;
+        \unlink($this->lockFilePath);
+        \flock($fp, \LOCK_UN);
+        \fclose($fp);
     }
 
     /**
@@ -106,12 +124,24 @@ class Information extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     protected function loadClassInformationForEntityWithClassName($className) {
-        if (!$this->cacheValidity OR \is_null($entityInformation = $this->cache->load($className))) {
+
+        if (\is_file($this->lockFilePath)) {
+            $fp = \fopen($this->lockFilePath, "c+" );
+            if (!\flock($fp, \LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
+            $this->cacheValidity = true;
+            \flock($fp, \LOCK_UN);
+            \fclose($fp);
+        }
+
+        if (!$this->cacheValidity OR ($entityInformation = $this->cache->load($className)) === null) {
             $this->createCache();
             if (\is_null($entityInformation = $this->cache->load($className))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+        } else {
+            $entityInformation = $this->cache->load($className);
         }
-        $this->registerRunTimeEventsForEntity($entityInformation = $this->cache->load($className));
-        return $this->entitiesInformations[$className] = $entityInformation;
+
+        $this->registerRunTimeEventsForEntity($entityInformation);
+        return $this->entitiesInformations[\ltrim($className, "\\")] = $entityInformation;
     }
 
     /**

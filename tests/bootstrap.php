@@ -19,6 +19,7 @@ date_default_timezone_set("Europe/Prague");
     ]
 ]));
 \obo\obo::setCache(new Obo\Cache(__DIR__ . DIRECTORY_SEPARATOR . "temp"));
+\obo\obo::setTempDir(__DIR__ . DIRECTORY_SEPARATOR . "temp");
 \obo\obo::addModelsDirs([
    __DIR__ . DIRECTORY_SEPARATOR . "obo" . DIRECTORY_SEPARATOR . "Entities",
 ]);
