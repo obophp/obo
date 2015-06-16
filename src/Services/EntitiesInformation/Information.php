@@ -57,7 +57,7 @@ class Information extends \obo\Object {
         if (\is_file($this->lockFilePath)) {
             $fp = \fopen($this->lockFilePath, "c+" );
             if (!\flock($fp, \LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
-            $this->cacheValidity = true;
+            $this->validateCache();
             \flock($fp, \LOCK_UN);
             \fclose($fp);
         }
@@ -128,7 +128,7 @@ class Information extends \obo\Object {
         if (\is_file($this->lockFilePath)) {
             $fp = \fopen($this->lockFilePath, "c+" );
             if (!\flock($fp, \LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
-            $this->cacheValidity = true;
+            $this->validateCache();
             \flock($fp, \LOCK_UN);
             \fclose($fp);
         }
