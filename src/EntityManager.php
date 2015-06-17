@@ -93,7 +93,8 @@ abstract class EntityManager  extends \obo\Object {
         $entity = self::emptyEntity();
 
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-        if (!$entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->validate($primaryPropertyValue, false)) throw new \obo\Exceptions\BadDataTypeException("Can't create entity from value " . (\is_scalar($primaryPropertyValue) ? "'" . print_r($primaryPropertyValue, true) . "'" : "") . " of '" . \gettype($primaryPropertyValue) . "' datatype. Primary property '" . $primaryPropertyName . "' in entity '" . self::classNameManagedEntity() . "' is of '" . $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->name() . "' datatype.");
+        $primaryPropertyDataType = $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType;
+        if (!$primaryPropertyDataType->validate($primaryPropertyDataType->sanitizeValue($primaryPropertyValue), false)) throw new \obo\Exceptions\BadDataTypeException("Can't create entity from value " . (\is_scalar($primaryPropertyValue) ? "'" . print_r($primaryPropertyValue, true) . "'" : "") . " of '" . \gettype($primaryPropertyValue) . "' datatype. Primary property '" . $primaryPropertyName . "' in entity '" . self::classNameManagedEntity() . "' is of '" . $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->name() . "' datatype.");
         $entity->setValueForPropertyWithName($primaryPropertyValue, $primaryPropertyName);
         $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
 
