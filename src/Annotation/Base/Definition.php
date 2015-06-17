@@ -78,13 +78,12 @@ abstract class Definition extends \obo\Object {
      * @throws \obo\Exceptions\BadAnnotationException
      */
     public function checkAnnotationValueStructure($annotationValue) {
-        $parametersDefinition = self::parametersDefinition();
 
-        if (isset($parametersDefinition["numberOfParameters"])) {
+        if (isset(static::parametersDefinition()["numberOfParameters"])) {
             $this->checkNumberOfParametersForAnnotationValue($annotationValue);
         }
 
-        if (isset($parametersDefinition["parameters"])) {
+        if (isset(static::parametersDefinition()["parameters"])) {
             $this->checkParametersForAnnotationValue($annotationValue);
         }
     }
@@ -95,19 +94,19 @@ abstract class Definition extends \obo\Object {
      * @throws \obo\Exceptions\BadAnnotationException
      */
     private function checkNumberOfParametersForAnnotationValue($annotationValue) {
-        $parametersDefinition = self::parametersDefinition();
+        $parametersDefinition = static::parametersDefinition();
 
         switch (true) {
             case $parametersDefinition["numberOfParameters"] == "?" :
-                if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects zero or one parameter, you send more parameters");
+                if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects zero or one parameter, you send more parameters");
             break;
 
             case $parametersDefinition["numberOfParameters"] == -1 :
-                if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects one or more parameters, you did not send any parameters");
+                if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects one or more parameters, you did not send any parameters");
             break;
 
             case $parametersDefinition["numberOfParameters"] > 0 :
-                if (count($annotationValue) != $parametersDefinition["numberOfParameters"]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' expects {$parametersDefinition["numberOfParameters"]} parameters, you sent " . count($annotationValue));
+                if (count($annotationValue) != $parametersDefinition["numberOfParameters"]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects {$parametersDefinition["numberOfParameters"]} parameters, you sent " . count($annotationValue));
             break;
 
             default:
@@ -121,17 +120,16 @@ abstract class Definition extends \obo\Object {
      * @throws \obo\Exceptions\BadAnnotationException
      */
     private function checkParametersForAnnotationValue($annotationValue) {
-        $parametersDefinition = self::parametersDefinition();
-        $definitionParameters = $parametersDefinition["parameters"];
+        $parametersDefinition = static::parametersDefinition()["parameters"];
 
         foreach ($annotationValue as $parameterName => $parameterRequired) {
-            if (!isset($definitionParameters[$parameterName])) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' does not accept parameter with name '{$parameterName}'");
-            $definitionParameters[$parameterName] = false;
+            if (!isset($parametersDefinition[$parameterName])) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' does not accept parameter with name '{$parameterName}'");
+            $parametersDefinition[$parameterName] = false;
         }
 
-        if(\array_reduce($definitionParameters, function($v, $w) {return $v OR $w;}, false)) {
-            foreach ($definitionParameters as $parameterName => $parameterRequired) {
-                if ($parameterRequired) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '{$this->name}' requires a parameter with name '{$parameterName}' which was not sent");
+        if(\array_reduce($parametersDefinition, function($v, $w) {return $v OR $w;}, false)) {
+            foreach ($parametersDefinition as $parameterName => $parameterRequired) {
+                if ($parameterRequired) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' requires a parameter with name '{$parameterName}' which was not sent");
             }
         }
     }
