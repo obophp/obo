@@ -13,11 +13,6 @@ namespace obo\Annotation\Entity;
 class SoftDeletable extends \obo\Annotation\Base\Entity {
 
     /**
-     * @var string
-     */
-    protected $usePropertyWithName = null;
-
-    /**
      * @return string
      */
     public static function name() {
@@ -33,22 +28,25 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
 
     /**
      * @param array $values
+     * @throws \obo\Exceptions\Exception
      * @return void
      */
     public function process(array $values) {
         parent::process($values);
 
-        if (isset($values[0]) AND $values[0] !== true) {
-            if ($values[0] === false) {
-                 $value = null;
+        $propertyNameForSoftDelete = "deleted";
+
+        if (isset($values[0])) {
+            if (is_string($values[0])) {
+                $propertyNameForSoftDelete = $values[0];
+            } else if (is_bool($values[0])) {
+                if (!$values[0]) $propertyNameForSoftDelete = "";
             } else {
-                 $value = $values[0];
+                throw new \obo\Exceptions\BadAnnotationException("Annotation 'softDeletable' expects single parameter of data type string or boolean");
             }
-        } else {
-            $value = "deleted";
         }
 
-        $this->entityInformation->propertyNameForSoftDelete = $this->usePropertyWithName = $value;
+        $this->entityInformation->propertyNameForSoftDelete = $propertyNameForSoftDelete;
     }
 
     /**
