@@ -70,20 +70,21 @@ class Many extends \obo\Annotation\Base\Property {
 
         $relationship = $this->propertyInformation->relationship = new \obo\Relationships\Many($this->targetEntity, $this->propertyInformation->name);
 
+        if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
+
+        if (isset($values["sortVia"])) {
+            $relationship->sortVia = $this->sortVia = $values["sortVia"];
+        }
+
         if (isset($values["connectViaProperty"])) {
             $relationship->connectViaPropertyWithName = $this->connectViaProperty =  $values["connectViaProperty"];
             if (isset($values["ownerNameInProperty"])) $relationship->ownerNameInProperty = $this->ownerNameInProperty = $values["ownerNameInProperty"];
         } elseif (isset($values["connectViaRepository"])) {
             $relationship->connectViaRepositoryWithName = $this->connectViaRepository =  $values["connectViaRepository"];
+            if (!\array_search("delete", $this->cascadeOptions)) $this->cascadeOptions[] = "delete";
             if (isset($values["ownerNameInProperty"])) throw new \obo\Exceptions\BadAnnotationException("Annotation 'ownerNameInProperty' may be used only with 'connectViaProperty' annotation");
         } else {
             throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built because it relies on a parameter 'connectViaProperty' or 'connectViaRepository'");
-        }
-
-        if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
-
-        if (isset($values["sortVia"])) {
-            $relationship->sortVia = $this->sortVia = $values["sortVia"];
         }
 
         $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeObject($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
