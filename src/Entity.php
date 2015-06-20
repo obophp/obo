@@ -161,16 +161,16 @@ abstract class Entity  extends \obo\Object {
      * @return void
      * @throws \obo\Exceptions\Exception
      */
-    public function markUnpersitedPropertiesAsPersisted() {
+    public function markUnpersistedPropertiesAsPersisted() {
         $backTrace = \debug_backtrace(null, 2);
 
-        if (($backTrace[1]["class"] === "obo\\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\\Entity" AND $backTrace[1]["function"] === "discardNonPersitedChanges")) {
+        if (($backTrace[1]["class"] === "obo\\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\\Entity" AND $backTrace[1]["function"] === "discardNonPersistedChanges")) {
             foreach ($this->propertiesChanges as $propertyName => $changeStatus) {
                 $this->propertiesChanges[$propertyName]["persisted"] = true;
                 $this->propertiesChanges[$propertyName]["lastPersistedValue"] = $this->propertiesChanges[$propertyName]["newValue"];
             }
         } else {
-            throw new \obo\Exceptions\Exception("MarkUnpersitedPropertiesAsPersisted method can be only called from the obo framework");
+            throw new \obo\Exceptions\Exception("MarkUnpersistedPropertiesAsPersisted method can be only called from the obo framework");
         }
     }
 
@@ -224,8 +224,10 @@ abstract class Entity  extends \obo\Object {
      * @param mixed $value
      * @param string $propertyName
      * @param bool $triggerEvents
-     * @throws \obo\Exceptions\PropertyNotFoundException
      * @return mixed
+     * @throws \obo\Exceptions\Exception
+     * @throws \obo\Exceptions\PropertyNotFoundException
+     * @throws \obo\Exceptions\ServicesException
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
@@ -334,15 +336,16 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param array | \Iterator | null $onlyFromList
-     * @param boolean $entityAsPrimaryPropertyValue
+     * @param bool $entityAsPrimaryPropertyValue
+     * @param bool $onlyNonPersistentChanges
      * @return array
      */
-    public function changedProperties($onlyFromList = null, $entityAsPrimaryPropertyValue = true, $onlyNonPersitentChanges = false) {
+    public function changedProperties($onlyFromList = null, $entityAsPrimaryPropertyValue = true, $onlyNonPersistentChanges = false) {
         if ($this->isBasedInRepository()) {
 
             $propertiesChanges = $this->propertiesChanges;
 
-            if ($onlyNonPersitentChanges) {
+            if ($onlyNonPersistentChanges) {
                 foreach ($propertiesChanges as $propertyName => $changeStatus) {
                     if ($changeStatus["persisted"]) unset($propertiesChanges[$propertyName]);
                 }
@@ -434,10 +437,10 @@ abstract class Entity  extends \obo\Object {
      * @return void
      * @throws \obo\Exceptions\Exception
      */
-    public function discardNonPersitedChanges() {
+    public function discardNonPersistedChanges() {
         if ($this->saveInProgress) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
         foreach ($this->propertiesChanges as $propertyName => $changeStatus) $this->setValueForPropertyWithName($changeStatus["lastPersistedValue"], $propertyName);
-        $this->markUnpersitedPropertiesAsPersisted();
+        $this->markUnpersistedPropertiesAsPersisted();
     }
 
     /**

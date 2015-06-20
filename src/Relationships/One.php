@@ -26,7 +26,6 @@ class One extends \obo\Relationships\Relationship {
      * @param string $entityClassNameToBeConnected
      * @param string $ownerPropertyName
      * @param array $cascade
-     * @return void
      */
     public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []) {
         if (\strpos($entityClassNameToBeConnected, "property:") === 0) {
@@ -59,10 +58,9 @@ class One extends \obo\Relationships\Relationship {
         }
     }
 
-
     /**
      * @param \obo\Entity $owner
-     * @param strong $foreignPropertyName
+     * @param string $foreignPropertyName
      * @return \obo\Entity|null
      */
     public function entityForOwnerForeignProperty(\obo\Entity $owner, $foreignPropertyName) {

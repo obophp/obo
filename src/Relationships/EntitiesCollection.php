@@ -18,16 +18,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /** @var \obo\Entity */
     protected $owner = null;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $entitiesAreLoaded = false;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $savingInProgress = false;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $afterSavingNeedReload = false;
 
-    /** @var boolean*/
+    /** @var boolean */
     protected $deletingInProgress = false;
 
     /**
@@ -291,7 +291,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /**
      * @return void
      */
-    public function reloadEntitites() {
+    public function reloadEntities() {
         $this->clear();
         $this->loadEntities();
     }
@@ -303,7 +303,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if (!$this->entitiesAreLoaded) return;
         $this->savingInProgress = true;
         foreach ($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
-        if ($this->afterSavingNeedReload) $this->reloadEntitites();
+        if ($this->afterSavingNeedReload) $this->reloadEntities();
         $this->savingInProgress = false;
     }
 

@@ -18,19 +18,26 @@ abstract class Relationship extends \obo\Object {
     public $owner = null;
 
     /**
-     * @var type
+     * @var string
      */
     public $entityClassNameToBeConnected = "";
+
+    /**
+     * @var string
+     */
     public $ownerPropertyName = "";
-    public $cascade = [];
+
+    /**
+     * @var \obo\Carriers\DataCarrier
+     */
+    public $cascade = null;
 
     /**
      * @param string $entityClassNameToBeConnected
      * @param string $ownerPropertyName
      * @param array $cascade
-     * @return void
      */
-    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []){
+    public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []) {
         $this->entityClassNameToBeConnected = $entityClassNameToBeConnected;
         $this->ownerPropertyName = $ownerPropertyName;
         $this->cascade = new \obo\Carriers\DataCarrier($cascade);
