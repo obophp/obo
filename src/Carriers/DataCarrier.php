@@ -198,10 +198,11 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function offsetSet($offset, $value) {
+        $variables = $this->variables();
         if (is_null($offset)) {
-            $this->variables()[] = $value;
+            $variables[] = $value;
         } else {
-            $this->variables()[$offset] = $value;
+            $variables[$offset] = $value;
         }
     }
 
