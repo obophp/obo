@@ -135,7 +135,7 @@ class Information extends \obo\Object {
 
         if (!$this->cacheValidity OR ($entityInformation = $this->cache->load($className)) === null) {
             $this->createCache();
-            if (\is_null($entityInformation = $this->cache->load($className))) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+            if (($entityInformation = $this->cache->load($className)) === null) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
         } else {
             $entityInformation = $this->cache->load($className);
         }

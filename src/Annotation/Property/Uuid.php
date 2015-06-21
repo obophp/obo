@@ -50,7 +50,7 @@ class Uuid extends \obo\Annotation\Base\Property {
             throw new \obo\Exceptions\BadAnnotationException("UUID generator is not registered, register it via obo::setUuidGenerator()", null, $e);
         }
 
-        if (\is_null($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name))){
+        if ($arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) === null){
             $arguments["entity"]->setValueForPropertyWithName($uuidGenerator->generateUuid(), $this->propertyInformation->name);
         }
     }

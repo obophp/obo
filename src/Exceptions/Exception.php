@@ -16,7 +16,7 @@ class Exception extends \Exception {
 
     function __construct($message = null, $code = null, $previous = null, $foreseenFileError = null, $foreseenLineError = null) {
         parent::__construct($message, $code, $previous);
-        if(\is_null($foreseenFileError) OR \is_null($foreseenLineError)) {
+        if($foreseenFileError === null OR $foreseenLineError === null) {
             $this->findForeseenPointOfError();
         } else {
             $this->foreseenFileError = $foreseenFileError;

@@ -133,7 +133,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         $specification = new \obo\Carriers\QueryCarrier();
 
-        if (!\is_null($filter)) {
+        if ($filter !== null) {
             $specification->addSpecification($filter->getSpecification());
         }
 

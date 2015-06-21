@@ -26,7 +26,7 @@ class Integer extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if (\is_int($value) OR \is_null($value)) return true;
+        if (\is_int($value) OR $value === null) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'integer' datatype.");
         return false;
     }
@@ -36,7 +36,7 @@ class Integer extends \obo\DataType\Base\DataType {
      * @return integer
      */
     public static function convertValue($value) {
-        return (\is_null($value) OR $value === "") ? null : (int) $value;
+        return ($value === null OR $value === "") ? null : (int) $value;
     }
 
     /**
@@ -44,7 +44,7 @@ class Integer extends \obo\DataType\Base\DataType {
      * @return integer
      */
     public static function sanitizeValue($value) {
-        if (((\is_numeric($value) AND \is_int($value * 1))) OR \is_null($value) OR $value === "") return self::convertValue($value);
+        if (((\is_numeric($value) AND \is_int($value * 1))) OR $value === null OR $value === "") return self::convertValue($value);
         return $value;
     }
 }

@@ -81,7 +81,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function changeVariableNameForValue($variableName, $value) {
-        if (\is_null($varibleName = \array_search($value, $this->variables()))) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
+        if ($varibleName = \array_search($value, $this->variables()) === null) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
         $this->unsetValueForVaraibleWithName($varibleName);
         $this->setValueForVariableWithName($value, $variableName);
     }
@@ -198,7 +198,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return void
      */
     public function offsetSet($offset, $value) {
-        if (is_null($offset)) {
+        if ($offset === null) {
             $this->variables()[] = $value;
         } else {
             $this->variables()[$offset] = $value;

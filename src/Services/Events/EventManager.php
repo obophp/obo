@@ -79,14 +79,14 @@ class EventManager extends \obo\Object {
      * @return void
      */
     private function executeAction(\obo\Services\Events\Event $event, \obo\Entity $entity, array $arguments) {
-        if (!is_null($event->actionAnonymousFunction)) {
+        if ($event->actionAnonymousFunction !== null) {
             $arguments = \array_merge ($event->actionArguments, $arguments, ["entity" => $entity]);
             $actionAnonymousFunction = $event->actionAnonymousFunction;
             $actionAnonymousFunction($arguments);
         } else {
             $message = $event->actionMessage;
             $arguments = \array_merge ($event->actionArguments, $arguments);
-            if (is_null($event->actionEntity)) $entity->$message($arguments); else $event->actionEntity->$message($arguments);
+            if ($event->actionEntity === null) $entity->$message($arguments); else $event->actionEntity->$message($arguments);
         }
     }
 

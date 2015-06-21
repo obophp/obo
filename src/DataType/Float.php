@@ -26,7 +26,7 @@ class Float extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if (\is_float($value) OR \is_null($value)) return true;
+        if (\is_float($value) OR $value === null) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'float' datatype.");
         return false;
     }
@@ -36,7 +36,7 @@ class Float extends \obo\DataType\Base\DataType {
      * @return float
      */
     public static function convertValue($value) {
-        return (\is_null($value) OR $value === "") ? null : (float) $value;
+        return ($value === null OR $value === "") ? null : (float) $value;
     }
 
     /**
@@ -44,7 +44,7 @@ class Float extends \obo\DataType\Base\DataType {
      * @return float
      */
     public static function sanitizeValue($value) {
-        if ((\is_numeric($value) AND \is_float($value + 0.0)) OR \is_null($value) OR $value === "") return self::convertValue($value);
+        if ((\is_numeric($value) AND \is_float($value + 0.0)) OR $value === null OR $value === "") return self::convertValue($value);
         return $value;
     }
 }

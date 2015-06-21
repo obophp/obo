@@ -43,7 +43,7 @@ class One extends \obo\Relationships\Relationship {
     public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
         $this->owner = $owner;
 
-        if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {
+        if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
             $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
         } else {
             if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
@@ -64,10 +64,10 @@ class One extends \obo\Relationships\Relationship {
      * @return \obo\Entity|null
      */
     public function entityForOwnerForeignProperty(\obo\Entity $owner, $foreignPropertyName) {
-        if (\is_null($owner->primaryPropertyValue())) return null;
+        if ($owner->primaryPropertyValue() === null) return null;
         $this->owner = $owner;
 
-        if (\is_null($this->entityClassNameToBeConnectedInPropertyWithName)) {
+        if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
             $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
         } else {
             if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
