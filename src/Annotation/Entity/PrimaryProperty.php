@@ -13,11 +13,6 @@ namespace obo\Annotation\Entity;
 class PrimaryProperty extends \obo\Annotation\Base\Entity {
 
     /**
-     * @var string
-     */
-    protected $primaryPropertyName = "";
-
-    /**
      * @return string
      */
     public static function name() {
@@ -28,7 +23,7 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => 1];
+        return [self::PARAMETERS_NUMBER_DEFINITION => 1];
     }
 
     /**
@@ -37,7 +32,7 @@ class PrimaryProperty extends \obo\Annotation\Base\Entity {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->entityInformation->primaryPropertyName = $this->primaryPropertyName = $values[0];
+        $this->entityInformation->primaryPropertyName = $values[0];
     }
 
     /**

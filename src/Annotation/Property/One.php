@@ -48,7 +48,14 @@ class One extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["parameters" => ["targetEntity" => true, "connectViaProperty" => false, "cascade" => false, "autoCreate" => false]];
+        return [
+            self::PARAMETERS_DEFINITION => [
+                "targetEntity" => true,
+                "connectViaProperty" => false,
+                "cascade" => false,
+                "autoCreate" => false
+            ]
+        ];
     }
 
     /**

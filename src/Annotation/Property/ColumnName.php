@@ -13,11 +13,6 @@ namespace obo\Annotation\Property;
 class ColumnName extends \obo\Annotation\Base\Property {
 
     /**
-     * @var string
-     */
-    protected $columnName = "";
-
-    /**
      * @return string
      */
     public static function name() {
@@ -28,7 +23,7 @@ class ColumnName extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => 1];
+        return [self::PARAMETERS_NUMBER_DEFINITION => 1];
     }
 
     /**
@@ -37,7 +32,7 @@ class ColumnName extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->propertyInformation->columnName = $this->columnName = $values[0];
+        $this->propertyInformation->columnName = $values[0];
     }
 
 }

@@ -23,7 +23,7 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => "?"];
+        return [self::PARAMETERS_NUMBER_DEFINITION => self::ZERO_OR_ONE_PARAMETER];
     }
 
     /**
@@ -32,7 +32,7 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
      * @throws \obo\Exceptions\BadAnnotationException
      */
     public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
-        if (!$this->propertyInformation->dataType instanceof \obo\DataType\Integer) throw new \obo\Exceptions\BadAnnotationException("Annotation 'autoIncrement' can be used only with 'integer' dataType.");
+        if (!$this->propertyInformation->dataType instanceof \obo\DataType\Integer) throw new \obo\Exceptions\BadAnnotationException("Annotation '" . self::name() . "' can be used only with 'integer' dataType.");
     }
 
     /**
@@ -42,7 +42,7 @@ class AutoIncrement extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'autoIncrement' annotation must be of boolean type");
+        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for '" . self::name() . "' annotation must be of boolean type");
         $this->propertyInformation->autoIncrement = $values[0];
     }
 
