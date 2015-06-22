@@ -23,7 +23,7 @@ class Persistable extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => 1];
+        return [self::PARAMETERS_NUMBER_DEFINITION => 1];
     }
 
     /**

@@ -26,7 +26,7 @@ class Uuid extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => "?"];
+        return [self::PARAMETERS_NUMBER_DEFINITION => self::ZERO_OR_ONE_PARAMETER];
     }
 
     /**
@@ -41,9 +41,7 @@ class Uuid extends \obo\Annotation\Base\Property {
 
     /**
      * @param array $arguments
-     * @return void
-     * @throws \obo\Exceptions\BadDataTypeException
-     * @throws \obo\Exceptions\PropertyNotFoundException
+     * @throws \obo\Exceptions\BadAnnotationException
      */
     public function generateUuid(array $arguments) {
         try {

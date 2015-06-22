@@ -23,7 +23,7 @@ class Nullable extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => "?"];
+        return [self::PARAMETERS_NUMBER_DEFINITION => self::ONE_OR_MORE_PARAMETERS];
     }
 
     /**
@@ -32,7 +32,7 @@ class Nullable extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for 'nullable' annotation must be of boolean type");
+        if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for '". self::name() . "' annotation must be of boolean type");
         $this->propertyInformation->nullable = $values[0];
     }
 }

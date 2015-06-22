@@ -53,7 +53,16 @@ class Many extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["parameters" => ["targetEntity" => true, "connectViaProperty" => false, "ownerNameInProperty" => false, "connectViaRepository" => false, "sortVia" => false, "cascade" => false]];
+        return [
+            self::PARAMETERS_DEFINITION => [
+                "targetEntity" => true,
+                "connectViaProperty" => false,
+                "ownerNameInProperty" => false,
+                "connectViaRepository" => false,
+                "sortVia" => false,
+                "cascade" => false
+            ]
+        ];
     }
 
     /**
@@ -64,7 +73,7 @@ class Many extends \obo\Annotation\Base\Property {
     public function process(array $values) {
         parent::process($values);
 
-        if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built. Target entity class doesn't exist.");
+        if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship '" . self::name() . "' could not be built. Target entity '{$values["targetEntity"]}' doesn't exist.");
 
         $this->targetEntity = $values["targetEntity"];
 

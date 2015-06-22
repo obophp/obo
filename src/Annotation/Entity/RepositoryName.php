@@ -28,7 +28,7 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => 1];
+        return [self::PARAMETERS_NUMBER_DEFINITION => 1];
     }
 
     /**
@@ -37,8 +37,7 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
      */
     public function process(array $values) {
         parent::process($values);
-        $managerName = $this->entityInformation->managerName;
-        $this->entityInformation->repositoryName = $this->repositoryName = $values[0];
+        $this->entityInformation->repositoryName = $values[0];
     }
 
     /**

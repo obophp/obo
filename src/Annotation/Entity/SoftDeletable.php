@@ -23,7 +23,7 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
      * @return array
      */
     public static function parametersDefinition() {
-        return ["numberOfParameters" => "?"];
+        return [self::PARAMETERS_NUMBER_DEFINITION => self::ZERO_OR_ONE_PARAMETER];
     }
 
     /**
@@ -42,7 +42,7 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
             } else if (is_bool($values[0])) {
                 if (!$values[0]) $propertyNameForSoftDelete = "";
             } else {
-                throw new \obo\Exceptions\BadAnnotationException("Annotation 'softDeletable' expects single parameter of data type string or boolean");
+                throw new \obo\Exceptions\BadAnnotationException("Annotation '" . self::name() . "' expects single parameter of data type string or boolean");
             }
         }
 
