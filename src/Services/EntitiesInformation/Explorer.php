@@ -157,7 +157,7 @@ class Explorer extends \obo\Object {
         }
 
         foreach ($propertiesClassReflection->getProperties() as $property) {
-            if ($property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object") continue;
+            if (!$property->isPublic() OR $property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object") continue;
 
             $propertyInformation = new \obo\Carriers\PropertyInformationCarrier();
             $propertyInformation->name = $property->name;
