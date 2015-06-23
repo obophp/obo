@@ -48,7 +48,7 @@ class Many extends \obo\Relationships\Relationship {
      * @return \obo\Entity
      */
     public function findEntities(\obo\Carriers\QuerySpecification $specification = null) {
-        if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
+        if ($specification === null) $specification = new \obo\Carriers\QuerySpecification();
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         return $ownedEntityManagerName::findEntities($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
@@ -58,8 +58,8 @@ class Many extends \obo\Relationships\Relationship {
      * @param \obo\Carriers\QuerySpecification $specification
      * @return int
      */
-    public function countEntities (\obo\Carriers\QuerySpecification $specification = null) {
-        if (\is_null($specification)) $specification = new \obo\Carriers\QuerySpecification();
+    public function countEntities(\obo\Carriers\QuerySpecification $specification = null) {
+        if ($specification === null) $specification = new \obo\Carriers\QuerySpecification();
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         return $ownedEntityManagerName::countRecords($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
@@ -74,12 +74,12 @@ class Many extends \obo\Relationships\Relationship {
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $ownedPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
 
-        $query = \is_null($specification) ? \obo\Carriers\QueryCarrier::instance() : $specification;
+        $query = $specification === null ? \obo\Carriers\QueryCarrier::instance() : $specification;
 
-        if (!\is_null($this->connectViaPropertyWithName)){
+        if ($this->connectViaPropertyWithName !== null) {
             $query->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->$ownerPrimaryPropertyName);
-            if (!\is_null($this->ownerNameInProperty)) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
-        } elseif (!\is_null($this->connectViaRepositoryWithName)){
+            if ($this->ownerNameInProperty !== null) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
+        } elseif ($this->connectViaRepositoryWithName !== null){
             if ($ownedPropertyNameForSoftDelete !== "") {
                 $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownedPropertyNameForSoftDelete)->columnName}] = %b";
                 $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::informationForPropertyWithName($ownedEntityClassName::entityInformation()->primaryPropertyName)->columnName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName, FALSE);
@@ -88,7 +88,7 @@ class Many extends \obo\Relationships\Relationship {
             }
         }
 
-        if (!\is_null($this->sortVia)) $query->orderBy($this->sortVia);
+        if ($this->sortVia !== null) $query->orderBy($this->sortVia);
 
         return $query;
     }

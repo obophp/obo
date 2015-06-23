@@ -148,7 +148,7 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @throws \obo\Exceptions\Exception
      */
     public function dumpQuery() {
-        if (\is_null($this->defaultEntityClassName)) throw new \obo\Exceptions\Exception("Unable to dump query because default Entity is not set");
+        if ($this->defaultEntityClassName === null) throw new \obo\Exceptions\Exception("Unable to dump query because default Entity is not set");
         $defaultEntityClassName = $this->defaultEntityClassName;
         $managerClass = $defaultEntityClassName::entityInformation()->managerName;
         return $managerClass::dataStorage()->constructQuery($this);

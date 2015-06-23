@@ -26,7 +26,7 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if ($value instanceof \DateTime OR \is_null($value)) return true;
+        if ($value instanceof \DateTime OR $value === null) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'DateTime' datatype.");
         return false;
     }
@@ -36,7 +36,7 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @return \DateTime
      */
     public static function convertValue($value) {
-        return \is_null($value) ? $value : new \DateTime($value);
+        return $value === null ? $value : new \DateTime($value);
     }
 
     /**

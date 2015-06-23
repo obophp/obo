@@ -148,7 +148,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
         if (count($arguments) == 1 AND is_array(\current($arguments))) $arguments = \current($arguments);
 
         foreach ($arguments as $argument) {
-            if (\is_null($argument)) continue;
+            if ($argument === null) continue;
             $formatArguments[] = $argument;
         }
 

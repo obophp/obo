@@ -26,7 +26,7 @@ class String extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if (\is_string($value) OR \is_null($value)) return true;
+        if (\is_string($value) OR $value === null) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'string' datatype.");
         return false;
     }
@@ -36,6 +36,6 @@ class String extends \obo\DataType\Base\DataType {
      * @return string
      */
     public static function convertValue($value) {
-        return (\is_null($value)) ? null : (string) $value;
+        return ($value === null) ? null : (string) $value;
     }
 }

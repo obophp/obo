@@ -110,7 +110,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
-        if($createRelationshipInRepository AND !\is_null($this->relationShip->connectViaRepositoryWithName)) {
+        if ($createRelationshipInRepository AND $this->relationShip->connectViaRepositoryWithName !== null) {
             if (!$entity->isBasedInRepository()) {
                 $entity->save();
             }
@@ -131,10 +131,10 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             }
         }
 
-        if (!\is_null($this->relationShip->connectViaPropertyWithName)) {
+        if ($this->relationShip->connectViaPropertyWithName !== null) {
 
             $entity->setValueForPropertyWithName($this->owner, $this->relationShip->connectViaPropertyWithName);
-            if (!\is_null($this->relationShip->ownerNameInProperty)) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
+            if ($this->relationShip->ownerNameInProperty !== null) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
 
             if ($createRelationshipInRepository) {
 
@@ -255,7 +255,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         $specification = new \obo\Carriers\QuerySpecification();
 
-        if (!\is_null($filter)) {
+        if ($filter !== null) {
             $specification->addSpecification($filter->getSpecification());
         }
 
@@ -349,7 +349,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     protected function removeRelationshipFromRepositoryForEntity(\obo\Entity $entity) {
-        if (\is_null($this->relationShip->connectViaRepositoryWithName)) {
+        if ($this->relationShip->connectViaRepositoryWithName === null) {
             $entity->setValueForPropertyWithName(null, $this->relationShip->connectViaPropertyWithName);
             $entity->save();
         } else {

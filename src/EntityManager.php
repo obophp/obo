@@ -161,7 +161,7 @@ abstract class EntityManager  extends \obo\Object {
     public static function entity($specification) {
        if (is_array($specification) OR $specification instanceof \Traversable) {
            return self::entityFromArray($specification, true);
-       } elseif (!\is_null($specification)) {
+       } elseif ($specification !== null) {
            return self::entityWithPrimaryPropertyValue($specification);
        } else {
            throw new \obo\Exceptions\EntityNotFoundException("Can't initialize entity with specification 'NULL'");
@@ -198,11 +198,11 @@ abstract class EntityManager  extends \obo\Object {
 
         $specification = self::queryCarrier()->addSpecification($specification);
 
-        if (!\is_null($filter)) {
+        if ($filter !== null) {
            $specification->addSpecification($filter->getSpecification());
         }
 
-        if (!\is_null($paginator)) {
+        if ($paginator !== null) {
            $paginator->setItemCount(self::countRecords(clone $specification));
            $specification->addSpecification($paginator->getSpecification());
         }
@@ -311,7 +311,7 @@ abstract class EntityManager  extends \obo\Object {
     public static function saveEntity(\obo\Entity $entity, $forced = false) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
         if (!$forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
-        if (\is_null($entity->entityInformation()->repositoryName)) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
+        if ($entity->entityInformation()->repositoryName === null) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
 

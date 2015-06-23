@@ -115,7 +115,7 @@ abstract class Entity  extends \obo\Object {
      * @return \obo\EntityProperties
      */
     private function propertiesObject() {
-        if (!is_null($this->propertiesObject)) return $this->propertiesObject;
+        if ($this->propertiesObject !== null) return $this->propertiesObject;
         $propertiesClassName = $this->entityInformation()->propertiesClassName;
         return $this->propertiesObject = new $propertiesClassName($this);;
     }
@@ -241,7 +241,7 @@ abstract class Entity  extends \obo\Object {
 
         if ($dataType = $propertyInformation->dataType) {
             $value = $dataType->sanitizeValue($value);
-            if (\is_null($value) AND !$propertyInformation->nullable) throw new \obo\Exceptions\Exception("Property '{$propertyName}' in entity '" . $this->entityInformation()->className . "' cannot be null.  Consider using obo-nullable annotation.");
+            if ($value === null AND !$propertyInformation->nullable) throw new \obo\Exceptions\Exception("Property '{$propertyName}' in entity '" . $this->entityInformation()->className . "' cannot be null.  Consider using obo-nullable annotation.");
             $dataType->validate($value);
         }
 
@@ -252,7 +252,7 @@ abstract class Entity  extends \obo\Object {
 
             if (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
                 if ($value instanceof \obo\Entity) {
-                    if (\is_null($this->valueForPropertyWithName($propertyName, true))) {
+                    if ($this->valueForPropertyWithName($propertyName, true) === null) {
                         $change = true;
                     } else {
                         $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
@@ -309,7 +309,7 @@ abstract class Entity  extends \obo\Object {
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
        $data = [];
 
-       if (!\is_null($onlyFromList)) {
+       if ($onlyFromList !== null) {
            $propertiesNames = \array_keys((array) $onlyFromList);
        } else {
            $propertiesNames = \array_keys((array) $this->propertiesInformation());
@@ -351,7 +351,7 @@ abstract class Entity  extends \obo\Object {
                 }
             }
 
-            if (\is_null($onlyFromList)) {
+            if ($onlyFromList === null) {
                 return $this->propertiesAsArray($propertiesChanges, $entityAsPrimaryPropertyValue);
             } else {
                 return $this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($propertiesChanges))), $entityAsPrimaryPropertyValue);
@@ -398,7 +398,7 @@ abstract class Entity  extends \obo\Object {
      * @return boolean
      */
     public function isBasedInRepository() {
-        if (!is_null($this->basedInRepository)) return $this->basedInRepository;
+        if ($this->basedInRepository !== null) return $this->basedInRepository;
         $managerName = $this->entityInformation()->managerName;
         return $this->setBasedInRepository($managerName::isEntityBasedInRepository($this));
     }
@@ -422,7 +422,7 @@ abstract class Entity  extends \obo\Object {
      * @return string
      */
     public function entityIdentificationKey() {
-        if (\is_null($this->entityIdentificationKey)) return $this->entityIdentificationKey = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->identificationKeyForEntity($this);
+        if ($this->entityIdentificationKey === null) return $this->entityIdentificationKey = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->identificationKeyForEntity($this);
         return $this->entityIdentificationKey;
     }
 
@@ -488,7 +488,7 @@ abstract class Entity  extends \obo\Object {
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
             $propertyValue = $this->valueForPropertyWithName($propertyInformation->name);
-            if (!is_null($propertyInformation->relationship)) {
+            if ($propertyInformation->relationship !== null) {
 
                 if (isset($propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) AND $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) {
                     $connectedEntity = $this->valueForPropertyWithName($propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
@@ -505,7 +505,7 @@ abstract class Entity  extends \obo\Object {
                     "primaryPropertyName" => $connectedEntityInformation->primaryPropertyName,
                 ];
 
-                if (!is_null($propertyValue) AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
+                if ($propertyValue !== null AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
 
                     if (isset($arguments[0])
 

@@ -25,7 +25,7 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if (\is_array($value) OR \is_null($value)) return true;
+        if (\is_array($value) OR $value === null) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'array' datatype.");
         return false;
     }
@@ -35,6 +35,6 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
      * @return array
      */
     public static function convertValue($value) {
-        return \is_null($value) ? $value : (array) $value;
+        return $value === null ? $value : (array) $value;
     }
 }

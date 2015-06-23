@@ -125,7 +125,7 @@ class Explorer extends \obo\Object {
         $entityInformation->propertiesFile = $propertiesClassReflection->fileName;
 
         foreach ($this->loadEntityAnnotationForEntityWithClassName($entityClassName) as $annotationName => $annotationValue) {
-            if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::ENTITY_SCOPE))) continue;
+            if (($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::ENTITY_SCOPE)) === null) continue;
             $annotation = new $annotationClass($entityInformation);
             $annotation->process($annotationValue);
             $entityInformation->annotations[] = $annotation;
@@ -133,7 +133,7 @@ class Explorer extends \obo\Object {
 
         foreach ($entityClassReflection->getMethods() as $method) {
             foreach ($this->loadMethodAnnotationForMethodWithNameAndEntityWithClassName($method->name, $entityClassName) as $annotationName => $annotationValue) {
-                if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::METHOD_SCOPE))) continue;
+                if (($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::METHOD_SCOPE)) === null) continue;
                 $annotation = new $annotationClass($entityInformation, $method->name);
                 $annotation->process($annotationValue);
                 $entityInformation->annotations[] = $annotation;
@@ -193,7 +193,7 @@ class Explorer extends \obo\Object {
 
         foreach ($propertiesInformations as $propertyInformation) {
             foreach ($this->loadPropertyAnnotationForPropertyWithNameAndEntityPropertiesWithClassName($propertyInformation->name, $propertiesClassName) as $annotationName => $annotationValue) {
-                if (\is_null($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::PROPERTY_SCOPE))) return;
+                if (($annotationClass = $this->annotationClassWithNameForScope($annotationName, \obo\Annotation\Base\Definition::PROPERTY_SCOPE)) === null) return;
                 $annotation = new $annotationClass($propertyInformation, $entityInformation);
                 $annotation->process($annotationValue);
                 $propertyInformation->annotations[] = $annotation;
@@ -219,7 +219,7 @@ class Explorer extends \obo\Object {
         }
 
         foreach ($this->entitiesInformations[$entityClassName]->propertiesInformation as $propertyInformation) {
-            if (\is_null($propertyInformation->dataType) AND ($propertyInformation->varName !== "")) {
+            if ($propertyInformation->dataType === null AND ($propertyInformation->varName !== "")) {
                 throw new \obo\Exceptions\Exception("Property with name '{$propertyInformation->name}' in entity '{$entityClassName}' have not set data type");
             }
         }
