@@ -28,14 +28,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     protected $specification = null;
 
     /**
-     * @var booleam
+     * @var boolean
      */
     protected $entitiesAreLoaded = false;
 
     /**
      * @param string $entitiesClassName
      * @param \obo\Interfaces\IQuerySpecification $specification
-     * @return void
      */
     public function __construct($entitiesClassName, \obo\Interfaces\IQuerySpecification $specification) {
         parent::__construct();
@@ -166,7 +165,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /**
      * @return void
      */
-    public function reloadEntitites() {
+    public function reloadEntities() {
         $this->clear();
         $this->loadEntities();
     }
