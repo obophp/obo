@@ -13,11 +13,6 @@ namespace obo;
 class EntityProperties extends \obo\Object {
 
     /**
-     * @deprecated
-     */
-    protected $ownerProperties = null;
-
-    /**
      * @var \obo\Entity
      */
     protected $_owner = null;
@@ -26,7 +21,6 @@ class EntityProperties extends \obo\Object {
      * @param \obo\Entity $owner
      */
     public function __construct(\obo\Entity $owner) {
-        $this->ownerProperties = $owner;
         $this->_owner = $owner;
     }
 
