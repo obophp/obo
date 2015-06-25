@@ -31,7 +31,7 @@ abstract class DataType extends \obo\Object {
 
     /**
      * @param mixed $value
-     * @param bolean $throwException
+     * @param boolean $throwException
      * @return boolean
      * @throws \obo\Exceptions\BadDataTypeException
      */

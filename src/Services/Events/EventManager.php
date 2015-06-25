@@ -42,6 +42,7 @@ class EventManager extends \obo\Object {
      * @param \obo\Entity $entity
      * @param array $arguments
      * @return void
+     * @throws \Exception
      */
     public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = []) {
         if ($this->isRegisteredEntity($entity)) {
@@ -53,9 +54,9 @@ class EventManager extends \obo\Object {
                     $this->addIgnoreNotifyForEventWithKey($objectEventKey);
                     foreach ($this->events[$objectEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
-                } catch (\Exception $exc) {
+                } catch (\Exception $e) {
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
-                    throw $exc;
+                    throw $e;
                 }
             }
 
@@ -64,9 +65,9 @@ class EventManager extends \obo\Object {
                     $this->addIgnoreNotifyForEventWithKey($objectEventKey);
                 foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
                 $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
-                } catch (\Exception $exc) {
+                } catch (\Exception $e) {
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
-                    throw $exc;
+                    throw $e;
                 }
             }
         }
@@ -114,21 +115,20 @@ class EventManager extends \obo\Object {
         return isset($this->ignoreEvents[$eventKey]);
     }
 
+    /**
+     * @param \obo\Entity $entity
+     * @return void
+     */
     public function registerEntity(\obo\Entity $entity) {
         $this->registeredEntities[$entity->objectIdentificationKey()] = true;
     }
 
+    /**
+     * @param \obo\Entity $entity
+     * @return bool
+     */
     public function isRegisteredEntity(\obo\Entity $entity) {
         return isset($this->registeredEntities[$entity->objectIdentificationKey()]);
     }
 
-
-
-    /**
-     * @param \obo\Entity $entity
-     * @return boolean
-     */
-    public function isActiveIgnoreNotificationForEntity(\obo\Entity $entity) {
-        return isset($this->ignoreNotificationEntities[$entity->objectIdentificationKey()]);
-    }
 }

@@ -47,14 +47,6 @@ abstract class Entity  extends \obo\Object {
      */
     private $dataStorage = null;
 
-    public function __construct() {
-
-    }
-
-    public function __destruct() {
-
-    }
-
     /**
      * @param string $propertyName
      * @return mixed

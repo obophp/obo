@@ -21,6 +21,7 @@ class Boolean extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @param bool $throwException
      * @return boolean
      * @throws \obo\Exceptions\BadDataTypeException
      */
