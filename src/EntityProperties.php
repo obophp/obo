@@ -38,6 +38,6 @@ class EntityProperties extends \obo\Object {
      * @throws \obo\Exceptions\PropertyNotFoundException
      */
     public function __set($name, $value) {
-        throw new \obo\Exceptions\PropertyNotFoundException("Can't write to the property with name '{$name}', it is read-only");
+        throw new \obo\Exceptions\PropertyNotFoundException("Can't write to the property with name '{$name}' in entity '" . $this->_owner->className(). "', it is read-only");
     }
 }
