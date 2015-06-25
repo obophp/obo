@@ -99,6 +99,7 @@ class Information extends \obo\Object {
 
     /**
      * @return void
+     * @throws \obo\Exceptions\Exception
      */
     public function createCache() {
         $entitiesList = [];

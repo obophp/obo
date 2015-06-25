@@ -87,7 +87,11 @@ abstract class EntityManager  extends \obo\Object {
      * @param mixed $primaryPropertyValue
      * @param bool $ignoreSoftDelete
      * @return \obo\Entity
+     * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\EntityNotFoundException
+     * @throws \obo\Exceptions\Exception
+     * @throws \obo\Exceptions\PropertyNotFoundException
+     * @throws \obo\Exceptions\ServicesException
      */
     public static function entityWithPrimaryPropertyValue($primaryPropertyValue, $ignoreSoftDelete = false) {
         $entity = self::emptyEntity();
@@ -169,7 +173,7 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Carriers\QueryCarrier $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @param boolean $requiredEntity
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
@@ -189,7 +193,7 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Interfacon $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity
@@ -306,6 +310,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return void
      * @throws \obo\Exceptions\EntityIsDeletedException
      * @throws \obo\Exceptions\EntityIsNotInitializedException
+     * @throws \obo\Exceptions\Exception
      * @throws \obo\Exceptions\ServicesException
      */
     public static function saveEntity(\obo\Entity $entity, $forced = false) {

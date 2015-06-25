@@ -20,7 +20,6 @@ abstract class Method extends \obo\Annotation\Base\Definition {
     /**
      * @param \obo\Carriers\EntityInformationCarrier $entityInformation
      * @param string $methodName
-     * @return void
      */
     public function __construct(\obo\Carriers\EntityInformationCarrier $entityInformation, $methodName) {
         parent::__construct($entityInformation);

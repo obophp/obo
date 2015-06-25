@@ -18,6 +18,13 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     private $variables = [];
 
     /**
+     * @param array $data
+     */
+    public function __construct($data = []) {
+        foreach ($data as $variableName => $variableValue) $this->$variableName = $variableValue;
+    }
+
+    /**
      * @return array
      */
     protected function &variables() {
@@ -52,19 +59,19 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      * @param mixed $value
      * @param string $variableName
-     * @return void
+     * @return mixed
      */
     public function setValueForVariableWithName($value, $variableName) {
         return $this->variables()[$variableName] = $value;
     }
 
     /**
-     * @param string $varibleName
+     * @param string $variableName
      * @return void
      */
-    public function unsetValueForVaraibleWithName($varibleName) {
-        $this->variableForName($varibleName);
-        unset($this->variables()[$varibleName]);
+    public function unsetValueForVariableWithName($variableName) {
+        $this->variableForName($variableName);
+        unset($this->variables()[$variableName]);
     }
 
     /**
@@ -82,16 +89,8 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      */
     public function changeVariableNameForValue($variableName, $value) {
         if ($varibleName = \array_search($value, $this->variables()) === null) throw new \obo\Exceptions\VariableNotFoundException("Value does not exist in collection");
-        $this->unsetValueForVaraibleWithName($varibleName);
+        $this->unsetValueForVariableWithName($varibleName);
         $this->setValueForVariableWithName($value, $variableName);
-    }
-
-    /**
-     * @param array $data
-     * @return void
-     */
-    public function __construct($data = []) {
-        foreach ($data as $variableName => $variableValue) $this->$variableName = $variableValue;
     }
 
     /**
@@ -112,16 +111,16 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     }
 
     /**
-     * @param type $name
+     * @param string $name
      * @return void
      */
     public function __unset($name) {
-        $this->unsetValueForVaraibleWithName($name);
+        $this->unsetValueForVariableWithName($name);
     }
 
     /**
      *
-     * @param type $name
+     * @param string $name
      * @return boolean
      */
     public function __isset($name) {

@@ -41,6 +41,7 @@ class obo extends \obo\Object {
     protected static $tempDir = "";
 
     /**
+     * @param \obo\Interfaces\IDataStorage $defaultDataStorage
      * @return void
      */
     public static function setDefaultDataStorage(\obo\Interfaces\IDataStorage $defaultDataStorage) {
@@ -48,6 +49,7 @@ class obo extends \obo\Object {
     }
 
     /**
+     * @param \obo\Interfaces\ICache $cache
      * @return void
      */
     public static function setCache(\obo\Interfaces\ICache $cache) {
@@ -78,7 +80,7 @@ class obo extends \obo\Object {
     }
 
     /**
-     * @return type
+     * @return string
      */
     public static function tempDir() {
         return self::$tempDir;

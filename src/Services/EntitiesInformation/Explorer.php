@@ -33,7 +33,7 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $annotationClassName
-     * @param boolen $forced
+     * @param boolean $forced
      * @return void
      * @throws \obo\Exceptions\Exception
      */
@@ -43,7 +43,7 @@ class Explorer extends \obo\Object {
     }
 
     /**
-     * @param type $annotationClassName
+     * @param string $annotationClassName
      * @return void
      * @throws \obo\Exceptions\Exception
      */
@@ -272,7 +272,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $propertyName
      * @param string $entityPropertiesClassName
-     * @return type
+     * @return array
      */
     protected function loadPropertyAnnotationForPropertyWithNameAndEntityPropertiesWithClassName($propertyName, $entityPropertiesClassName) {
         $annotations = [];
@@ -325,7 +325,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $propertyName
      * @param string $entityClassName
-     * @return type
+     * @return string
      */
     protected function defaultColumnNamePropertiesForPropertyWithName($propertyName, $entityClassName) {
         return $propertyName;
@@ -370,7 +370,7 @@ class Explorer extends \obo\Object {
     /**
      *
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
-     * @return type
+     * @return \obo\DataType\Base\DataType
      */
     protected function defaultDataTypeForProperty(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
         if ($propertyInformation->varName === "") return null;

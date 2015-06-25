@@ -215,7 +215,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                 throw new \obo\Exceptions\EntityNotFoundException("The entity you want to delete does not exist in the collection");
             }
 
-            $this->unsetValueForVaraibleWithName($key);
+            $this->unsetValueForVariableWithName($key);
         }
 
         if (!$deleteEntity) $this->removeRelationshipFromRepositoryForEntity($entity);
