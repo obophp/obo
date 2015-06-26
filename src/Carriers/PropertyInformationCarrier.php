@@ -68,17 +68,17 @@ class PropertyInformationCarrier extends \obo\Object {
     public $columnName = "";
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $persistable = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $autoIncrement = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $nullable = null;
 }

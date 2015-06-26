@@ -13,12 +13,12 @@ namespace obo;
 abstract class Entity  extends \obo\Object {
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $initialized = false;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $basedInRepository = null;
 
@@ -38,7 +38,7 @@ abstract class Entity  extends \obo\Object {
     private $propertiesChanges = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $saveInProgress = false;
 
@@ -66,7 +66,7 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param string $name
-     * @return boolean
+     * @return bool
      */
     public function __isset($name) {
         return $this->hasPropertyWithName($name);
@@ -175,7 +175,7 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param string $propertyName
-     * @param boolean $entityAsPrimaryPropertyValue
+     * @param bool $entityAsPrimaryPropertyValue
      * @param bool $triggerEvents
      * @return mixed
      * @throws Exceptions\PropertyNotFoundException
@@ -295,7 +295,7 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param array | \Iterator | null $onlyFromList
-     * @param boolean $entityAsPrimaryPropertyValue
+     * @param bool $entityAsPrimaryPropertyValue
      * @return array
      */
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
@@ -355,7 +355,7 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isInitialized() {
         return $this->initialized;
@@ -373,21 +373,21 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isSaveInProggres(){
         return $this->saveInProgress;
     }
 
     /**
-     * @param boolean $value
+     * @param bool $value
      */
     public function setSaveInProgress($value = true){
         $this->saveInProgress = (bool)$value;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isBasedInRepository() {
         if ($this->basedInRepository !== null) return $this->basedInRepository;
@@ -396,15 +396,15 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
-     * @param boolean $state
-     * @return boolean
+     * @param bool $state
+     * @return bool
      */
     public function setBasedInRepository($state) {
         return $this->basedInRepository = (bool) $state;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isDeleted() {
         return ($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) === "" ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);

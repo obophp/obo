@@ -21,8 +21,8 @@ class String extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @param boolean $throwException
-     * @return boolean
+     * @param bool $throwException
+     * @return bool
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {

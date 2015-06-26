@@ -22,7 +22,7 @@ class Boolean extends \obo\DataType\Base\DataType {
     /**
      * @param mixed $value
      * @param bool $throwException
-     * @return boolean
+     * @return bool
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
@@ -33,7 +33,7 @@ class Boolean extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
     public static function convertValue($value) {
         return $value === null ? $value : \filter_var($value, \FILTER_VALIDATE_BOOLEAN);
@@ -41,10 +41,10 @@ class Boolean extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @return boolean
+     * @return bool
      */
     public static function sanitizeValue($value) {
-        if (!($value !== false AND $value !== true  AND $value !== "false"  AND $value !== "true") OR $value === null) return self::convertValue($value);
+        if (!($value !== false AND $value !== true AND $value !== "false" AND $value !== "true") OR $value === null) return self::convertValue($value);
         return $value;
     }
 }

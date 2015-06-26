@@ -13,7 +13,7 @@ namespace obo\Relationships;
 class One extends \obo\Relationships\Relationship {
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $autoCreate = true;
 

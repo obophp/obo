@@ -26,7 +26,7 @@ class obo extends \obo\Object {
     const UUID_GENERATOR = "obo-uuidGenerator";
 
     /**
-     * @var boolean
+     * @var bool
      */
     public static $developerMode = false;
 

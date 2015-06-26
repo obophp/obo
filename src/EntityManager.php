@@ -65,7 +65,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-     * @return boolean
+     * @return bool
      */
     public static function isEntityBasedInRepository(\obo\Entity $entity) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
@@ -114,9 +114,9 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param array $data
-     * @param boolean $loadOriginalData
-     * @param boolean $overwriteOriginalData
-     * @param boolean $separately
+     * @param bool $loadOriginalData
+     * @param bool $overwriteOriginalData
+     * @param bool $separately
      * @return \obo\Entity
      */
     public static function entityFromArray($data, $loadOriginalData = false, $overwriteOriginalData = true, $separately = false) {
@@ -141,7 +141,7 @@ abstract class EntityManager  extends \obo\Object {
 
         if ($entity->valueForPropertyWithName($primaryPropertyName) AND !$entity->isInitialized() AND $loadOriginalData) {
             $entity->changeValuesPropertiesFromArray($repositoryData = self::rawDataForEntity($entity));
-            $entity->setBasedInRepository((boolean) $repositoryData);
+            $entity->setBasedInRepository((bool) $repositoryData);
         }
 
         if (!$entity->isInitialized() OR $overwriteOriginalData) {
@@ -174,7 +174,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Interfaces\IQuerySpecification $specification
-     * @param boolean $requiredEntity
+     * @param bool $requiredEntity
      * @return \obo\Entity
      * @throws \obo\Exceptions\EntityNotFoundException
      */
@@ -268,7 +268,7 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-     * @param boolean $ignoreSoftDelete
+     * @param bool $ignoreSoftDelete
      * @return array;
      */
     protected static function rawDataForEntity(\obo\Entity $entity, $ignoreSoftDelete = false) {

@@ -28,7 +28,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     protected $specification = null;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $entitiesAreLoaded = false;
 
@@ -90,7 +90,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getEntitiesAreLoaded() {
         return $this->entitiesAreLoaded;

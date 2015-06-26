@@ -31,8 +31,8 @@ abstract class DataType extends \obo\Object {
 
     /**
      * @param mixed $value
-     * @param boolean $throwException
-     * @return boolean
+     * @param bool $throwException
+     * @return bool
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public abstract function validate($value, $throwException = true);

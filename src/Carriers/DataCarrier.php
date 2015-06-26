@@ -121,7 +121,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     /**
      *
      * @param string $name
-     * @return boolean
+     * @return bool
      */
     public function __isset($name) {
         return isset($this->variables()[$name]);
@@ -185,7 +185,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function valid() {
         return isset($this->variables()[$this->key()]);
@@ -206,7 +206,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
 
     /**
      * @param mixed $offset
-     * @return boolean
+     * @return bool
      */
     public function offsetExists($offset) {
         return isset($this->variables()[$offset]);

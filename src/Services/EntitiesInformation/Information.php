@@ -20,7 +20,7 @@ class Information extends \obo\Object {
     protected $cache = null;
     /** @var \obo\Carriers\EntityInformationCarrier[] */
     protected $entitiesInformations = [];
-    /** @var boolean */
+    /** @var bool */
     protected $cacheValidity = true;
     /** @var string */
     protected $lockFilePath = "";
