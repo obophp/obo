@@ -33,7 +33,7 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $annotationClassName
-     * @param boolean $forced
+     * @param bool $forced
      * @return void
      * @throws \obo\Exceptions\Exception
      */
@@ -55,7 +55,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $annotationName
      * @param string $scope
-     * @return boolean
+     * @return bool
      * @throws \obo\Exceptions\BadAnnotationException
      */
     public function existAnnotationWithNameForScope($annotationName, $scope) {
@@ -342,7 +342,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $propertyName
      * @param string $entityClassName
-     * @return boolean
+     * @return bool
      */
     protected function defaultAutoIncrementValueForPropertyWithName($propertyName, $entityClassName) {
         return false;
@@ -351,7 +351,7 @@ class Explorer extends \obo\Object {
     /**
      * @param string $propertyName
      * @param string $entityClassName
-     * @return boolean
+     * @return bool
      */
     protected function defaultNullableValueForPropertyWithName($propertyName, $entityClassName) {
         return true;
@@ -361,7 +361,7 @@ class Explorer extends \obo\Object {
      *
      * @param string $propertyName
      * @param string $entityClassName
-     * @return boolean
+     * @return bool
      */
     protected function defaultPersistableValuePropertiesForPropertyWithName($propertyName, $entityClassName) {
         return true;

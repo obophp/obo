@@ -109,7 +109,7 @@ class EventManager extends \obo\Object {
 
     /**
      * @param string $eventKey
-     * @return boolean
+     * @return bool
      */
     public function isActiveIgnoreNotifyForEventWithKey($eventKey) {
         return isset($this->ignoreEvents[$eventKey]);

@@ -18,7 +18,7 @@ class EntityInformationCarrier extends \obo\Object {
     public $className = "";
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $isAbstract = null;
 
@@ -38,7 +38,7 @@ class EntityInformationCarrier extends \obo\Object {
     public $propertiesClassName = "";
 
     /**
-     * @var boolean
+     * @var bool
      */
     public $isPropertiesAbstract = null;
 
@@ -96,7 +96,7 @@ class EntityInformationCarrier extends \obo\Object {
 
     /**
      * @param string $propertyName
-     * @return boolean
+     * @return bool
      */
     public function existInformationForPropertyWithName($propertyName) {
         return isset($this->propertiesInformation[$propertyName]);

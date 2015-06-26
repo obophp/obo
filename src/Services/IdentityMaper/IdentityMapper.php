@@ -40,7 +40,7 @@ class IdentityMapper extends \obo\Object {
 
     /**
      * @param \obo\Entity $entity
-     * @return boolean
+     * @return bool
      */
     public function isMappedEntity(\obo\Entity $entity) {
         return isset($this->entities[$entity->entityIdentificationKey()]);

@@ -25,7 +25,7 @@ class Services extends \obo\Object {
     /**
      * @param mixed $service
      * @param string $serviceName
-     * @param boolean $forced
+     * @param bool $forced
      * @return void
      * @throws \obo\Exceptions\ServicesException
      */
@@ -37,7 +37,7 @@ class Services extends \obo\Object {
     /**
      * @param function $factory
      * @param string $serviceName
-     * @param boolean $forced
+     * @param bool $forced
      * @return void
      * @throws \obo\Exceptions\ServicesException
      */
@@ -63,7 +63,7 @@ class Services extends \obo\Object {
 
     /**
      * @param string $serviceName
-     * @return boolean
+     * @return bool
      */
     public static function isRegisteredServiceWithName($serviceName) {
         return isset(self::$services[$serviceName]) OR isset(self::$factories[$serviceName]);

@@ -33,7 +33,7 @@ class One extends \obo\Annotation\Base\Property {
     protected $cascadeOptions = [];
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $autoCreate = false;
 

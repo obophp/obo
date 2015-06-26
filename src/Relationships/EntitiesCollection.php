@@ -18,16 +18,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /** @var \obo\Entity */
     protected $owner = null;
 
-    /** @var boolean */
+    /** @var bool */
     protected $entitiesAreLoaded = false;
 
-    /** @var boolean */
+    /** @var bool */
     protected $savingInProgress = false;
 
-    /** @var boolean */
+    /** @var bool */
     protected $afterSavingNeedReload = false;
 
-    /** @var boolean */
+    /** @var bool */
     protected $deletingInProgress = false;
 
     /**
@@ -47,14 +47,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isSavingInProgress() {
         return $this->savingInProgress;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function isDeletingInProgress() {
         return $this->deletingInProgress;
@@ -182,7 +182,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
     /**
      * @param array | \Iterator $data
-     * @param boolean $notifyEvents
+     * @param bool $notifyEvents
      * @return \obo\Entity
      */
     public function addNew($data = [], $notifyEvents = true) {
@@ -308,7 +308,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @param boolean $removeEntity
+     * @param bool $removeEntity
      * @return void
      */
     public function delete($removeEntity = false) {
