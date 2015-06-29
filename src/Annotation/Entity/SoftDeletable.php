@@ -50,6 +50,15 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
     }
 
     /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @throws \obo\Exceptions\BadAnnotationException
+     * @return void
+     */
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
+        if (!$this->entityInformation->existInformationForPropertyWithName($this->entityInformation->propertyNameForSoftDelete)) throw new \obo\Exceptions\BadAnnotationException("Property for softdelete feature with the name '{$this->entityInformation->propertyNameForSoftDelete}' does not exist in the '{$this->entityInformation->className}' entity");
+    }
+
+    /**
      * @return void
      */
     public function registerEvents() {
