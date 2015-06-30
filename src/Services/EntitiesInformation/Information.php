@@ -164,7 +164,14 @@ class Information extends \obo\Object {
                     $backTrace = \debug_backtrace();
                     if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can't be changed, has been marked as initialized");
                 }},
-            ]
-        ));
+        ]));
+
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+            "onClassWithName" => $entityInformation->className,
+            "name" => "beforeChange",
+            "actionAnonymousFunction" => function($arguments) {
+                if ($arguments["entity"]->isDeleted()) throw new \obo\Exceptions\PropertyAccessException("Property '{$arguments["propertyName"]}' can't be changed, entity '{$arguments["entity"]->entityInformation()->className}' is deleted");
+            },
+        ]));
     }
 }
