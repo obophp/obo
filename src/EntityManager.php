@@ -116,30 +116,28 @@ abstract class EntityManager  extends \obo\Object {
      * @param array $data
      * @param bool $loadOriginalData
      * @param bool $overwriteOriginalData
-     * @param bool $separately
      * @return \obo\Entity
      */
-    public static function entityFromArray($data, $loadOriginalData = false, $overwriteOriginalData = true, $separately = false) {
+    public static function entityFromArray($data, $loadOriginalData = false, $overwriteOriginalData = true) {
         $entity = self::emptyEntity();
 
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
 
-        if (isset($data[$primaryPropertyName]) AND $data[$primaryPropertyName] AND !$separately) {
+        if (isset($data[$primaryPropertyName]) AND $data[$primaryPropertyName]) {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
             $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
-        } elseif (!$separately) {
-            $event = new \obo\Services\Events\Event([
-                    "onObject" => $entity,
-                    "name" => "afterInsert",
-                    "actionAnonymousFunction" => function($arguments) {
-                       \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($arguments["entity"]);
-                       $arguments["entity"]->setBasedInRepository(true);
-                    }
-            ]);
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent($event);
+        } else {
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                "onObject" => $entity,
+                "name" => "afterInsert",
+                "actionAnonymousFunction" => function($arguments) {
+                   \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($arguments["entity"]);
+                   $arguments["entity"]->setBasedInRepository(true);
+                }
+            ]));
         }
 
-        if ($entity->valueForPropertyWithName($primaryPropertyName) AND !$entity->isInitialized() AND $loadOriginalData) {
+        if ($entity->primaryPropertyValue() AND !$entity->isInitialized() AND $loadOriginalData) {
             $entity->changeValuesPropertiesFromArray($repositoryData = self::rawDataForEntity($entity));
             $entity->setBasedInRepository((bool) $repositoryData);
         }
