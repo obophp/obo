@@ -96,7 +96,7 @@ class Many extends \obo\Annotation\Base\Property {
             throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built because it relies on a parameter 'connectViaProperty' or 'connectViaRepository'");
         }
 
-        $this->propertyInformation->dataType = \obo\DataType\Factory::createDataTypeObject($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
+        $this->propertyInformation->dataType = \obo\DataType\Factory::createObjectDataType($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
         $this->propertyInformation->columnName = "";
         $this->propertyInformation->persistable = false;
     }

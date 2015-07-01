@@ -10,7 +10,7 @@
 
 namespace obo\DataType;
 
-class Entity extends \obo\DataType\Base\DataType {
+class EntityDataType extends \obo\DataType\Base\DataType {
 
     public $className = null;
 

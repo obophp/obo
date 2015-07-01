@@ -10,13 +10,13 @@
 
 namespace obo\DataType;
 
-class Boolean extends \obo\DataType\Base\DataType {
+class FloatDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @return string
      */
     public function name() {
-        return "boolean";
+        return "float";
     }
 
     /**
@@ -26,25 +26,25 @@ class Boolean extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if (\is_bool($value) OR $value === null) return true;
-        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'boolean' datatype.");
+        if (\is_float($value) OR $value === null) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'float' datatype.");
         return false;
     }
 
     /**
      * @param mixed $value
-     * @return bool
+     * @return float
      */
     public static function convertValue($value) {
-        return $value === null ? $value : \filter_var($value, \FILTER_VALIDATE_BOOLEAN);
+        return ($value === null OR $value === "") ? null : (float) $value;
     }
 
     /**
      * @param mixed $value
-     * @return bool
+     * @return float
      */
     public static function sanitizeValue($value) {
-        if (!($value !== false AND $value !== true AND $value !== "false" AND $value !== "true") OR $value === null) return self::convertValue($value);
+        if ((\is_numeric($value) AND \is_float($value + 0.0)) OR $value === null OR $value === "") return self::convertValue($value);
         return $value;
     }
 }

@@ -376,15 +376,15 @@ class Explorer extends \obo\Object {
         if ($propertyInformation->varName === "") return null;
 
         if ($propertyInformation->defaultValue === false OR $propertyInformation->defaultValue === true) {
-            return \obo\DataType\Factory::createDataTypeBoolean($propertyInformation);
+            return \obo\DataType\Factory::createBooleanDataType($propertyInformation);
         } elseif (\is_numeric($propertyInformation->defaultValue) AND \is_int($propertyInformation->defaultValue * 1)) {
-            return \obo\DataType\Factory::createDataTypeInteger($propertyInformation);
+            return \obo\DataType\Factory::createIntegerDataType($propertyInformation);
         } elseif (\is_numeric($propertyInformation->defaultValue) AND \is_float($propertyInformation->defaultValue * 1)) {
-            return \obo\DataType\Factory::createDataTypeFloat($propertyInformation);
+            return \obo\DataType\Factory::createFloatDataType($propertyInformation);
         } elseif (is_string($propertyInformation->defaultValue)) {
-            return \obo\DataType\Factory::createDataTypeString($propertyInformation);
+            return \obo\DataType\Factory::createStringDataType($propertyInformation);
         } elseif (\is_array($propertyInformation->defaultValue)) {
-            return \obo\DataType\Factory::createDataTypeArray($propertyInformation);
+            return \obo\DataType\Factory::createArrayDataType($propertyInformation);
         } else {
             return null;
         }
