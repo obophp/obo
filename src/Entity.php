@@ -23,6 +23,11 @@ abstract class Entity  extends \obo\Object {
     private $basedInRepository = null;
 
     /**
+     * @var bool
+     */
+    private $deleted = null;
+
+    /**
      * @var string
      */
     private $entityIdentificationKey = null;
@@ -370,6 +375,7 @@ abstract class Entity  extends \obo\Object {
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEntity($this);
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInitialize", $this);
         $this->initialized = true;
+        $this->deleted = ($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) === "" ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);
         return $this;
     }
@@ -409,7 +415,7 @@ abstract class Entity  extends \obo\Object {
      * @return bool
      */
     public function isDeleted() {
-        return ($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) === "" ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
+        return $this->deleted;
     }
 
     /**
@@ -461,6 +467,7 @@ abstract class Entity  extends \obo\Object {
     public function delete() {
         $managerName = $this->entityInformation()->managerName;
         $managerName::deleteEntity($this);
+        $this->deleted = true;
     }
 
     /**
