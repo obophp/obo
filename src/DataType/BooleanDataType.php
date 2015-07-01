@@ -10,13 +10,13 @@
 
 namespace obo\DataType;
 
-class DateTime extends \obo\DataType\Base\DataType {
+class BooleanDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @return string
      */
     public function name() {
-        return "dateTime";
+        return "boolean";
     }
 
     /**
@@ -26,25 +26,25 @@ class DateTime extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if ($value instanceof \DateTime OR $value === null) return true;
-        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'DateTime' datatype.");
+        if (\is_bool($value) OR $value === null) return true;
+        if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'boolean' datatype.");
         return false;
     }
 
     /**
      * @param mixed $value
-     * @return \DateTime
+     * @return bool
      */
     public static function convertValue($value) {
-        return $value === null ? $value : new \DateTime($value);
+        return $value === null ? $value : \filter_var($value, \FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return bool
      */
     public static function sanitizeValue($value) {
-        if (!$value instanceof \DateTime) return self::convertValue($value);
+        if (!($value !== false AND $value !== true AND $value !== "false" AND $value !== "true") OR $value === null) return self::convertValue($value);
         return $value;
     }
 }

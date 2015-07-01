@@ -10,7 +10,7 @@
 
 namespace obo\DataType;
 
-class Mixed extends \obo\DataType\Base\DataType {
+class MixedDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @return string
