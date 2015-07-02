@@ -358,6 +358,7 @@ abstract class EntityManager  extends \obo\Object {
             self::saveEntity($entity, true);
         }
 
+        $entity->setDeleted(true);
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDelete", $entity);
     }
 }
