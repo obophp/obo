@@ -389,6 +389,7 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param bool $value
+     * @return void
      */
     public function setSaveInProgress($value = true){
         $this->saveInProgress = (bool)$value;
@@ -405,10 +406,18 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param bool $state
-     * @return bool
+     * @return void
      */
     public function setBasedInRepository($state) {
-        return $this->basedInRepository = (bool) $state;
+        $this->basedInRepository = (bool) $state;
+    }
+
+    /**
+     * @param bool $deleted
+     * @return void
+     */
+    public function setDeleted($deleted = true) {
+        $this->deleted = (bool) $deleted;
     }
 
     /**
@@ -467,7 +476,6 @@ abstract class Entity  extends \obo\Object {
     public function delete() {
         $managerName = $this->entityInformation()->managerName;
         $managerName::deleteEntity($this);
-        $this->deleted = true;
     }
 
     /**
