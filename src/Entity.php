@@ -13,6 +13,11 @@ namespace obo;
 abstract class Entity  extends \obo\Object {
 
     /**
+     * @var \obo\Carriers\EntityInformationCarrier[]
+     */
+    private static $entitiesInformations = [];
+
+    /**
      * @var bool
      */
     private $initialized = false;
@@ -121,7 +126,9 @@ abstract class Entity  extends \obo\Object {
      * @return \obo\Carriers\EntityInformationCarrier
      */
     public static function entityInformation() {
-        return \obo\Services::serviceWithName(\obo\obo::ENTITIES_INFORMATION)->informationForEntityWithClassName(self::className());
+        $selfClassName = self::className();
+        if (!isset(self::$entitiesInformations[$selfClassName])) self::$entitiesInformations[$selfClassName] = \obo\Services::serviceWithName(\obo\obo::ENTITIES_INFORMATION)->informationForEntityWithClassName($selfClassName);
+        return self::$entitiesInformations[$selfClassName];
     }
 
     /**
