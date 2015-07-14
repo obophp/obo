@@ -27,10 +27,5 @@
         "nette/caching": "~2.2"
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-	"extra": {
-		"branch-alias": {
-			"dev-master": "0.10-dev"
-		}
-	}
+    "prefer-stable": true
 }
