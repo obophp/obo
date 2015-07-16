@@ -135,7 +135,7 @@ class Many extends \obo\Annotation\Base\Property {
                     $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
                     if (!$currentPropertyValue instanceof $propertyInformation->relationship->entityClassNameToBeConnected AND !$currentPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
-                        $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"]);
+                        $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"], false);
                     }
 
                 },

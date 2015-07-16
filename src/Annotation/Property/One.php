@@ -141,7 +141,7 @@ class One extends \obo\Annotation\Base\Property {
                     }
 
                     if ($entityToBeConnected !== null) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
-                    $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"]);
+                    $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"], false);
                     if ($entityToBeConnected !== null) {
                         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entityToBeConnected, ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
                         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->propertyInformation->name . "Connected", $arguments["entity"], ["columnName" => $propertyInformation->columnName, "connectedEntity" => $entityToBeConnected]);
