@@ -54,7 +54,7 @@ class One extends \obo\Relationships\Relationship {
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
         } else {
-            return $this->autoCreate ? $entityManagerName::entityFromArray([]) : null;
+            return ($this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([]) : null;
         }
     }
 
