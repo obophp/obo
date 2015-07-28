@@ -114,9 +114,9 @@ class Information extends \obo\Object {
         $this->cache->store("entitiesList", $entitiesList);
         $this->cache->store("changesHash", $this->calculateChangesHash());
         $this->cacheValidity = true;
-        \unlink($this->lockFilePath);
         \flock($fp, \LOCK_UN);
         \fclose($fp);
+        \unlink($this->lockFilePath);
     }
 
     /**
