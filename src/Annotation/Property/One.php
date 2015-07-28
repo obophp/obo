@@ -132,17 +132,18 @@ class One extends \obo\Annotation\Base\Property {
                 $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                 $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
-                if (!\is_object($currentPropertyValue)) {
-
+                if (!$currentPropertyValue instanceof \obo\Entity) {
                     if ($this->connectViaProperty === null ) {
                         $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
                     } else {
                         $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignProperty($arguments["entity"], $this->connectViaProperty);
                     }
 
-                    if ($entityToBeConnected !== null) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
-                    $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"], false);
-                    if ($entityToBeConnected !== null) {
+                    if ($entityToBeConnected === null) {
+                        $arguments["entity"]->setValueForPropertyWithName(null, $arguments["propertyName"]);
+                    } else {
+                        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entityToBeConnected, ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
+                        $arguments["entity"]->setValueForPropertyWithName($entityToBeConnected, $arguments["propertyName"], !$entityToBeConnected->isBasedInRepository());
                         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entityToBeConnected, ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
                         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->propertyInformation->name . "Connected", $arguments["entity"], ["columnName" => $propertyInformation->columnName, "connectedEntity" => $entityToBeConnected]);
                     }
