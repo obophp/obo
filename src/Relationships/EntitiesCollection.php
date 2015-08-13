@@ -165,7 +165,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                      new \obo\Services\Events\Event([
                          "onObject" => $entity,
                          "name" => "afterInsert",
-                         "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress()) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
+                         "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress() AND $arguments["entitiesCollection"]->containsValue($arguments["entity"])) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
                          "actionArguments" => ["entitiesCollection" => $this],
                      ]));
         }
