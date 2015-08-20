@@ -305,6 +305,7 @@ abstract class EntityManager  extends \obo\Object {
     /**
      * @param \obo\Entity $entity
      * @param bool $forced
+     * @param bool $triggerEvents
      * @return void
      * @throws \obo\Exceptions\EntityIsDeletedException
      * @throws \obo\Exceptions\EntityIsNotInitializedException
@@ -316,23 +317,20 @@ abstract class EntityManager  extends \obo\Object {
         if (!$forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
         if ($entity->entityInformation()->repositoryName === null) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
+        $entity->setSavingInProgress();
         if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
 
         if (count($entity->changedProperties($entity->entityInformation()->persistablePropertiesNames, true, true))) {
             if ($entity->isBasedInRepository()) {
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeUpdate", $entity);
-                $entity->setSaveInProgress();
                 $entity->dataStorage()->updateEntity($entity);
-                $entity->setSaveInProgress(false);
                 $entity->markUnpersistedPropertiesAsPersisted();
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterUpdate", $entity);
             } else {
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInsert", $entity);
-                $entity->setSaveInProgress();
                 $entity->dataStorage()->insertEntity($entity);
                 $entity->setBasedInRepository(true);
-                $entity->setSaveInProgress(false);
                 $entity->markUnpersistedPropertiesAsPersisted();
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
                 if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInsert", $entity);
@@ -340,15 +338,18 @@ abstract class EntityManager  extends \obo\Object {
         } else {
             if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
         }
+        $entity->setSavingInProgress(false);
     }
 
     /**
      * @param \obo\Entity $entity
+     * @param bool $triggerEvents
      * @return void
      * @throws \obo\Exceptions\EntityIsNotInitializedException
      */
     public static function deleteEntity(\obo\Entity $entity, $triggerEvents = true) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot delete entity which is not initialized");
+        $entity->setDeletingInProgress();
         if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDelete", $entity);
 
         if (($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) === "") {
@@ -361,5 +362,6 @@ abstract class EntityManager  extends \obo\Object {
 
         $entity->setDeleted(true);
         if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDelete", $entity);
+        $entity->setDeletingInProgress(false);
     }
 }
