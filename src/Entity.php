@@ -50,7 +50,12 @@ abstract class Entity  extends \obo\Object {
     /**
      * @var bool
      */
-    private $saveInProgress = false;
+    private $savingInProgress = false;
+
+    /**
+     * @var bool
+     */
+    private $deletingInProgress = false;
 
     /**
      * @var \obo\Interfaces\IDataStorage
@@ -390,16 +395,31 @@ abstract class Entity  extends \obo\Object {
     /**
      * @return bool
      */
-    public function isSaveInProggres(){
-        return $this->saveInProgress;
+    public function isSavingInProgress() {
+        return $this->savingInProgress;
     }
 
     /**
      * @param bool $value
      * @return void
      */
-    public function setSaveInProgress($value = true){
-        $this->saveInProgress = (bool)$value;
+    public function setSavingInProgress($value = true) {
+        $this->savingInProgress = (bool) $value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeletingInProgress() {
+        return $this->deletingInProgress;
+    }
+
+    /**
+     * @param bool $value
+     * @return void
+     */
+    public function setDeletingInProgress($value = true) {
+        $this->deletingInProgress = (bool) $value;
     }
 
     /**
@@ -454,7 +474,7 @@ abstract class Entity  extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     public function discardNonPersistedChanges() {
-        if ($this->saveInProgress) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
+        if ($this->isSavingInProgress()) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
         foreach ($this->propertiesChanges as $propertyName => $changeStatus) $this->setValueForPropertyWithName($changeStatus["lastPersistedValue"], $propertyName);
         $this->markUnpersistedPropertiesAsPersisted();
     }
@@ -464,7 +484,7 @@ abstract class Entity  extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     public function discardChanges() {
-        if ($this->saveInProgress) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
+        if ($this->isSavingInProgress()) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
         foreach ($this->propertiesChanges as $propertyName => $changeStatus) $this->setValueForPropertyWithName($changeStatus["oldValue"], $propertyName);
     }
 
