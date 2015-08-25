@@ -13,11 +13,6 @@ namespace obo\Annotation\Entity;
 class RepositoryName extends \obo\Annotation\Base\Entity {
 
     /**
-     * @var string
-     */
-    protected $repositoryName = "";
-
-    /**
      * @return string
      */
     public static function name() {
