@@ -83,9 +83,17 @@ class One extends \obo\Annotation\Base\Property {
         }
 
         if (isset($values["connectViaProperty"])) {
-           $this->connectViaProperty = $values["connectViaProperty"];
-           $this->propertyInformation->columnName = "";
-           $this->propertyInformation->persistable = false;
+            if (\preg_match("#[,: ]+#", $values["connectViaProperty"])) {
+                $matches = [];
+                \preg_match("#entity\:([[:alnum:]]+)[ ]*?,[ ]*?entityClass\:([[:alnum:]]+)#", $values["connectViaProperty"], $matches);
+                if (count($matches) !== 3) throw new \obo\Exceptions\BadAnnotationException("Inverse dynamic relationship is defined in the format: entity:[entityPropertyName], entityClass:[entityClassPropertyName]");
+                $this->connectViaProperty = $input = "{$matches[1]},{$matches[2]}";
+            } else {
+                $this->connectViaProperty = $values["connectViaProperty"];
+            }
+
+            $this->propertyInformation->columnName = "";
+            $this->propertyInformation->persistable = false;
         }
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name, $this->cascadeOptions);
@@ -136,7 +144,7 @@ class One extends \obo\Annotation\Base\Property {
                     if ($this->connectViaProperty === null ) {
                         $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
                     } else {
-                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignProperty($arguments["entity"], $this->connectViaProperty);
+                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignKey($arguments["entity"], $this->connectViaProperty);
                     }
 
                     if ($entityToBeConnected === null) {
