@@ -59,7 +59,7 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Carriers\QuerySpecification
      */
     public static function querySpecification() {
-        $querySpecification = \obo\Carriers\QueryCarrier::instance();
+        $querySpecification = new \obo\Carriers\QuerySpecification();
         return $querySpecification;
     }
 
