@@ -177,17 +177,15 @@ abstract class EntityManager  extends \obo\Object {
      * @throws \obo\Exceptions\EntityNotFoundException
      */
     public static function findEntity(\obo\Interfaces\IQuerySpecification $specification, $requiredEntity = true) {
+        $classNameEntity = self::classNameManagedEntity();
         $specification = self::queryCarrier()->addSpecification($specification);
+        $specification->select("DISTINCT {" . \implode("}, {", $classNameEntity::entityInformation()->persistablePropertiesNames) . "}");
 
-        $entity = self::findEntities($specification->limit(1));
-
-        if (count($entity)) return $entity->current();
-
-        if ($requiredEntity) {
-            $query = self::dataStorage()->constructQuery($specification);
-            throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . (\is_string($query) ? $query : \var_export($query, true)) . "'");
+        if (!($entity = self::entityFromDataStorage($specification)) AND $requiredEntity) {
+            throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . (\is_string($query = self::dataStorage()->constructQuery($specification)) ? $query : \var_export($query, true)) . "'");
         }
-        return null;
+
+        return $entity;
     }
 
     /**
@@ -197,7 +195,6 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Entity
      */
     public static function findEntities(\obo\Interfaces\IQuerySpecification $specification, \obo\Interfaces\IPaginator $paginator = null, \obo\Interfaces\IFilter $filter = null) {
-
         $specification = self::queryCarrier()->addSpecification($specification);
 
         if ($filter !== null) {
@@ -226,10 +223,34 @@ abstract class EntityManager  extends \obo\Object {
 
     /**
      * @param \obo\Carriers\QueryCarrier $specification
+     * @return \obo\Entity
+     */
+    protected static function entityFromDataStorage(\obo\Carriers\QueryCarrier $specification) {
+        $classNameEntity = self::classNameManagedEntity();
+        $specification->limit(1);
+
+        if (($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
+            $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
+        }
+
+        return isset(self::rawDataForSpecification($specification)[0]) ? self::entityFromRawData(self::rawDataForSpecification($specification)[0]) : null;
+    }
+
+    /**
+     * @param array $data
+     * @return \obo\Entity
+     */
+    protected static function entityFromRawData(array $data) {
+        $entity = self::entityFromArray($data, false, false);
+        $entity->setBasedInRepository(true);
+        return $entity;
+    }
+
+    /**
+     * @param \obo\Carriers\QueryCarrier $specification
      * @return \obo\Entity[]
      */
     protected static function entitiesFromDataStorage(\obo\Carriers\QueryCarrier $specification) {
-
         $classNameEntity = self::classNameManagedEntity();
 
         if (($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
@@ -244,16 +265,6 @@ abstract class EntityManager  extends \obo\Object {
         }
 
         return $entities;
-    }
-
-    /**
-     * @param array $data
-     * @return \obo\Entity
-     */
-    protected static function entityFromRawData(array $data) {
-        $entity = self::entityFromArray($data, false, false);
-        $entity->setBasedInRepository(true);
-        return $entity;
     }
 
     /**
