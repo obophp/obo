@@ -64,7 +64,7 @@ class Information extends \obo\Object {
 
         if (($entitiesList = $this->cache->load("entitiesList")) === null) {
             $this->createCache();
-            if (($entitiesList = $this->cache->load("entitiesList")) === null) throw new \obo\Exceptions\Exception("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+            if (($entitiesList = $this->cache->load("entitiesList")) === null) throw new \obo\Exceptions\Exception("Failed to load entities information cache. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
         }
 
         foreach($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName($entityClassName);
@@ -136,7 +136,7 @@ class Information extends \obo\Object {
 
         if (!$this->cacheValidity OR ($entityInformation = $this->cache->load($className)) === null) {
             $this->createCache();
-            if (($entityInformation = $this->cache->load($className)) === null) throw new \obo\Exceptions\Exception ("Failed to load cache entities information. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+            if (($entityInformation = $this->cache->load($className)) === null) throw new \obo\Exceptions\Exception ("Failed to load entity information cache for class {$className}. Possible cause could be that you can't write to the cache folder, folders with all models are not loaded, or you are missing a model directory in config file.");
         } else {
             $entityInformation = $this->cache->load($className);
         }
