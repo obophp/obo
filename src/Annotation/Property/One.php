@@ -112,7 +112,7 @@ class One extends \obo\Annotation\Base\Property {
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeSave",
                     "actionAnonymousFunction" => function($arguments) {
-                        $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false);
+                        $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, true, false);
                         if ($connectedEntity instanceof \obo\Entity && !$connectedEntity->isDeleted()) $connectedEntity->save();
                     },
                     "actionArguments" => ["propertyName" => $this->propertyInformation->name],
@@ -122,7 +122,7 @@ class One extends \obo\Annotation\Base\Property {
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeDelete",
                     "actionAnonymousFunction" => function($arguments) {
-                        if ($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) !== null) {
+                        if ($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, true, false) !== null) {
                             if (($connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])) instanceof \obo\Entity) $connectedEntity->delete($arguments["removeEntity"]);
                         }
                     },
@@ -142,9 +142,9 @@ class One extends \obo\Annotation\Base\Property {
 
                 if (!$currentPropertyValue instanceof \obo\Entity) {
                     if ($this->connectViaProperty === null ) {
-                        $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue);
+                        $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue, $arguments["autoCreate"]);
                     } else {
-                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignKey($arguments["entity"], $this->connectViaProperty);
+                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignKey($arguments["entity"], $this->connectViaProperty, $arguments["autoCreate"]);
                     }
 
                     if ($entityToBeConnected === null) {
