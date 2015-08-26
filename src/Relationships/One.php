@@ -38,9 +38,10 @@ class One extends \obo\Relationships\Relationship {
     /**
      * @param \obo\Entity $owner
      * @param mixed $propertyValue
+     * @param boolean $autoCreate
      * @return \obo\Entity|null
      */
-    public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue) {
+    public function relationshipForOwnerAndPropertyValue(\obo\Entity $owner, $propertyValue, $autoCreate = true) {
         $this->owner = $owner;
 
         if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
@@ -54,16 +55,17 @@ class One extends \obo\Relationships\Relationship {
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
         } else {
-            return ($this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([]) : null;
+            return ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([]) : null;
         }
     }
 
     /**
      * @param \obo\Entity $owner
      * @param string $foreignKey
+     * @param boolean $autoCreate
      * @return \obo\Entity|null
      */
-    public function entityForOwnerForeignKey(\obo\Entity $owner, $foreignKey) {
+    public function entityForOwnerForeignKey(\obo\Entity $owner, $foreignKey, $autoCreate = true) {
         if ($owner->primaryPropertyValue() === null) return null;
         $this->owner = $owner;
 
@@ -82,7 +84,7 @@ class One extends \obo\Relationships\Relationship {
         if ($entity = $entityManagerName::findEntity($query, false)) {
             return $entity;
         } else {
-            return ($this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([$foreignKey[0] => $owner]) : null;
+            return ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([$foreignKey[0] => $owner]) : null;
         }
     }
 }

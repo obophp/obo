@@ -194,11 +194,12 @@ abstract class Entity  extends \obo\Object {
      * @param string $propertyName
      * @param bool $entityAsPrimaryPropertyValue
      * @param bool $triggerEvents
+     * @param bool $autoCreate
      * @return mixed
      * @throws Exceptions\PropertyNotFoundException
      * @throws Exceptions\ServicesException
      */
-    public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true) {
+    public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true, $autoCreate = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
 
             if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
@@ -211,7 +212,7 @@ abstract class Entity  extends \obo\Object {
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
         if ($triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue, "autoCreate" => $autoCreate]);
         }
 
         if ($propertyInformation->getterName === "") {
