@@ -403,7 +403,7 @@ class Explorer extends \obo\Object {
             if($tokens[$i][0] === T_NAMESPACE AND $i++) {
                 $namespace = "";
                 while($tokens[++$i][0] === T_STRING OR $tokens[$i][0] === T_NS_SEPARATOR) $namespace .= $tokens[$i][1];
-            } elseif ($tokens[$i][0] === T_CLASS) {
+            } elseif ($tokens[$i][0] === T_CLASS AND $tokens[$i - 1][0] !== T_DOUBLE_COLON) {
                 $classes[] = ($namespace ? $namespace . "\\" : "") . $tokens[$i += 2][1];
             }
         }
