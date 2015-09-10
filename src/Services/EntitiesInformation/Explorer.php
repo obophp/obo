@@ -86,7 +86,7 @@ class Explorer extends \obo\Object {
             $files = new \RegexIterator($iterator, '#^.+\.php$#', \RegexIterator::MATCH, \RegexIterator::USE_KEY);
 
             foreach ($files as $fileName) {
-                foreach ($this->findClasses(file_get_contents($fileName)) as $className) {
+                foreach (self::findClasses(file_get_contents($fileName)) as $className) {
                     $reflection = new \ReflectionClass($className);
                     if ($reflection->isSubclassOf("\\obo\\Entity")) $entitiesClasses[] = $className;
                 }
@@ -392,9 +392,9 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $code
-     * @return string
+     * @return string[]
      */
-    protected function findClasses($code) {
+    public static function findClasses($code) {
         $classes = [];
         $count = count($tokens = token_get_all($code));
         $namespace = "";
