@@ -15,17 +15,17 @@ class Many extends \obo\Relationships\Relationship {
     /**
      * @var string
      */
-    public $connectViaPropertyWithName = null;
+    public $connectViaPropertyWithName = "";
 
     /**
      * @var string
      */
-    public $ownerNameInProperty = null;
+    public $ownerNameInProperty = "";
 
     /**
      * @var string
      */
-    public $connectViaRepositoryWithName = null;
+    public $connectViaRepositoryWithName = "";
 
     /**
      * @var string
@@ -45,13 +45,12 @@ class Many extends \obo\Relationships\Relationship {
 
     /**
      * @param \obo\Carriers\QuerySpecification $specification
-     * @return \obo\Entity
+     * @return \obo\Entity[]
      */
     public function findEntities(\obo\Carriers\QuerySpecification $specification = null) {
-        if ($specification === null) $specification = new \obo\Carriers\QuerySpecification();
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-        return $ownedEntityManagerName::findEntities($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+        return $ownedEntityManagerName::findEntities($this->createSpecification($specification));
     }
 
     /**
@@ -59,38 +58,99 @@ class Many extends \obo\Relationships\Relationship {
      * @return int
      */
     public function countEntities(\obo\Carriers\QuerySpecification $specification = null) {
-        if ($specification === null) $specification = new \obo\Carriers\QuerySpecification();
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-        return $ownedEntityManagerName::countRecords($this->constructSpecification(\obo\Carriers\QueryCarrier::instance()->addSpecification($specification)));
+        return $ownedEntityManagerName::countRecords($this->createSpecification($specification));
     }
 
     /**
-     * @param \obo\Carriers\QueryCarrier $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Carriers\QueryCarrier
      */
-    public function constructSpecification(\obo\Carriers\QueryCarrier $specification = null) {
+    public function createSpecification(\obo\Interfaces\IQuerySpecification $specification = null) {
         $ownedEntityClassName = $this->entityClassNameToBeConnected;
+        $ownedEntityManger = $ownedEntityClassName::entityInformation()->managerName;
         $ownerPrimaryPropertyName = $this->owner->entityInformation()->primaryPropertyName;
         $ownedPropertyNameForSoftDelete = $ownedEntityClassName::entityInformation()->propertyNameForSoftDelete;
 
-        $query = $specification === null ? \obo\Carriers\QueryCarrier::instance() : $specification;
-
-        if ($this->connectViaPropertyWithName !== null) {
-            $query->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->$ownerPrimaryPropertyName);
-            if ($this->ownerNameInProperty !== null) $query->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
-        } elseif ($this->connectViaRepositoryWithName !== null){
-            if ($ownedPropertyNameForSoftDelete !== "") {
-                $softDeleteJoinQuery = "AND [{$ownedEntityClassName::entityInformation()->repositoryName}].[{$ownedEntityClassName::informationForPropertyWithName($ownedPropertyNameForSoftDelete)->columnName}] = %b";
-                $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::informationForPropertyWithName($ownedEntityClassName::entityInformation()->primaryPropertyName)->columnName}]" . $softDeleteJoinQuery, $this->owner->$ownerPrimaryPropertyName, FALSE);
-            } else {
-                $query->join("JOIN [{$this->connectViaRepositoryWithName}] ON [{$this->owner->entityInformation()->repositoryName}] = %s AND [{$ownedEntityClassName::entityInformation()->repositoryName}] = [{$ownedEntityClassName::informationForPropertyWithName($ownedEntityClassName::entityInformation()->primaryPropertyName)->columnName}]", $this->owner->$ownerPrimaryPropertyName);
-            }
+        if ($specification === null) {
+            $specification = $ownedEntityManger::queryCarrier();
+        } else {
+            $specification = $ownedEntityManger::queryCarrier()->addSpecification($specification);
         }
 
-        if ($this->sortVia !== null) $query->orderBy($this->sortVia);
+        if ($this->connectViaPropertyWithName !== "") {
+            $specification->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->primaryPropertyValue());
+            if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
+        } elseif ($this->connectViaRepositoryWithName !== "") {
+            $specification->where("{*{$this->connectViaRepositoryWithName}:{$this->owner->entityInformation()->repositoryName}*} = %s", $this->owner->primaryPropertyValue());
+        }
 
-        return $query;
+        if ($this->sortVia !== null) $specification->orderBy($this->sortVia);
+
+        return $specification ;
+    }
+
+    public function add(\obo\Entity $entity) {
+        if ($this->connectViaPropertyWithName !== "") {
+            $entity->setValueForPropertyWithName($this->owner, $this->connectViaPropertyWithName);
+            if ($this->ownerNameInProperty !== "") $entity->setValueForPropertyWithName($this->owner->className(), $this->ownerNameInProperty);
+
+            if ($this->owner->isBasedInRepository()) {
+                $entity->save();
+            } else {
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                    new \obo\Services\Events\Event([
+                        "onObject" => $this->owner,
+                        "name" => "afterInsert",
+                        "actionAnonymousFunction" => function () use ($entity) {
+                            $entity->save();
+                        },
+                        "actionArguments" => [],
+                    ])
+                );
+            }
+        } elseIf ($this->connectViaRepositoryWithName !== "") {
+            if (!$entity->isBasedInRepository()) $entity->save();
+
+            if ($this->owner->isBasedInRepository()) {
+                $this->createRelationshipInRepositoryForEntity($entity);
+            } else {
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                    new \obo\Services\Events\Event([
+                        "onObject" => $this->owner,
+                        "name" => "afterInsert",
+                        "actionAnonymousFunction" => function () use ($entity) {
+                            $this->createRelationshipInRepositoryForEntity($entity);
+                        },
+                        "actionArguments" => [],
+                    ])
+                );
+            }
+        } else {
+            throw new \obo\Exceptions\Exception("This relationship is not well configured");
+        }
+    }
+
+    public function remove(\obo\Entity $entity) {
+        if ($this->connectViaPropertyWithName !== "") {
+            $entity->setValueForPropertyWithName(null, $this->connectViaPropertyWithName);
+            $entity->save();
+        } elseIf ($this->connectViaRepositoryWithName !== "") {
+            $ownerManagerName = $this->owner->entityInformation()->managerName;
+            $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->connectViaRepositoryWithName, [$this->owner, $entity]);
+        } else {
+            throw new \obo\Exceptions\Exception("This relationship is not well configured");
+        }
+    }
+
+    /**
+     * @param \obo\Entity $entity
+     * @return void
+     */
+    protected function createRelationshipInRepositoryForEntity(\obo\Entity $entity) {
+        $ownerManagerName = $this->owner->entityInformation()->managerName;
+        $ownerManagerName::dataStorage()->createRelationshipBetweenEntities($this->connectViaRepositoryWithName, [$this->owner, $entity]);
     }
 
 }
