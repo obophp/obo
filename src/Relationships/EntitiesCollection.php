@@ -85,24 +85,33 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if ($this->entitiesAreLoaded) {
             return parent::count();
         } elseif ($this->owner->isBasedInRepository()) {
-            $entityClass = $this->relationShip->entityClassNameToBeConnected;
-            $managerClass = $entityClass::entityInformation()->managerName;
-            return $managerClass::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()));
+            return $this->relationShip->countEntities();
         } else {
             return 0;
         }
     }
 
     /**
+     * @param array | \Iterator $data
+     * @param bool $notifyEvents
+     * @return \obo\Entity
+     */
+    public function addNew($data = [], $notifyEvents = true) {
+        $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
+        $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
+        return $this->add($entityManager::entity($data), true, $notifyEvents);
+    }
+
+    /**
      * @param \obo\Entity $entity
-     * @param bool $createRelationshipInRepository
+     * @param bool $persistently
      * @param bool $notifyEvents
      * @return \obo\Entity
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      * @throws \obo\Exceptions\ServicesException
      */
-    public function add(\obo\Entity $entity, $createRelationshipInRepository = true, $notifyEvents = true) {
+    public function add(\obo\Entity $entity, $persistently = true, $notifyEvents = true) {
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
         if ($notifyEvents) {
@@ -110,52 +119,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
-        if ($createRelationshipInRepository AND $this->relationShip->connectViaRepositoryWithName !== null) {
-            if (!$entity->isBasedInRepository()) {
-                $entity->save();
-            }
-
-            if ($this->owner->isBasedInRepository()) {
-                $this->createRelationshipInRepositoryForEntity($entity);
-            } else {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                    new \obo\Services\Events\Event([
-                        "onObject" => $this->owner,
-                        "name" => "afterInsert",
-                        "actionAnonymousFunction" => function () use ($entity) {
-                            $this->createRelationshipInRepositoryForEntity($entity);
-                        },
-                        "actionArguments" => [],
-                    ])
-                );
-            }
-        }
-
-        if ($this->relationShip->connectViaPropertyWithName !== null) {
-
-            $entity->setValueForPropertyWithName($this->owner, $this->relationShip->connectViaPropertyWithName);
-            if ($this->relationShip->ownerNameInProperty !== null) $entity->setValueForPropertyWithName($this->owner->className(), $this->relationShip->ownerNameInProperty);
-
-            if ($createRelationshipInRepository) {
-
-                if ($this->owner->isBasedInRepository()) {
-                    $entity->save();
-                } else {
-                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                        new \obo\Services\Events\Event([
-                            "onObject" => $this->owner,
-                            "name" => "afterInsert",
-                            "actionAnonymousFunction" => function () use ($entity) {
-                                $entity->save();
-                            },
-                            "actionArguments" => [],
-                        ])
-                    );
-                }
-
-            }
-
-        }
+        if ($persistently) $this->relationShip->add($entity);
 
         if (!$entityKey = $entity->primaryPropertyValue()) {
              $entityKey = "__" . ($this->count() + 1);
@@ -178,17 +142,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         }
 
         return $entity;
-    }
-
-    /**
-     * @param array | \Iterator $data
-     * @param bool $notifyEvents
-     * @return \obo\Entity
-     */
-    public function addNew($data = [], $notifyEvents = true) {
-        $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
-        $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
-        return $this->add($entityManager::entity($data), true, $notifyEvents);
     }
 
     /**
@@ -218,15 +171,17 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             $this->unsetValueForVariableWithName($key);
         }
 
-        if (!$deleteEntity) $this->removeRelationshipFromRepositoryForEntity($entity);
+        if ($deleteEntity) {
+            $entity->delete();
+        } else {
+            $this->relationShip->remove($entity);
+        }
 
         if ($notifyEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["removedEntity" => $entity]);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Disconnected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "disconnectedEntity" => $entity]);
         }
-
-        if ($deleteEntity) $entity->delete();
     }
 
     /**
@@ -235,7 +190,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
 
     public function getSpecification() {
-        return clone $this->relationShip->constructSpecification();
+        return clone $this->relationShip->createSpecification();
     }
 
     /**
@@ -333,29 +288,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         }
 
         return $dump;
-    }
-
-    /**
-     * @param \obo\Entity $entity
-     * @return void
-     */
-    protected function createRelationshipInRepositoryForEntity(\obo\Entity $entity) {
-        $ownerManagerName = $this->owner->entityInformation()->managerName;
-        $ownerManagerName::dataStorage()->createRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
-    }
-
-    /**
-     * @param \obo\Entity $entity
-     * @return void
-     */
-    protected function removeRelationshipFromRepositoryForEntity(\obo\Entity $entity) {
-        if ($this->relationShip->connectViaRepositoryWithName === null) {
-            $entity->setValueForPropertyWithName(null, $this->relationShip->connectViaPropertyWithName);
-            $entity->save();
-        } else {
-            $ownerManagerName = $this->owner->entityInformation()->managerName;
-            $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->relationShip->connectViaRepositoryWithName, [$this->owner, $entity]);
-        }
     }
 
 }

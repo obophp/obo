@@ -30,7 +30,7 @@ class One extends \obo\Relationships\Relationship {
     public function __construct($entityClassNameToBeConnected, $ownerPropertyName, array $cascade = []) {
         if (\strpos($entityClassNameToBeConnected, "property:") === 0) {
             $this->entityClassNameToBeConnectedInPropertyWithName = \substr($entityClassNameToBeConnected, 9);
-            $entityClassNameToBeConnected = null;
+            $entityClassNameToBeConnected = "";
         }
         parent::__construct($entityClassNameToBeConnected, $ownerPropertyName, $cascade);
     }

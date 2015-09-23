@@ -49,6 +49,25 @@ interface IDataStorage {
      */
     public function removeEntity(\obo\Entity $entity);
 
+
+    /**
+     * @param \obo\Carriers\QueryCarrier $specification
+     * @param string $repositoryName
+     * @param \obo\Entity $owner
+     * @param string $targetEntity
+     * @return int
+     */
+    public function countEntitiesInRelationship(\obo\Carriers\QueryCarrier $specification, $repositoryName, \obo\Entity $owner, $targetEntity);
+
+    /**
+     * @param \obo\Carriers\QueryCarrier $specification
+     * @param string $repositoryName
+     * @param \obo\Entity $owner
+     * @param string $targetEntity
+     * @return array
+     */
+    public function dataForEntitiesInRelationship(\obo\Carriers\QueryCarrier $specification, $repositoryName, \obo\Entity $owner, $targetEntity);
+
     /**
      * @param string $repositoryName
      * @param array $entities
