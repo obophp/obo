@@ -82,7 +82,7 @@ class Factory extends \obo\Object {
      * @return \obo\DataType\ObjectDataType
      */
     public static function createObjectDataType(\obo\Carriers\PropertyInformationCarrier $propertyInformation, $className = null) {
-        return new \obo\DataType\ObjectDataType($propertyInformation, $className = null);
+        return new \obo\DataType\ObjectDataType($propertyInformation, $className);
     }
 
     /**
@@ -91,6 +91,6 @@ class Factory extends \obo\Object {
      * @return \obo\DataType\EntityDataType
      */
     public static function createEntityDataType(\obo\Carriers\PropertyInformationCarrier $propertyInformation, $className = null) {
-        return new \obo\DataType\EntityDataType($propertyInformation, $className = null);
+        return new \obo\DataType\EntityDataType($propertyInformation, $className);
     }
 }
