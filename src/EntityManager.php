@@ -105,7 +105,6 @@ abstract class EntityManager  extends \obo\Object {
         if (!$entity->isInitialized()) {
             $data = self::rawDataForEntity($entity, $ignoreSoftDelete);
             if (!count($data)) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' with primary property value '{$primaryPropertyName} = {$primaryPropertyValue}' does not exist in the repository or is deleted");
-
             return self::entityFromRawData($data);
         }
 
@@ -142,14 +141,15 @@ abstract class EntityManager  extends \obo\Object {
             $entity->setBasedInRepository((bool) $repositoryData);
         }
 
-        if (!$entity->isInitialized() OR $overwriteOriginalData) {
-            if ($overwriteOriginalData) {
-                if (!$entity->isInitialized()) $entity->setInitialized();
-                $entity->changeValuesPropertiesFromArray($data);
-            } else {
-                $entity->changeValuesPropertiesFromArray($data);
-                $entity->setInitialized();
-            }
+
+        if ($overwriteOriginalData) {
+            if (!$entity->isInitialized()) $entity->setInitialized();
+            $entity->changeValuesPropertiesFromArray($data);
+        }
+
+        if (!$entity->isInitialized()) {
+            $entity->changeValuesPropertiesFromArray($data);
+            $entity->setInitialized();
         }
 
         return $entity;
@@ -303,7 +303,7 @@ abstract class EntityManager  extends \obo\Object {
     public static function countRecords(\obo\Carriers\QueryCarrier $specification) {
         $specification = self::queryCarrier()->addSpecification($specification);
         $classNameManagedEntity = self::classNameManagedEntity();
-        $primaryPropertyName = $classNameManagedEntity::informationForPropertyWithName($classNameManagedEntity::entityInformation()->primaryPropertyName)->name;
+        $primaryPropertyName = $classNameManagedEntity::entityInformation()->primaryPropertyName;
         $specification->rewriteOrderBy(null);
 
         if (($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
