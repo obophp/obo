@@ -434,10 +434,10 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param bool $state
-     * @return void
+     * @return bool
      */
     public function setBasedInRepository($state) {
-        $this->basedInRepository = (bool) $state;
+        return $this->basedInRepository = (bool) $state;
     }
 
     /**
