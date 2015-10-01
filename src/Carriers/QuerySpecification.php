@@ -154,14 +154,13 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
         }
 
         foreach ($formatArguments as $key => $argument) {
-            if ($queryPosition == $key) {
-                $queryPosition = \preg_match_all("#%([a-zA-Z~][a-zA-Z0-9~]{0,5})#", $argument, $matches) + $key + 1;
+            if ($queryPosition === $key) {
+                $queryPosition = \preg_match_all("#(%([a-zA-Z~][a-zA-Z0-9~]{0,5}))|(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER) . ")#", $argument, $matches) + $key + 1;
                 $targetPart["query"] .= $prefix . $argument .$suffix;
             } else {
                 $targetPart["data"][] = $argument;
             }
         }
-
     }
 
     /**

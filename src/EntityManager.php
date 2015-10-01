@@ -69,8 +69,8 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function isEntityBasedInRepository(\obo\Entity $entity) {
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-        if (!$entity->valueForPropertyWithName($primaryPropertyName)) return false;
-        return (bool) self::countRecords(self::queryCarrier()->where("AND [{$primaryPropertyName}] = %s", $entity->$primaryPropertyName));
+        if (!$entity->primaryPropertyValue()) return false;
+        return (bool) self::countRecords(self::queryCarrier()->where("AND [{$primaryPropertyName}] = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $entity->primaryPropertyValue()));
     }
 
     /**
@@ -230,7 +230,7 @@ abstract class EntityManager  extends \obo\Object {
         $specification->limit(1);
 
         if (($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
-            $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
+            $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
         return isset(self::rawDataForSpecification($specification)[0]) ? self::entityFromRawData(self::rawDataForSpecification($specification)[0]) : null;
@@ -254,7 +254,7 @@ abstract class EntityManager  extends \obo\Object {
         $classNameEntity = self::classNameManagedEntity();
 
         if (($propertyNameForSoftDelete = $classNameEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
-            $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
+            $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
         $entities = new \obo\Carriers\DataCarrier();
@@ -285,10 +285,10 @@ abstract class EntityManager  extends \obo\Object {
 
         $specification = self::queryCarrier();
 
-        $specification->select("{" . \implode("}, {", $entity->entityInformation()->persistablePropertiesNames) . "}")->where("{{$primaryPropertyName}} = %s", $entity->valueForPropertyWithName($primaryPropertyName));
+        $specification->select("{" . \implode("}, {", $entity->entityInformation()->persistablePropertiesNames) . "}")->where("{{$primaryPropertyName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $entity->valueForPropertyWithName($primaryPropertyName));
 
         if (!$ignoreSoftDelete AND ($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) !== "") {
-            $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
+            $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
         $data = self::rawDataForSpecification($specification);
@@ -307,7 +307,7 @@ abstract class EntityManager  extends \obo\Object {
         $specification->rewriteOrderBy(null);
 
         if (($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
-            $specification->where("AND {{$propertyNameForSoftDelete}} = %b", FALSE);
+            $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
         return (int) self::dataStorage()->countRecordsForQuery($specification, $primaryPropertyName);
