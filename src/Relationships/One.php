@@ -72,16 +72,16 @@ class One extends \obo\Relationships\Relationship {
         $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
         $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
 
-        $query = $entityManagerName::querySpecification();
+        $specification = $entityManagerName::querySpecification();
 
         if (\strpos($foreignKey, ",") === false) {
-            $query->where("{{$foreignKey}} = %s", $owner->primaryPropertyValue());
+            $specification->where("{{$foreignKey}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
         } else {
             $foreignKey = \explode(",", $foreignKey);
-            $query->where("{{$foreignKey[0]}} = %s AND {{$foreignKey[1]}} = %s", $owner->primaryPropertyValue(), $owner->entityInformation()->className);
+            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->className);
         }
 
-        if ($entity = $entityManagerName::findEntity($query, false)) {
+        if ($entity = $entityManagerName::findEntity($specification, false)) {
             return $entity;
         } else {
             return ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([$foreignKey[0] => $owner]) : null;

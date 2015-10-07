@@ -80,10 +80,10 @@ class Many extends \obo\Relationships\Relationship {
         }
 
         if ($this->connectViaPropertyWithName !== "") {
-            $specification->where("AND {{$this->connectViaPropertyWithName}} = %s", $this->owner->primaryPropertyValue());
-            if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = %s", $this->owner->className());
+            $specification->where("AND {{$this->connectViaPropertyWithName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
+            if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->className());
         } elseif ($this->connectViaRepositoryWithName !== "") {
-            $specification->where("{*{$this->connectViaRepositoryWithName}:{$this->owner->entityInformation()->repositoryName}*} = %s", $this->owner->primaryPropertyValue());
+            $specification->where("{*{$this->connectViaRepositoryWithName}:" . $this->owner->className() . "*} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
         }
 
         if ($this->sortVia !== null) $specification->orderBy($this->sortVia);
