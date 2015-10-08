@@ -114,13 +114,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function add(\obo\Entity $entity, $persistently = true, $notifyEvents = true) {
         if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
-        if ($notifyEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["addedEntity" => $entity]);
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
-        }
-
-        if ($persistently) $this->relationShip->add($entity);
-
         if (!$entityKey = $entity->primaryPropertyValue()) {
              $entityKey = "__" . ($this->count() + 1);
              $this->afterSavingNeedReload = true;
@@ -132,8 +125,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                          "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress() AND $arguments["entitiesCollection"]->containsValue($arguments["entity"])) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
                          "actionArguments" => ["entitiesCollection" => $this],
                      ]));
+        } else {
+            if ($this->__isset($entityKey)) throw new \obo\Exceptions\Exception("Can't add an element with key '{$entityKey}' into a collection because it already exists.");
         }
 
+        if ($notifyEvents) {
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeAddTo" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["addedEntity" => $entity]);
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
+        }
+
+        if ($persistently) $this->relationShip->add($entity);
         $this->setValueForVariableWithName($entity, $entityKey);
 
         if ($notifyEvents) {
