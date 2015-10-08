@@ -525,6 +525,7 @@ abstract class Entity  extends \obo\Object {
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
             $propertyValue = $this->valueForPropertyWithName($propertyInformation->name);
+
             if ($propertyInformation->relationship !== null) {
 
                 if (isset($propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) AND $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) {
@@ -542,12 +543,9 @@ abstract class Entity  extends \obo\Object {
                     "primaryPropertyName" => $connectedEntityInformation->primaryPropertyName,
                 ];
 
-                if ($propertyValue !== null AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !count($propertyValue))) {
-
+                if ($propertyValue !== null AND !($propertyValue instanceof \obo\Relationships\EntitiesCollection AND !$propertyValue->count())) {
                     if (isset($arguments[0])
-
-                        AND $arguments[0]->className() == $connectedEntityInformation->className
-                        AND $arguments[0]->valueForPropertyWithName($arguments[0]->entityInformation()->primaryPropertyName) == $propertyValue->valueForPropertyWithName($connectedEntityInformation->primaryPropertyName)
+                        AND $arguments[0]->className() === $connectedEntityInformation->className
                     ) {
                         $relationshipInformation["entity"] = "**RECURSION**";
                     } else {
@@ -561,8 +559,8 @@ abstract class Entity  extends \obo\Object {
 
                 $propertyValue = $relationshipInformation;
             }
-            $dump["properties"][$propertyInformation->name] = $propertyValue;
 
+            $dump["properties"][$propertyInformation->name] = $propertyValue;
         }
 
         return $dump;
