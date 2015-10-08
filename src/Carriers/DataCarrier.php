@@ -238,7 +238,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      */
     public function offsetGet($offset) {
         if (isset($this->variables()[$offset])) return $this->variables()[$offset];
-        return null;
+        throw new \obo\Exceptions\VariableNotFoundException("Can't return an element with offset '{$offset}' because it doesn't exist in a collection.");
     }
 
     /**
