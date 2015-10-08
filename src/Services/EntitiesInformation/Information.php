@@ -116,7 +116,6 @@ class Information extends \obo\Object {
         $this->cacheValidity = true;
         \flock($fp, \LOCK_UN);
         \fclose($fp);
-        \unlink($this->lockFilePath);
     }
 
     /**
