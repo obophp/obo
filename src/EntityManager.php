@@ -297,10 +297,10 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
-     * @param \obo\Carriers\QueryCarrier $specification
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return int
      */
-    public static function countRecords(\obo\Carriers\QueryCarrier $specification) {
+    public static function countRecords(\obo\Interfaces\IQuerySpecification $specification) {
         $specification = self::queryCarrier()->addSpecification($specification);
         $classNameManagedEntity = self::classNameManagedEntity();
         $primaryPropertyName = $classNameManagedEntity::entityInformation()->primaryPropertyName;
