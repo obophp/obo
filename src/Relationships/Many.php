@@ -96,32 +96,43 @@ class Many extends \obo\Relationships\Relationship {
             $entity->setValueForPropertyWithName($this->owner, $this->connectViaPropertyWithName);
             if ($this->ownerNameInProperty !== "") $entity->setValueForPropertyWithName($this->owner->className(), $this->ownerNameInProperty);
 
-            if ($this->owner->isBasedInRepository()) {
-                $entity->save();
-            } else {
+            if ($entity->isBasedInRepository() AND $this->owner->isBasedInRepository()) $entity->save();
+
+            if (!$this->owner->isBasedInRepository()) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
                     new \obo\Services\Events\Event([
                         "onObject" => $this->owner,
                         "name" => "afterInsert",
                         "actionAnonymousFunction" => function () use ($entity) {
-                            $entity->save();
+                            if ($entity->isBasedInRepository()) $entity->save();
                         },
                         "actionArguments" => [],
                     ])
                 );
             }
-        } elseIf ($this->connectViaRepositoryWithName !== "") {
-            if (!$entity->isBasedInRepository()) $entity->save();
 
-            if ($this->owner->isBasedInRepository()) {
-                $this->createRelationshipInRepositoryForEntity($entity);
-            } else {
+        } elseif ($this->connectViaRepositoryWithName !== "") {
+            if (!$entity->isBasedInRepository()) {
+                $owner = $this->owner;
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                    new \obo\Services\Events\Event([
+                        "onObject" => $entity,
+                        "name" => "afterInsert",
+                        "actionAnonymousFunction" => function () use ($owner, $entity) {
+                            if ($owner->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
+                        },
+                        "actionArguments" => [],
+                    ])
+                );
+            }
+
+            if (!$this->owner->isBasedInRepository()) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
                     new \obo\Services\Events\Event([
                         "onObject" => $this->owner,
                         "name" => "afterInsert",
                         "actionAnonymousFunction" => function () use ($entity) {
-                            $this->createRelationshipInRepositoryForEntity($entity);
+                            if ($entity->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
                         },
                         "actionArguments" => [],
                     ])
@@ -136,7 +147,7 @@ class Many extends \obo\Relationships\Relationship {
         if ($this->connectViaPropertyWithName !== "") {
             $entity->setValueForPropertyWithName(null, $this->connectViaPropertyWithName);
             $entity->save();
-        } elseIf ($this->connectViaRepositoryWithName !== "") {
+        } elseif ($this->connectViaRepositoryWithName !== "") {
             $ownerManagerName = $this->owner->entityInformation()->managerName;
             $ownerManagerName::dataStorage()->removeRelationshipBetweenEntities($this->connectViaRepositoryWithName, [$this->owner, $entity]);
         } else {
