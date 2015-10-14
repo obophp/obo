@@ -202,8 +202,30 @@ abstract class Entity  extends \obo\Object {
     public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true, $autoCreate = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
 
-            if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
-                return $entity->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsPrimaryPropertyValue, $triggerEvents);
+            if ($pos = \strpos($propertyName, "_")) {
+                if (($subPropertyValue = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity) {
+                    return $subPropertyValue->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsPrimaryPropertyValue, $triggerEvents);
+                } elseif($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                    $propertyName = substr($propertyName, $pos + 1);
+
+                    if (($pos = \strpos($propertyName, "_")) === 0) {
+                        $propertyName = \ltrim($propertyName, "_");
+                        $position = "___" . \substr($propertyName, 0, \strpos($propertyName, "_"));
+                        $propertyName = \substr($propertyName, \strpos($propertyName, "_") + 1);
+
+                        if ($subPropertyValue->__isset($position)) {
+                            $entity = $subPropertyValue->variableForName($position);
+                        } else {
+                            $entityClassNameTobeConnected = $subPropertyValue->getEntitiesClassName();
+                            $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
+                            $entity = $entityManager::entity([]);
+                        }
+
+                        return $entity->valueForPropertyWithName($propertyName);
+                    } elseif ($pos) {
+                        return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->valueForPropertyWithName(substr($propertyName, $pos + 1));
+                    }
+                }
             }
 
             throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' can't be read, does not exist in entity '" . $this->className() . "'");
@@ -240,10 +262,36 @@ abstract class Entity  extends \obo\Object {
      * @throws \obo\Exceptions\ServicesException
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
+
+
         if (!$this->hasPropertyWithName($propertyName)) {
-            if (($pos = \strpos($propertyName, "_")) AND (($entity = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity)) {
-                return $entity->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
+            if ($pos = \strpos($propertyName, "_")) {
+
+                if (($subPropertyValue = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity) {
+                    return $subPropertyValue->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
+                } elseif($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                    $propertyName = substr($propertyName, $pos + 1);
+
+                    if (($pos = \strpos($propertyName, "_")) === 0) {
+                        $propertyName = \ltrim($propertyName, "_");
+                        $position = "___" . \substr($propertyName, 0, \strpos($propertyName, "_"));
+                        $propertyName = \substr($propertyName, \strpos($propertyName, "_") + 1);
+
+                        if ($subPropertyValue->__isset($position)) {
+                            $entity = $subPropertyValue->variableForName($position);
+                        } else {
+                            $entityClassNameTobeConnected = $subPropertyValue->getEntitiesClassName();
+                            $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
+                            $subPropertyValue->add([$position => $entity = $entityManager::entity([])]);
+                        }
+
+                        return $entity->setValueForPropertyWithName($value, $propertyName);
+                    } elseif ($pos) {
+                        return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
+                    }
+                }
             }
+
             throw new \obo\Exceptions\PropertyNotFoundException("Can't write to the property with name '{$propertyName}', does not exist in entity '".$this->className()."'");
         }
 
