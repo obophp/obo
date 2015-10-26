@@ -112,31 +112,35 @@ class Many extends \obo\Relationships\Relationship {
             }
 
         } elseif ($this->connectViaRepositoryWithName !== "") {
-            if (!$entity->isBasedInRepository()) {
-                $owner = $this->owner;
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                    new \obo\Services\Events\Event([
-                        "onObject" => $entity,
-                        "name" => "afterInsert",
-                        "actionAnonymousFunction" => function () use ($owner, $entity) {
-                            if ($owner->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
-                        },
-                        "actionArguments" => [],
-                    ])
-                );
-            }
+            if ($entity->isBasedInRepository() AND $this->owner->isBasedInRepository()) {
+                $this->createRelationshipInRepositoryForEntity($entity);
+            } else {
+                if (!$entity->isBasedInRepository()) {
+                    $owner = $this->owner;
+                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                        new \obo\Services\Events\Event([
+                            "onObject" => $entity,
+                            "name" => "afterInsert",
+                            "actionAnonymousFunction" => function () use ($owner, $entity) {
+                                if ($owner->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
+                            },
+                            "actionArguments" => [],
+                        ])
+                    );
+                }
 
-            if (!$this->owner->isBasedInRepository()) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
-                    new \obo\Services\Events\Event([
-                        "onObject" => $this->owner,
-                        "name" => "afterInsert",
-                        "actionAnonymousFunction" => function () use ($entity) {
-                            if ($entity->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
-                        },
-                        "actionArguments" => [],
-                    ])
-                );
+                if (!$this->owner->isBasedInRepository()) {
+                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                        new \obo\Services\Events\Event([
+                            "onObject" => $this->owner,
+                            "name" => "afterInsert",
+                            "actionAnonymousFunction" => function () use ($entity) {
+                                if ($entity->isBasedInRepository()) $this->createRelationshipInRepositoryForEntity($entity);
+                            },
+                            "actionArguments" => [],
+                        ])
+                    );
+                }
             }
         } else {
             throw new \obo\Exceptions\Exception("This relationship is not well configured");
