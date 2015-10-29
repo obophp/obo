@@ -395,6 +395,35 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @param array $data
+     */
+    public function setValuesPropertiesFromArray($data) {
+        if ($this->isInitialized()) throw new \obo\Exceptions\PropertyAccessException("Can't set properties. The entity is already initialized.");
+        $newData = [];
+
+        foreach ($data as $propertyName => $value) {
+            if (\strpos($propertyName, "_") === false) {
+                $newData[$propertyName] = $value;
+            } else {
+                $parts = \explode ("_", $propertyName, 2);
+                $newData[$parts[0]] = (is_array($newData[$parts[0]])) ? $newData[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
+            }
+        }
+
+        foreach ($newData as $propertyName => $value) {
+            if (\is_array($value) AND $this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
+                $targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected;
+                $manager = $targetEntity::entityInformation()->managerName;
+                $entity = $manager::entityFromArray($value, false, false);
+                $entity->setBasedInRepository(true);
+                $this->setValueForPropertyWithName($manager::entityFromArray($value, false, false), $propertyName);
+            } else {
+                $this->setValueForPropertyWithName($value, $propertyName);
+            }
+        }
+    }
+
+    /**
      * @param array | \Iterator | null $onlyFromList
      * @param bool $entityAsPrimaryPropertyValue
      * @param bool $onlyNonPersistentChanges

@@ -38,6 +38,11 @@ class One extends \obo\Annotation\Base\Property {
     protected $autoCreate = false;
 
     /**
+     * @var bool
+     */
+    protected $eager = false;
+
+    /**
      * @return string
      */
     public static function name() {
@@ -53,7 +58,8 @@ class One extends \obo\Annotation\Base\Property {
                 "targetEntity" => true,
                 "connectViaProperty" => false,
                 "cascade" => false,
-                "autoCreate" => false
+                "autoCreate" => false,
+                "eager" => false,
             ]
         ];
     }
@@ -95,6 +101,10 @@ class One extends \obo\Annotation\Base\Property {
             $this->propertyInformation->columnName = "";
             $this->propertyInformation->persistable = false;
         }
+
+
+        if (isset($values["eager"])) $this->eager = $values["eager"];
+        if ($this->eager) $this->entityInformation->eagerConnections[] = $this->propertyInformation->name;
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name, $this->cascadeOptions);
         $this->propertyInformation->relationship->autoCreate = $this->autoCreate;

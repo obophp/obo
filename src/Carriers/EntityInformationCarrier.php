@@ -83,6 +83,11 @@ class EntityInformationCarrier extends \obo\Object {
     public $propertyNameForSoftDelete = "";
 
     /**
+     * @var array
+     */
+    public $eagerConnections = [];
+
+    /**
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
      * @return void
      */
