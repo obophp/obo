@@ -26,10 +26,9 @@ interface IDataStorage {
 
     /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
-     * @param string $primaryPropertyName
      * $return int
      */
-    public function countRecordsForQuery(\obo\Carriers\QueryCarrier $queryCarrier, $primaryPropertyName);
+    public function countRecordsForQuery(\obo\Carriers\QueryCarrier $queryCarrier);
 
     /**
      * @param \obo\Entity $entity

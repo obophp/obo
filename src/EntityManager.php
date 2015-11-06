@@ -148,7 +148,7 @@ abstract class EntityManager  extends \obo\Object {
         }
 
         if (!$entity->isInitialized()) {
-            $entity->changeValuesPropertiesFromArray($data);
+            $entity->setValuesPropertiesFromArray($data);
             $entity->setInitialized();
         }
 
@@ -179,7 +179,7 @@ abstract class EntityManager  extends \obo\Object {
     public static function findEntity(\obo\Interfaces\IQuerySpecification $specification, $requiredEntity = true) {
         $classNameEntity = self::classNameManagedEntity();
         $specification = self::queryCarrier()->addSpecification($specification);
-        $specification->select("DISTINCT {" . \implode("}, {", $classNameEntity::entityInformation()->persistablePropertiesNames) . "}");
+        $specification->select(self::constructSelect());
 
         if (!($entity = self::entityFromDataStorage($specification)) AND $requiredEntity) {
             throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' does not exist for query '" . (\is_string($query = self::dataStorage()->constructQuery($specification)) ? $query : \var_export($query, true)) . "'");
@@ -208,7 +208,7 @@ abstract class EntityManager  extends \obo\Object {
 
         $classNameEntity = self::classNameManagedEntity();
 
-        $specification->select("DISTINCT {" . \implode("}, {", $classNameEntity::entityInformation()->persistablePropertiesNames) . "}");
+        $specification->select(self::constructSelect());
 
         return self::entitiesFromDataStorage($specification);
     }
@@ -285,14 +285,13 @@ abstract class EntityManager  extends \obo\Object {
 
         $specification = self::queryCarrier();
 
-        $specification->select("{" . \implode("}, {", $entity->entityInformation()->persistablePropertiesNames) . "}")->where("{{$primaryPropertyName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $entity->valueForPropertyWithName($primaryPropertyName));
+        $specification->select(self::constructSelect())->where("{{$primaryPropertyName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $entity->valueForPropertyWithName($primaryPropertyName));
 
         if (!$ignoreSoftDelete AND ($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) !== "") {
             $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
         $data = self::rawDataForSpecification($specification);
-
         return isset($data[0]) ? $data[0] : [];
     }
 
@@ -303,14 +302,47 @@ abstract class EntityManager  extends \obo\Object {
     public static function countRecords(\obo\Interfaces\IQuerySpecification $specification) {
         $specification = self::queryCarrier()->addSpecification($specification);
         $classNameManagedEntity = self::classNameManagedEntity();
-        $primaryPropertyName = $classNameManagedEntity::entityInformation()->primaryPropertyName;
         $specification->rewriteOrderBy(null);
 
         if (($propertyNameForSoftDelete = $classNameManagedEntity::entityInformation()->propertyNameForSoftDelete) !== "") {
             $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
-        return (int) self::dataStorage()->countRecordsForQuery($specification, $primaryPropertyName);
+        return (int) self::dataStorage()->countRecordsForQuery($specification);
+    }
+
+    /**
+     * @return string
+     */
+    public static function constructSelect() {
+        $classNameManagedEntity = self::classNameManagedEntity();
+        $entityInformation = $classNameManagedEntity::entityInformation();
+
+        return "{" . \implode("}, {", $entityInformation->persistablePropertiesNames) . "}" . self::loadEagerConnections();
+    }
+
+    /**
+     * @param string $prefix
+     * @return string
+     */
+    public static function loadEagerConnections($prefix = "") {
+        $nextQuery = "";
+        $classNameManagedEntity = self::classNameManagedEntity();
+        $entityInformation = $classNameManagedEntity::entityInformation();
+
+        foreach ($entityInformation->eagerConnections as $eagerConnection) {
+            $targetEntity = $classNameManagedEntity::informationForPropertyWithName($eagerConnection)->relationship->entityClassNameToBeConnected;
+            $persistableProperties = $targetEntity::entityInformation()->persistablePropertiesNames;
+            $targetEntityManagerClassName = $targetEntity::entityInformation()->managerName;
+
+            foreach ($persistableProperties as $persistableProperty) {
+                $nextQuery .= ", {$prefix}{{$eagerConnection}}.{{$persistableProperty}}";
+            }
+
+            $nextQuery .= $targetEntityManagerClassName::loadEagerConnections("{$prefix}{{$eagerConnection}}.");
+        }
+
+        return $nextQuery;
     }
 
     /**

@@ -106,14 +106,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
     /**
      * @param \obo\Entity|array|\Iterator $entities
-     * @param bool $persistently
+     * @param bool $permanently
      * @param bool $notifyEvents
-     * @return void
+     * @return mixed
      * @throws \obo\Exceptions\BadDataTypeException
      * @throws \obo\Exceptions\PropertyNotFoundException
      * @throws \obo\Exceptions\ServicesException
      */
-    public function add($entities, $persistently = true, $notifyEvents = true) {
+    public function add($entities, $permanently = true, $notifyEvents = true) {
+
+        $originalValue = $entities;
 
         if (!$entities instanceof \Iterator AND !\is_array($entities)) {
             $entities = [$entities];
@@ -148,7 +150,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "columnName" => $this->relationShip->ownerPropertyName]);
             }
 
-            if ($persistently) $this->relationShip->add($entity);
+            if ($permanently) $this->relationShip->add($entity);
             $this->setValueForVariableWithName($entity, $entityKey);
 
             if ($notifyEvents) {
@@ -156,6 +158,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
             }
         }
+
+        return $originalValue;
     }
 
     /**
