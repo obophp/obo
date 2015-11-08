@@ -18,6 +18,16 @@ class EntityInformationCarrier extends \obo\Object {
     public $className = "";
 
     /**
+     * @var string
+     */
+    public $name = "";
+
+    /**
+     * @var string
+     */
+    public $description = "";
+
+    /**
      * @var bool
      */
     public $isAbstract = null;
