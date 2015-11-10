@@ -112,6 +112,7 @@ class Explorer extends \obo\Object {
         $entityClassReflection = $entityClassName::getReflection();
         $entityInformation = new \obo\Carriers\EntityInformationCarrier();
         $entityInformation->className = $entityClassName;
+        $entityInformation->name = $this->defaultNameForEntityWithClassName($entityClassName);
         $entityInformation->propertiesClassName = $propertiesClassName = $this->propertiesClassNameForEntityWithClassName($entityClassName);
         $entityInformation->managerName = $this->managerClassNameForEntityWithClassName($entityClassName);
         $entityInformation->repositoryName = $this->defaultRepositoryNameForEntityWithClassName($entityClassName);
@@ -310,6 +311,14 @@ class Explorer extends \obo\Object {
     protected function propertiesClassNameForEntityWithClassName($entityClassName) {
         if (\class_exists($propertiesClassName = $entityClassName . "Properties")) return $propertiesClassName;
         throw new \obo\Exceptions\DefinitionException("Properties class for entity with name '{$entityClassName}' does not exist");
+    }
+
+    /**
+     * @param string $className
+     * @return string
+     */
+    protected function defaultNameForEntityWithClassName($className) {
+        return $className;
     }
 
     /**

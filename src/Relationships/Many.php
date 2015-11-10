@@ -81,7 +81,7 @@ class Many extends \obo\Relationships\Relationship {
 
         if ($this->connectViaPropertyWithName !== "") {
             $specification->where("AND {{$this->connectViaPropertyWithName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
-            if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->className());
+            if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->name());
         } elseif ($this->connectViaRepositoryWithName !== "") {
             $specification->where("{*{$this->connectViaRepositoryWithName}:" . $this->owner->className() . "*} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
         }
@@ -94,7 +94,7 @@ class Many extends \obo\Relationships\Relationship {
     public function add(\obo\Entity $entity) {
         if ($this->connectViaPropertyWithName !== "") {
             $entity->setValueForPropertyWithName($this->owner, $this->connectViaPropertyWithName);
-            if ($this->ownerNameInProperty !== "") $entity->setValueForPropertyWithName($this->owner->className(), $this->ownerNameInProperty);
+            if ($this->ownerNameInProperty !== "") $entity->setValueForPropertyWithName($this->owner->name(), $this->ownerNameInProperty);
 
             if ($entity->isBasedInRepository() AND $this->owner->isBasedInRepository()) $entity->save();
 

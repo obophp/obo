@@ -35,6 +35,11 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
+    public $caption = "";
+
+    /**
+     * @var string
+     */
     public $varName = "";
 
     /**
