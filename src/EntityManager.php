@@ -233,7 +233,8 @@ abstract class EntityManager  extends \obo\Object {
             $specification->where("AND {{$propertyNameForSoftDelete}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, FALSE);
         }
 
-        return isset(self::rawDataForSpecification($specification)[0]) ? self::entityFromRawData(self::rawDataForSpecification($specification)[0]) : null;
+        $rawData = self::rawDataForSpecification($specification);
+        return isset($rawData[0]) ? self::entityFromRawData($rawData[0]) : null;
     }
 
     /**
