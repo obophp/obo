@@ -28,6 +28,10 @@ class One extends \obo\Annotation\Base\Property {
     protected $connectViaProperty = null;
 
     /**
+     * @var string
+     */
+    protected $ownerNameInProperty = null;
+    /**
      * @var array
      */
     protected $cascadeOptions = [];
@@ -57,6 +61,7 @@ class One extends \obo\Annotation\Base\Property {
             self::PARAMETERS_DEFINITION => [
                 "targetEntity" => true,
                 "connectViaProperty" => false,
+                "ownerNameInProperty" => false,
                 "cascade" => false,
                 "autoCreate" => false,
                 "eager" => false,
@@ -89,15 +94,8 @@ class One extends \obo\Annotation\Base\Property {
         }
 
         if (isset($values["connectViaProperty"])) {
-            if (\preg_match("#[,: ]+#", $values["connectViaProperty"])) {
-                $matches = [];
-                \preg_match("#entity\:([[:alnum:]]+)[ ]*?,[ ]*?entityClass\:([[:alnum:]]+)#", $values["connectViaProperty"], $matches);
-                if (count($matches) !== 3) throw new \obo\Exceptions\BadAnnotationException("Inverse dynamic relationship is defined in the format: entity:[entityPropertyName], entityClass:[entityClassPropertyName]");
-                $this->connectViaProperty = $input = "{$matches[1]},{$matches[2]}";
-            } else {
-                $this->connectViaProperty = $values["connectViaProperty"];
-            }
-
+            $this->connectViaProperty = $values["connectViaProperty"];
+            if (isset($values["ownerNameInProperty"])) $this->ownerNameInProperty = $values["ownerNameInProperty"];
             $this->propertyInformation->columnName = "";
             $this->propertyInformation->persistable = false;
         }
@@ -154,7 +152,9 @@ class One extends \obo\Annotation\Base\Property {
                     if ($this->connectViaProperty === null ) {
                         $entityToBeConnected = $propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue, $arguments["autoCreate"]);
                     } else {
-                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignKey($arguments["entity"], $this->connectViaProperty, $arguments["autoCreate"]);
+                        $foreignKey = [$this->connectViaProperty];
+                        if ($this->ownerNameInProperty !== null) $foreignKey[] = $this->ownerNameInProperty;
+                        $entityToBeConnected = $propertyInformation->relationship->entityForOwnerForeignKey($arguments["entity"], $foreignKey, $arguments["autoCreate"]);
                     }
 
                     if ($entityToBeConnected === null) {

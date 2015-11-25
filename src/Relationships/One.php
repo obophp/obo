@@ -61,11 +61,11 @@ class One extends \obo\Relationships\Relationship {
 
     /**
      * @param \obo\Entity $owner
-     * @param string $foreignKey
+     * @param array $foreignKey
      * @param boolean $autoCreate
      * @return \obo\Entity|null
      */
-    public function entityForOwnerForeignKey(\obo\Entity $owner, $foreignKey, $autoCreate = true) {
+    public function entityForOwnerForeignKey(\obo\Entity $owner, array $foreignKey, $autoCreate = true) {
         if ($owner->primaryPropertyValue() === null) return null;
         $this->owner = $owner;
 
@@ -74,10 +74,9 @@ class One extends \obo\Relationships\Relationship {
 
         $specification = $entityManagerName::querySpecification();
 
-        if (\strpos($foreignKey, ",") === false) {
-            $specification->where("{{$foreignKey}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
+        if (\count($foreignKey) === 1) {
+            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
         } else {
-            $foreignKey = \explode(",", $foreignKey);
             $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->className);
         }
 
