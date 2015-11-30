@@ -13,6 +13,7 @@ namespace obo\Interfaces;
 interface IQuerySpecification {
 
     const PARAMETER_PLACEHOLDER = "?";
+    const PARAMETER_PREFIX = ":";
 
     /**
      * @return array
