@@ -304,22 +304,30 @@ abstract class Entity  extends \obo\Object {
         }
 
         if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
-            $change = false;
-            $oldValue = $this->valueForPropertyWithName($propertyName);
+            $change = null;
+
+            $oldValue = $this->valueForPropertyWithName($propertyName, true, true, false);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => &$value]]);
 
-            if (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection))) {
-                if ($value instanceof \obo\Entity) {
-                    if ($this->valueForPropertyWithName($propertyName, true) === null) {
-                        $change = true;
+            if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
+                if (\is_scalar($value)) {
+                    if ($propertyInformation->relationship instanceof \obo\Relationships\One) {
+                        $entityClassNameToBeConnectedInPropertyWithName = $propertyInformation->relationship->entityClassNameToBeConnected;
+                        $value = $entityClassNameToBeConnectedInPropertyWithName::informationForPropertyWithName($entityClassNameToBeConnectedInPropertyWithName::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
+                        if ($oldValue instanceof \obo\Entity) {
+                            $change = $value !== $oldValue->primaryPropertyValue();
+                        }
+                    }
+                } elseif ($value instanceof \obo\Entity) {
+                    if ($oldValue instanceof \obo\Entity) {
+                        $change = $value->primaryPropertyValue() !== $oldValue->primaryPropertyValue();
                     } else {
-                        $primaryPropertyValue = $value->valueForPropertyWithName($value->entityInformation()->primaryPropertyName);
-                        if ($this->valueForPropertyWithName($propertyName, true) !== $primaryPropertyValue) $change = true;
+                        $change = $value->primaryPropertyValue() !== $oldValue;
                     }
                 }
-            } else {
-                $change = $this->valueForPropertyWithName($propertyName, true) !== $value;
             }
+
+            if ($change === null) $change = $oldValue !== $value;
 
             if ($change) {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange", $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
