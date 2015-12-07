@@ -414,7 +414,7 @@ abstract class Entity  extends \obo\Object {
                 $newData[$propertyName] = $value;
             } else {
                 $parts = \explode ("_", $propertyName, 2);
-                $newData[$parts[0]] = (is_array($newData[$parts[0]])) ? $newData[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
+                $newData[$parts[0]] = (isset($newData[$parts[0]]) AND is_array($newData[$parts[0]])) ? $newData[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
             }
         }
 
