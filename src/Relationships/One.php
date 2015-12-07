@@ -23,6 +23,16 @@ class One extends \obo\Relationships\Relationship {
     public $entityClassNameToBeConnectedInPropertyWithName = null;
 
     /**
+     * @var string
+     */
+    public $connectViaProperty = "";
+
+    /**
+     * @var string
+     */
+    public $ownerNameInProperty = "";
+
+    /**
      * @param string $entityClassNameToBeConnected
      * @param string $ownerPropertyName
      * @param array $cascade
@@ -77,6 +87,7 @@ class One extends \obo\Relationships\Relationship {
         if (\count($foreignKey) === 1) {
             $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
         } else {
+            $this->ownerNameInProperty = $foreignKey[1];
             $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->className);
         }
 

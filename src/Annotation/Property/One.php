@@ -106,6 +106,8 @@ class One extends \obo\Annotation\Base\Property {
 
         $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name, $this->cascadeOptions);
         $this->propertyInformation->relationship->autoCreate = $this->autoCreate;
+        $this->propertyInformation->relationship->ownerNameInProperty = $this->ownerNameInProperty;
+        $this->propertyInformation->relationship->connectViaProperty = $this->connectViaProperty;
         $this->propertyInformation->dataType = \obo\DataType\Factory::createEntityDataType($this->propertyInformation, $this->targetEntityInProperty === null ? $this->targetEntity : null);
     }
 
