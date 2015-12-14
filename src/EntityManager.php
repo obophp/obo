@@ -74,9 +74,10 @@ abstract class EntityManager  extends \obo\Object {
     }
 
     /**
+     * @internal
      * @return \obo\Entity
      */
-    protected static function emptyEntity() {
+    public static function emptyEntity() {
         $entityClassName = self::classNameManagedEntity();
         $entity = new $entityClassName;
         $entity->setDataStorage(self::dataStorage());
