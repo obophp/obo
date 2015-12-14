@@ -406,7 +406,6 @@ abstract class Entity  extends \obo\Object {
      * @param array $data
      */
     public function setValuesPropertiesFromArray($data) {
-        if ($this->isInitialized()) throw new \obo\Exceptions\PropertyAccessException("Can't set properties. The entity is already initialized.");
         $newData = [];
 
         foreach ($data as $propertyName => $value) {
@@ -422,9 +421,18 @@ abstract class Entity  extends \obo\Object {
             if (\is_array($value) AND $this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
                 $targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected;
                 $manager = $targetEntity::entityInformation()->managerName;
-                $entity = $manager::entityFromArray($value, false, false);
-                $entity->setBasedInRepository(true);
-                $this->setValueForPropertyWithName($manager::entityFromArray($value, false, false), $propertyName);
+
+                if (isset($value[$primaryPropertyName = $targetEntity::entityInformation()->primaryPropertyName])) {
+                    $prototypeEntity = $manager::emptyEntity();
+                    $prototypeEntity->setValueForPropertyWithName($value[$primaryPropertyName], $primaryPropertyName);
+                    $entityExist = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->isMappedEntity($prototypeEntity);
+                } else {
+                    $entityExist = false;
+                }
+
+                $entity = $manager::entityFromArray($value, false, !$entityExist);
+                if ($entityExist) $entity->setBasedInRepository(true);
+                $this->setValueForPropertyWithName($entity, $propertyName);
             } else {
                 $this->setValueForPropertyWithName($value, $propertyName);
             }
