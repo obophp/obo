@@ -311,8 +311,7 @@ abstract class Entity  extends \obo\Object {
 
             if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
                 if (\is_scalar($value)) {
-                    if ($propertyInformation->relationship instanceof \obo\Relationships\One) {
-                        $entityClassNameToBeConnectedInPropertyWithName = $propertyInformation->relationship->entityClassNameToBeConnected;
+                    if ($propertyInformation->relationship instanceof \obo\Relationships\One AND $entityClassNameToBeConnectedInPropertyWithName = $propertyInformation->relationship->entityClassNameToBeConnected) {
                         $value = $entityClassNameToBeConnectedInPropertyWithName::informationForPropertyWithName($entityClassNameToBeConnectedInPropertyWithName::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
                         if ($oldValue instanceof \obo\Entity) {
                             $change = $value !== $oldValue->primaryPropertyValue();
