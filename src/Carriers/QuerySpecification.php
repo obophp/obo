@@ -172,7 +172,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
         for (\reset($formatedArguments); \key($formatedArguments) !== null; \next($formatedArguments)) {
             $argument = \current($formatedArguments);
             $matches = [];
-            $matched = \preg_match_all("#(%([a-zA-Z~][a-zA-Z0-9~]{0,5}))|(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER) . ")|(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) . "[a-zA-Z~_]([a-zA-Z0-9~_])+)#", $argument, $matches);
+            $matched = \preg_match_all("#(%([a-zA-Z~][a-zA-Z0-9~]{0,5}))(\s+|$|\))|(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER) . ")|(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) . "[a-zA-Z~_]([a-zA-Z0-9~_])+)#", $argument, $matches);
 
             $targetPart["query"] .= $prefix . \preg_replace("#(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) . "[a-zA-Z~_]([a-zA-Z0-9~_])+)#", \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $argument) . $suffix;
 
