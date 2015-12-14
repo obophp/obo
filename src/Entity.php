@@ -311,8 +311,14 @@ abstract class Entity  extends \obo\Object {
 
             if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
                 if (\is_scalar($value)) {
-                    if ($propertyInformation->relationship instanceof \obo\Relationships\One AND $entityClassNameToBeConnectedInPropertyWithName = $propertyInformation->relationship->entityClassNameToBeConnected) {
-                        $value = $entityClassNameToBeConnectedInPropertyWithName::informationForPropertyWithName($entityClassNameToBeConnectedInPropertyWithName::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
+                    if ($propertyInformation->relationship instanceof \obo\Relationships\One) {
+
+                        if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
+                            $targetEntity = $this->valueForPropertyWithName($this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        }
+
+                        $value = $targetEntity::informationForPropertyWithName($targetEntity::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
+
                         if ($oldValue instanceof \obo\Entity) {
                             $change = $value !== $oldValue->primaryPropertyValue();
                         }
@@ -409,7 +415,7 @@ abstract class Entity  extends \obo\Object {
 
         foreach ($data as $propertyName => $value) {
             if (\strpos($propertyName, "_") === false) {
-                $newData[$propertyName] = $value;
+                $newData = [$propertyName => $value] + $newData;
             } else {
                 $parts = \explode ("_", $propertyName, 2);
                 $newData[$parts[0]] = (isset($newData[$parts[0]]) AND is_array($newData[$parts[0]])) ? $newData[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
@@ -418,7 +424,11 @@ abstract class Entity  extends \obo\Object {
 
         foreach ($newData as $propertyName => $value) {
             if (\is_array($value) AND $this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
-                $targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected;
+
+                if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
+                    $targetEntity = $newData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                }
+
                 $manager = $targetEntity::entityInformation()->managerName;
 
                 if (isset($value[$primaryPropertyName = $targetEntity::entityInformation()->primaryPropertyName])) {
