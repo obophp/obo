@@ -170,7 +170,7 @@ class Information extends \obo\Object {
             "onClassWithName" => $entityInformation->className,
             "name" => "beforeChange",
             "actionAnonymousFunction" => function($arguments) {
-                if ($arguments["entity"]->isDeleted()) throw new \obo\Exceptions\PropertyAccessException("Property '{$arguments["propertyName"]}' can't be changed, entity '{$arguments["entity"]->entityInformation()->className}' is deleted");
+                if ($arguments["entity"]->isDeleted() AND !$arguments["entity"]->isDeletingInProgress()) throw new \obo\Exceptions\PropertyAccessException("Property '{$arguments["propertyName"]}' can't be changed, entity '{$arguments["entity"]->entityInformation()->className}' is deleted");
             },
         ]));
     }
