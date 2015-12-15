@@ -81,7 +81,9 @@ class One extends \obo\Annotation\Base\Property {
 
         if (\strpos($this->targetEntity, "property:") === 0) {
             $this->targetEntityInProperty = \substr($this->targetEntity, 9);
-            if ($this->entityInformation->existInformationForPropertyWithName($this->targetEntityInProperty)) $this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty)->dataType = \obo\DataType\Factory::createStringDataType($this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty));
+            if ($this->entityInformation->existInformationForPropertyWithName($this->targetEntityInProperty)) {
+                \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\StringDataType::name(), $this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty));
+            }
         }
 
         if (!$this->targetEntityInProperty AND !\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
@@ -108,7 +110,7 @@ class One extends \obo\Annotation\Base\Property {
         $this->propertyInformation->relationship->autoCreate = $this->autoCreate;
         $this->propertyInformation->relationship->ownerNameInProperty = $this->ownerNameInProperty;
         $this->propertyInformation->relationship->connectViaProperty = $this->connectViaProperty;
-        $this->propertyInformation->dataType = \obo\DataType\Factory::createEntityDataType($this->propertyInformation, $this->targetEntityInProperty === null ? $this->targetEntity : null);
+        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\EntityDataType::name(), $this->propertyInformation, $this->targetEntityInProperty === null ? ["className" => $this->targetEntity] : []);
     }
 
     /**

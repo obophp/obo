@@ -97,7 +97,7 @@ class Many extends \obo\Annotation\Base\Property {
         }
 
         $relationship->cascade = $this->cascadeOptions;
-        $this->propertyInformation->dataType = \obo\DataType\Factory::createObjectDataType($this->propertyInformation, "\\obo\\Relationships\\EntitiesCollection");
+        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\ObjectDataType::name(), $this->propertyInformation, ["className" => "\\obo\\Relationships\\EntitiesCollection"]);
         $this->propertyInformation->columnName = "";
         $this->propertyInformation->persistable = false;
     }

@@ -34,111 +34,15 @@ class DataType extends \obo\Annotation\Base\Property {
     public function process(array  $values) {
         parent::process($values);
 
-        switch ($values[0]) {
-            case "boolean":
-                $dataType = $this->createBooleanDataType();
-                break;
-            case "number":
-                $dataType = $this->createNumberDataType();
-                break;
-            case "string":
-                $dataType = $this->createStringDataType();
-                break;
-            case "dateTime":
-                $dataType = $this->createDataTypeDateTime();
-                break;
-            case "array":
-                $dataType = $this->createArrayDataType();
-                break;
-            case "integer":
-                $dataType = $this->createIntegerDataType();
-                break;
-            case "float":
-                $dataType = $this->createFloatDataType();
-                break;
-            case "object":
-                $dataType = $this->createObjectDataType();
-                break;
-            case "entity":
-                $dataType = $this->createEntityDataType();
-                break;
-            case "mixed":
-                $dataType = $this->createMixedDataType();
-                break;
-            default :
-                throw new \obo\Exceptions\BadDataTypeException("Data type '{$values[0]}' is not allowed.");
+        if (count($values) > 1 ) {
+            $dataTypeName = \array_shift($values);
+            $dataTypeOptions = $values;
+        } else {
+            $dataTypeName = $values[0];
+            $dataTypeOptions = [];
         }
 
-        $this->propertyInformation->dataType = $dataType ;
+        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType($dataTypeName, $this->propertyInformation, $dataTypeOptions);
     }
 
-    /**
-     * @return \obo\DataType\BooleanDataType
-     */
-    protected function createBooleanDataType() {
-        return \obo\DataType\Factory::createBooleanDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\IntegerDataType
-     */
-    protected function createIntegerDataType() {
-        return \obo\DataType\Factory::createIntegerDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\FloatDataType
-     */
-    protected function createFloatDataType() {
-        return \obo\DataType\Factory::createFloatDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\NumberDataType
-     */
-    protected function createNumberDataType() {
-        return \obo\DataType\Factory::createNumberDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\StringDataType
-     */
-    protected function createStringDataType() {
-        return \obo\DataType\Factory::createStringDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\DateTimeDataType
-     */
-    protected function createDataTypeDateTime() {
-        return \obo\DataType\Factory::createDateTimeDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\ArrayDataType
-     */
-    protected function createArrayDataType() {
-        return \obo\DataType\Factory::createArrayDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\ObjectDataType
-     */
-    protected function createObjectDataType() {
-        return \obo\DataType\Factory::createObjectDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\EntityDataType
-     */
-    protected function createEntityDataType() {
-        return \obo\DataType\Factory::createEntityDataType($this->propertyInformation);
-    }
-
-    /**
-     * @return \obo\DataType\MixedDataType
-     */
-    protected function createMixedDataType() {
-        return \obo\DataType\Factory::createMixedDataType($this->propertyInformation);
-    }
 }

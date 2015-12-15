@@ -15,19 +15,24 @@ class ObjectDataType extends \obo\DataType\Base\DataType {
     public $className = null;
 
     /**
-     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
-     * @param string $className
+     * @return string
      */
-    function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, $className = null) {
-        parent::__construct($propertyInformation);
-        $this->className = $className;
+    public static function name() {
+        return "object";
     }
 
     /**
      * @return string
      */
-    public function name() {
-        return "object";
+    public static function dataTypeClass() {
+        return \obo\Interfaces\IDataType::DATA_TYPE_CLASS_OBJECT;
+    }
+
+    /**
+     * @return array
+     */
+    public static function optionsStructure() {
+        return ["className" => false];
     }
 
     /**

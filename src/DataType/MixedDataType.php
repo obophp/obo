@@ -15,8 +15,15 @@ class MixedDataType extends \obo\DataType\Base\DataType {
     /**
      * @return string
      */
-    public function name() {
+    public static function name() {
         return "mixed";
+    }
+
+    /**
+     * @return string
+     */
+    public static function dataTypeClass() {
+        return \obo\Interfaces\IDataType::DATA_TYPE_CLASS_MIXED;
     }
 
     /**
