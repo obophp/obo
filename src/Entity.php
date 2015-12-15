@@ -414,7 +414,7 @@ abstract class Entity  extends \obo\Object {
         $newData = [];
 
         foreach ($data as $propertyName => $value) {
-            if (\strpos($propertyName, "_") === false) {
+            if ($this->hasPropertyWithName($propertyName) OR \strpos($propertyName, "_") === false) {
                 $newData = [$propertyName => $value] + $newData;
             } else {
                 $parts = \explode ("_", $propertyName, 2);
