@@ -363,7 +363,7 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function saveEntity(\obo\Entity $entity, $forced = false, $triggerEvents = true) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot save entity which is not initialized");
-        if (!$forced AND $entity->isDeleted()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
+        if (!$forced AND $entity->isDeleted() AND !$entity->isDeletingInProgress()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
         if ($entity->entityInformation()->repositoryName === null) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
         $entity->setSavingInProgress();
