@@ -15,8 +15,15 @@ class DateTimeDataType extends \obo\DataType\Base\DataType {
     /**
      * @return string
      */
-    public function name() {
+    public static function name() {
         return "dateTime";
+    }
+
+    /**
+     * @return string
+     */
+    public static function dataTypeClass() {
+        return \obo\Interfaces\IDataType::DATA_TYPE_CLASS_DATETIME;
     }
 
     /**

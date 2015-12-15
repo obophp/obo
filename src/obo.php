@@ -95,6 +95,7 @@ class obo extends \obo\Object {
         \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);
         \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
+        \obo\DataType\CoreDataTypes::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
         \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, \obo\Services::serviceWithName(self::ENTITIES_EXPLORER), \obo\Services::serviceWithName(self::CACHE)), self::ENTITIES_INFORMATION);
         \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
     }

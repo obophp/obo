@@ -20,6 +20,11 @@ class Explorer extends \obo\Object {
     protected $annotationsDefinitions = [];
 
     /**
+     * @var array
+     */
+    protected $dataTypes = [];
+
+    /**
      * @var \obo\Carriers\EntityInformationCarrier[]
      */
     protected $entitiesInformations = [];
@@ -65,13 +70,47 @@ class Explorer extends \obo\Object {
     }
 
     /**
-     *
      * @param string $annotationName
      * @param string $scope
      * @return string
      */
     public function annotationClassWithNameForScope($annotationName, $scope) {
         return $this->existAnnotationWithNameForScope($annotationName, $scope) ? $this->annotationsDefinitions["{$scope}-{$annotationName}"] : null;
+    }
+
+    /**
+     * @param string $dataTypeClassName
+     * @param bool $forced
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
+    public function registerDatatype($dataTypeClassName, $forced = false) {
+        if (!$forced AND isset($this->dataTypes[$dataTypeClassName::name()])) throw new \obo\Exceptions\Exception ("Can't register dataType with name " . $dataTypeClassName::name() .", dataType is already registered");
+        if (!\is_subclass_of($dataTypeClassName, "\obo\Interfaces\IDataType")) throw new \obo\Exceptions\Exception("Can't register dataType with name " . $dataTypeClassName::name() .", dataType does not implement interface '\obo\Interfaces\IDataType'");
+        $this->dataTypes[$dataTypeClassName::name()] = $dataTypeClassName;
+    }
+
+    /**
+     * @param string $dataTypeClassName
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
+    public function unregisterDatatype($dataTypeClassName) {
+        if (!isset($this->dataTypes[$dataTypeClassName::name()])) throw new \obo\Exceptions\Exception ("Can't unregister dataType with name " . $dataTypeClassName::name() .", dataType isn't registered");
+        unset($this->dataTypes[$dataTypeClassName::name()]);
+    }
+
+    /**
+     * @param string $name
+     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
+     * @param array $options
+     * @return \obo\Interfaces\IDataType
+     * @throws \obo\Exceptions\Exception
+     */
+    public function createDatatype($name, \obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options = []) {
+        if (!isset($this->dataTypes[$name])) throw new \obo\Exceptions\Exception ("Can't create dataType with name " . $name .", dataType isn't registered");
+        $dataTypeClassName = $this->dataTypes[$name];
+        return $dataTypeClassName::createDatatype($propertyInformation, $options);
     }
 
     /**
@@ -385,15 +424,15 @@ class Explorer extends \obo\Object {
         if ($propertyInformation->varName === "") return null;
 
         if ($propertyInformation->defaultValue === false OR $propertyInformation->defaultValue === true) {
-            return \obo\DataType\Factory::createBooleanDataType($propertyInformation);
+            return $this->createDatatype(\obo\DataType\BooleanDataType::name(), $propertyInformation);
         } elseif (\is_numeric($propertyInformation->defaultValue) AND \is_int($propertyInformation->defaultValue * 1)) {
-            return \obo\DataType\Factory::createIntegerDataType($propertyInformation);
+            return $this->createDatatype(\obo\DataType\IntegerDataType::name(), $propertyInformation);
         } elseif (\is_numeric($propertyInformation->defaultValue) AND \is_float($propertyInformation->defaultValue * 1)) {
-            return \obo\DataType\Factory::createFloatDataType($propertyInformation);
+            return $this->createDatatype(\obo\DataType\FloatDataType::name(), $propertyInformation);
         } elseif (is_string($propertyInformation->defaultValue)) {
-            return \obo\DataType\Factory::createStringDataType($propertyInformation);
+            return $this->createDatatype(\obo\DataType\StringDataType::name(), $propertyInformation);
         } elseif (\is_array($propertyInformation->defaultValue)) {
-            return \obo\DataType\Factory::createArrayDataType($propertyInformation);
+            return $this->createDatatype(\obo\DataType\ArrayDataType::name(), $propertyInformation);
         } else {
             return null;
         }

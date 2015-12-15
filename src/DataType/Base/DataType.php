@@ -10,7 +10,7 @@
 
 namespace obo\DataType\Base;
 
-abstract class DataType extends \obo\Object {
+abstract class DataType extends \obo\Object implements \obo\Interfaces\IDataType {
 
     /**
      * @var \obo\Carriers\PropertyInformationCarrier
@@ -19,23 +19,38 @@ abstract class DataType extends \obo\Object {
 
     /**
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
+     * @param array $options
      */
-    public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation) {
+    public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options = []) {
+
+        foreach(static::optionsStructure() as $optionName => $requiredOption) {
+            if ($requiredOption AND !isset($options[$optionName])) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter($structure, function($value) {return $value;}))) . "]");
+        }
+
+        foreach($options as $optionName => $optionValue) {
+            if (!isset(static::optionsStructure()[$optionName])) throw new \obo\Exceptions\Exception("Option '{$optionName}' can not be set, the data type is not supported");
+            $this->$optionName = $optionValue;
+        }
+
         $this->propertyInformation = $propertyInformation;
+        foreach($options as $optionName => $optionValue) $this->$optionName = $optionValue;
     }
 
     /**
-     * @return string
+     * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
+     * @param array $options
+     * @return \obo\Interfaces\IDataType
      */
-    public abstract function name();
+    public static function createDatatype(\obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options) {
+        return new static($propertyInformation, $options);
+    }
 
     /**
-     * @param mixed $value
-     * @param bool $throwException
-     * @return bool
-     * @throws \obo\Exceptions\BadDataTypeException
+     * @return array
      */
-    public abstract function validate($value, $throwException = true);
+    public static function optionsStructure() {
+        return [];
+    }
 
     /**
      * @param mixed $value
