@@ -126,6 +126,7 @@ abstract class EntityManager  extends \obo\Object {
         if (isset($data[$primaryPropertyName]) AND $data[$primaryPropertyName]) {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
             $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
+            unset($data[$primaryPropertyName]);
         } else {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                 "onObject" => $entity,
@@ -141,7 +142,6 @@ abstract class EntityManager  extends \obo\Object {
             $entity->changeValuesPropertiesFromArray($repositoryData = self::rawDataForEntity($entity));
             $entity->setBasedInRepository((bool) $repositoryData);
         }
-
 
         if ($overwriteOriginalData) {
             if ($entity->isInitialized()) {
