@@ -423,25 +423,34 @@ abstract class Entity  extends \obo\Object {
         }
 
         foreach ($newData as $propertyName => $value) {
-            if (\is_array($value) AND $this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
+            if (\is_array($value)) {
+                $propertyValue = $this->valueForPropertyWithName($propertyName);
+                if ($propertyValue instanceof \obo\Entity) {
+                    if(isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName])) unset($value[$primaryPropertyName]);
+                    $propertyValue->setValuesPropertiesFromArray($value);
+                } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
+                    if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
+                        $targetEntity = $newData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                    }
 
-                if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
-                    $targetEntity = $newData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
-                }
+                    $manager = $targetEntity::entityInformation()->managerName;
 
-                $manager = $targetEntity::entityInformation()->managerName;
+                    if (isset($value[$primaryPropertyName = $targetEntity::entityInformation()->primaryPropertyName])) {
+                        $prototypeEntity = $manager::emptyEntity();
+                        $prototypeEntity->setValueForPropertyWithName($value[$primaryPropertyName], $primaryPropertyName);
+                        $entityExist = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->isMappedEntity($prototypeEntity);
+                    } else {
+                        $entityExist = false;
+                    }
 
-                if (isset($value[$primaryPropertyName = $targetEntity::entityInformation()->primaryPropertyName])) {
-                    $prototypeEntity = $manager::emptyEntity();
-                    $prototypeEntity->setValueForPropertyWithName($value[$primaryPropertyName], $primaryPropertyName);
-                    $entityExist = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->isMappedEntity($prototypeEntity);
+                    $entity = $manager::entityFromArray($value, false, !$entityExist);
+                    if ($entityExist) $entity->setBasedInRepository(true);
+                    $this->setValueForPropertyWithName($entity, $propertyName);
+                } elseif(($datatypeClass = $this->informationForPropertyWithName($propertyName)->dataType->dataTypeClass()) === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_ARRAY OR $datatypeClass === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_MIXED) {
+                    $this->setValueForPropertyWithName($value, $propertyName);
                 } else {
-                    $entityExist = false;
+                    throw new \obo\Exceptions\Exception("Can't set decomposition values, property '{$propertyName}' must contain entity or 'one' relationship ");
                 }
-
-                $entity = $manager::entityFromArray($value, false, !$entityExist);
-                if ($entityExist) $entity->setBasedInRepository(true);
-                $this->setValueForPropertyWithName($entity, $propertyName);
             } else {
                 $this->setValueForPropertyWithName($value, $propertyName);
             }
