@@ -209,6 +209,14 @@ class One extends \obo\Annotation\Base\Property {
                 },
                 "actionArguments" => ["propertyName" => $this->propertyInformation->name],
             ]));
+
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "afterChange" . \ucfirst($this->targetEntityInProperty),
+                "actionAnonymousFunction" => function($arguments) {
+                    if ($arguments["propertyValue"]["new"] AND !$arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name) instanceof $arguments["propertyValue"]["new"]) $arguments["entity"]->setValueForPropertyWithName(null, $this->propertyInformation->name);
+                },
+            ]));
         }
 
         \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([

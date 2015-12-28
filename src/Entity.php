@@ -317,7 +317,9 @@ abstract class Entity  extends \obo\Object {
                             $targetEntity = $this->valueForPropertyWithName($this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName);
                         }
 
-                        $value = $targetEntity::informationForPropertyWithName($targetEntity::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
+                        if ($targetEntity) {
+                            $value = $targetEntity::informationForPropertyWithName($targetEntity::entityInformation()->primaryPropertyName)->dataType->sanitizeValue($value);
+                        }
 
                         if ($oldValue instanceof \obo\Entity) {
                             $change = $value !== $oldValue->primaryPropertyValue();
