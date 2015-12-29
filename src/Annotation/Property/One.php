@@ -122,7 +122,7 @@ class One extends \obo\Annotation\Base\Property {
             if ($cascadeOption == "save") {
                 \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
-                    "name" => "beforeSave",
+                    "name" => ($this->connectViaProperty) ? "afterSave" : "beforeSave",
                     "actionAnonymousFunction" => function($arguments) {
                         $connectedEntity = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, true, false);
                         if ($connectedEntity instanceof \obo\Entity && !$connectedEntity->isDeleted()) $connectedEntity->save();
