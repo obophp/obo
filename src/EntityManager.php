@@ -122,8 +122,7 @@ abstract class EntityManager  extends \obo\Object {
         $entity = self::emptyEntity();
 
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-
-        if (isset($data[$primaryPropertyName]) AND $data[$primaryPropertyName]) {
+        if (isset($data[$primaryPropertyName])) {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
             $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
             unset($data[$primaryPropertyName]);
