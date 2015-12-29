@@ -32,7 +32,6 @@ class Exception extends \Exception {
                 if(isset($trace[$key-1])) {
                     if (isset($trace[$key-1]["file"])) $this->foreseenFileError = $trace[$key-1]["file"];
                     if (isset($trace[$key-1]["line"])) $this->foreseenLineError = $trace[$key-1]["line"];
-
                 }
 
                 break;

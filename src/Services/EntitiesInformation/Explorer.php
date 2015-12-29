@@ -207,7 +207,7 @@ class Explorer extends \obo\Object {
             $propertyInformation->autoIncrement = $this->defaultAutoIncrementValueForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->nullable = $this->defaultNullableValueForPropertyWithName($property->name, $entityClassName);
 
-            if(isset($classVariables[$property->name])) $propertyInformation->defaultValue = $classVariables[$property->name];
+            if(isset($classVariables[$property->name]) OR \array_key_exists($property->name, $classVariables)) $propertyInformation->defaultValue = $classVariables[$property->name];
 
             if(isset($propertiesMethodAccess[$property->name])) {
 
