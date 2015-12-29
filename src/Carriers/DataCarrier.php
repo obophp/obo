@@ -37,7 +37,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function &variableForName($name) {
-       if (isset($this->variables()[$name])) return $this->variables()[$name];
+       if (isset($this->variables()[$name]) OR \array_key_exists($name, $this->variables())) return $this->variables()[$name];
        throw new \obo\Exceptions\VariableNotFoundException("Variable with name '".$name."' does not exist");
     }
 
@@ -140,7 +140,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function __isset($name) {
-        return isset($this->variables()[$name]);
+        return isset($this->variables()[$name]) OR \array_key_exists($name, $this->variables());
     }
 
     /**
@@ -204,7 +204,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function valid() {
-        return isset($this->variables()[$this->key()]);
+        return isset($this->variables()[$this->key()]) OR \array_key_exists($this->key(), $this->variables());
     }
 
     /**
@@ -221,7 +221,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function offsetExists($offset) {
-        return isset($this->variables()[$offset]);
+        return isset($this->variables()[$offset]) OR \array_key_exists($offset, $this->variables());
     }
 
     /**
@@ -237,7 +237,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return mixed
      */
     public function offsetGet($offset) {
-        if (isset($this->variables()[$offset])) return $this->variables()[$offset];
+        if (isset($this->variables()[$offset]) OR \array_key_exists($offset, $this->variables())) return $this->variables()[$offset];
         throw new \obo\Exceptions\VariableNotFoundException("Can't return an element with offset '{$offset}' because it doesn't exist in a collection.");
     }
 

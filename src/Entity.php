@@ -428,7 +428,7 @@ abstract class Entity  extends \obo\Object {
             if (\is_array($value)) {
                 $propertyValue = $this->valueForPropertyWithName($propertyName);
                 if ($propertyValue instanceof \obo\Entity) {
-                    if(isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName])) unset($value[$primaryPropertyName]);
+                    if(isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
                     $propertyValue->setValuesPropertiesFromArray($value);
                 } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
                     if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {

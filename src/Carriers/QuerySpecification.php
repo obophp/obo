@@ -180,7 +180,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
                 foreach($matches[0] as $match) {
                     if (\strpos($match, \obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) === 0) {
                         $parameterName = ltrim($match, \obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX);
-                        if (!isset($this->parameters[$parameterName])) throw new \obo\Exceptions\Exception("Can not use parameter '{$parameterName}'. Parametr is not bound.");
+                        if (!(isset($this->parameters[$parameterName]) OR \array_key_exists($parameterName, $this->parameters))) throw new \obo\Exceptions\Exception("Can not use parameter '{$parameterName}'. Parametr is not bound.");
                         $targetPart["data"][] = &$this->parameters[ltrim($match, \obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX)];
                     } else {
                         $targetPart["data"][] = \next($formatedArguments);
