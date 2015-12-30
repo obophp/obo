@@ -424,7 +424,6 @@ abstract class Entity  extends \obo\Object {
             }
         }
 
-
         foreach ($newData as $propertyName => $value) {
             if (\is_array($value)) {
                 if ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
@@ -440,6 +439,14 @@ abstract class Entity  extends \obo\Object {
                         $entityExist = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->isMappedEntity($prototypeEntity);
                     } else {
                         $entityExist = false;
+                    }
+
+                    if ($connectViaProperty = $this->informationForPropertyWithName($propertyName)->relationship->connectViaProperty) {
+                        $value[$connectViaProperty] = $this;
+                    }
+
+                    if ($ownerNameInProperty = $this->informationForPropertyWithName($propertyName)->relationship->ownerNameInProperty) {
+                        $value[$ownerNameInProperty] = $this->className();
                     }
 
                     $entity = $manager::entityFromArray($value, false, !$entityExist);
