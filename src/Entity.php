@@ -263,7 +263,6 @@ abstract class Entity  extends \obo\Object {
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
 
-
         if (!$this->hasPropertyWithName($propertyName)) {
             if ($pos = \strpos($propertyName, "_")) {
 
