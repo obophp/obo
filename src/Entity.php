@@ -609,6 +609,18 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @param string $eventName
+     * @param callable $callback
+     */
+    final public function on($eventName, callable $callback) {
+        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+            "onObject" => $this,
+            "name" => $eventName,
+            "actionAnonymousFunction" => $callback,
+        ]));
+    }
+
+    /**
      * @return \obo\Entity
      */
     public function save() {
