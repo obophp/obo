@@ -13,7 +13,7 @@ namespace obo;
 class obo extends \obo\Object {
 
     const _NAME = "obo";
-    const _VERSION = "development";
+    const _VERSION = "v0.11.0";
     const _VERSION_ID = 1100;
     const _LICENCE = "Apache License, Version 2.0";
     const _WWW = "http://www.obophp.org/";
