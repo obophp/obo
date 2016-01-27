@@ -454,7 +454,7 @@ abstract class Entity  extends \obo\Object {
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
                     if (isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
                     $propertyValue->setValuesPropertiesFromArray($value);
-                } elseif (($datatypeClass = $this->informationForPropertyWithName($propertyName)->dataType->dataTypeClass()) === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_ARRAY OR $datatypeClass === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_MIXED) {
+                } elseif ($this->informationForPropertyWithName($propertyName)->dataType === null OR ($datatypeClass = $this->informationForPropertyWithName($propertyName)->dataType->dataTypeClass()) === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_ARRAY OR $datatypeClass === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_MIXED) {
                     $this->setValueForPropertyWithName($value, $propertyName);
                 } else {
                     throw new \obo\Exceptions\Exception("Can't set decomposition values, property '{$propertyName}' must contain entity or 'one' relationship ");
