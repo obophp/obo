@@ -304,8 +304,8 @@ abstract class Entity  extends \obo\Object {
 
         if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
             $change = null;
+            $oldValue = $this->valueForPropertyWithName($propertyName, false, true, false);
 
-            $oldValue = $this->valueForPropertyWithName($propertyName, true, true, false);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyValue" => ["old" => $oldValue, "new" => &$value]]);
 
             if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
