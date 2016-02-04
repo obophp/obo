@@ -410,8 +410,9 @@ abstract class Entity  extends \obo\Object {
 
     /**
      * @param array $data
+     * @param bool $overwriteEntities
      */
-    public function setValuesPropertiesFromArray($data) {
+    public function setValuesPropertiesFromArray($data, $overwriteEntities = true) {
         $newData = [];
 
         foreach ($data as $propertyName => $value) {
@@ -440,14 +441,6 @@ abstract class Entity  extends \obo\Object {
 
                     $manager = $targetEntity::entityInformation()->managerName;
 
-                    if (isset($value[$primaryPropertyName = $targetEntity::entityInformation()->primaryPropertyName])) {
-                        $prototypeEntity = $manager::emptyEntity();
-                        $prototypeEntity->setValueForPropertyWithName($value[$primaryPropertyName], $primaryPropertyName);
-                        $entityExist = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->isMappedEntity($prototypeEntity);
-                    } else {
-                        $entityExist = false;
-                    }
-
                     if ($connectViaProperty = $this->informationForPropertyWithName($propertyName)->relationship->connectViaProperty) {
                         $value[$connectViaProperty] = $this;
                     }
@@ -456,8 +449,8 @@ abstract class Entity  extends \obo\Object {
                         $value[$ownerNameInProperty] = $this->className();
                     }
 
-                    $entity = $manager::entityFromArray($value, false, !$entityExist);
-                    if ($entityExist) $entity->setBasedInRepository(true);
+                    $entity = $manager::entityFromArray($value, false, $overwriteEntities);
+
                     $this->setValueForPropertyWithName($entity, $propertyName);
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
                     if (isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
