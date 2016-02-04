@@ -153,7 +153,7 @@ abstract class EntityManager  extends \obo\Object {
         }
 
         if (!$entity->isInitialized()) {
-            $entity->setValuesPropertiesFromArray($data);
+            $entity->setValuesPropertiesFromArray($data, false);
             $entity->setInitialized();
         }
 
