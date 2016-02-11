@@ -187,8 +187,6 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
                     }
                 }
             }
-
-            \next($formatedArguments);
         }
 
     }
