@@ -413,30 +413,32 @@ abstract class Entity  extends \obo\Object {
      * @param bool $overwriteEntities
      */
     public function setValuesPropertiesFromArray($data, $overwriteEntities = true) {
-        $newData = [];
-
+        $entityProperties = [];
+        $entitiesProperties = [];
         foreach ($data as $propertyName => $value) {
             if ($this->hasPropertyWithName($propertyName) OR \strpos($propertyName, "_") === false) {
-                $newData = [$propertyName => $value] + $newData;
+                $entityProperties[$propertyName] = $value;
             } else {
                 $parts = \explode ("_", $propertyName, 2);
 
-                if (isset($newData[$parts[0]]) AND !\is_array($newData[$parts[0]])) {
+                if (isset($entitiesProperties[$parts[0]]) AND !\is_array($entitiesProperties[$parts[0]])) {
                     if (!$targetEntity = $this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnected) {
-                        $targetEntity = $newData[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        $targetEntity = $entitiesProperties[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName];
                     }
-                    $newData[$parts[0]] = [$targetEntity::entityInformation()->primaryPropertyName => $newData[$parts[0]]];
+                    $entitiesProperties[$parts[0]] = [$targetEntity::entityInformation()->primaryPropertyName => $entitiesProperties[$parts[0]]];
                 }
 
-                $newData[$parts[0]] = (isset($newData[$parts[0]]) AND is_array($newData[$parts[0]])) ? $newData[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
+                $entitiesProperties[$parts[0]] = (isset($entitiesProperties[$parts[0]]) AND is_array($entitiesProperties[$parts[0]])) ? $entitiesProperties[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
             }
         }
 
-        foreach ($newData as $propertyName => $value) {
+        $formattedData = \array_merge($entityProperties, $entitiesProperties);
+
+        foreach ($formattedData as $propertyName => $value) {
             if (\is_array($value)) {
                 if ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
                     if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
-                        $targetEntity = $newData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        $targetEntity = $formattedData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
                     }
 
                     $manager = $targetEntity::entityInformation()->managerName;
