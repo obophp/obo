@@ -182,7 +182,6 @@ abstract class EntityManager  extends \obo\Object {
      * @throws \obo\Exceptions\EntityNotFoundException
      */
     public static function findEntity(\obo\Interfaces\IQuerySpecification $specification, $requiredEntity = true) {
-        $classNameEntity = self::classNameManagedEntity();
         $specification = self::queryCarrier()->addSpecification($specification);
         $specification->select(self::constructSelect());
 
