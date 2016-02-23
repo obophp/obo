@@ -80,15 +80,20 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param \obo\Interfaces\IQuerySpecification $specification
      * @return int
      */
-    public function count() {
-        if ($this->entitiesAreLoaded) {
-            return parent::count();
-        } elseif ($this->owner->isBasedInRepository()) {
-            return $this->relationShip->countEntities();
+    public function count(\obo\Interfaces\IQuerySpecification $specification = null) {
+        if ($specification !== null) {
+            return $this->relationShip->countEntities($specification);
         } else {
-            return 0;
+            if ($this->entitiesAreLoaded) {
+                return parent::count();
+            } elseif ($this->owner->isBasedInRepository()) {
+                return $this->relationShip->countEntities();
+            } else {
+                return 0;
+            }
         }
     }
 
