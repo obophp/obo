@@ -177,6 +177,12 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
+        if ($deleteEntity) {
+            $entity->delete();
+        } else {
+            $this->relationShip->remove($entity);
+        }
+
         if ($this->entitiesAreLoaded) {
             $primaryPropertyValue = $entity->primaryPropertyValue();
 
@@ -187,12 +193,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             }
 
             $this->unsetValueForVariableWithName($key);
-        }
-
-        if ($deleteEntity) {
-            $entity->delete();
-        } else {
-            $this->relationShip->remove($entity);
         }
 
         if ($notifyEvents) {
