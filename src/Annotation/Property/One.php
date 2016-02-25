@@ -248,5 +248,33 @@ class One extends \obo\Annotation\Base\Property {
             },
             "actionArguments" => ["propertyName" => $this->propertyInformation->name],
         ]));
+
+        if ($this->connectViaProperty !== null) {
+           \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "afterConnectToOwner",
+                "actionAnonymousFunction" => function($arguments) {
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    if ($arguments["owner"] instanceof $propertyInformation->relationship->entityClassNameToBeConnected
+                            && $arguments["columnName"] === $propertyInformation->relationship->connectViaProperty) {
+                        $arguments["entity"]->setValueForPropertyWithName($arguments["owner"], $propertyInformation->relationship->ownerPropertyName);
+                    }
+                },
+                "actionArguments" => ["propertyName" => $this->propertyInformation->name],
+            ]));
+
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                "onClassWithName" => $this->entityInformation->className,
+                "name" => "afterDisconnectFromOwner",
+                "actionAnonymousFunction" => function($arguments) {
+                    $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
+                    if ($arguments["owner"] instanceof $propertyInformation->relationship->entityClassNameToBeConnected
+                            && $arguments["columnName"] === $propertyInformation->relationship->connectViaProperty) {
+                        $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->ownerPropertyName);
+                    }
+                },
+                "actionArguments" => ["propertyName" => $this->propertyInformation->name],
+            ]));
+        }
     }
 }
