@@ -454,13 +454,15 @@ abstract class Entity  extends \obo\Object {
                     $entity = $manager::entityFromArray($value, false, $overwriteEntities);
 
                     $this->setValueForPropertyWithName($entity, $propertyName);
+                } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\Many) {
+                    foreach($value as $subPropertyName => $subProeprtyName)  $this->setValueForPropertyWithName($subProeprtyName, $propertyName . "_" . $subPropertyName);
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
                     if (isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
                     $propertyValue->setValuesPropertiesFromArray($value);
                 } elseif ($this->informationForPropertyWithName($propertyName)->dataType === null OR ($datatypeClass = $this->informationForPropertyWithName($propertyName)->dataType->dataTypeClass()) === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_ARRAY OR $datatypeClass === \obo\Interfaces\IDataType::DATA_TYPE_CLASS_MIXED) {
                     $this->setValueForPropertyWithName($value, $propertyName);
                 } else {
-                    throw new \obo\Exceptions\Exception("Can't set decomposition values, property '{$propertyName}' must contain entity or 'one' relationship ");
+                    throw new \obo\Exceptions\Exception("Can't set decomposition values, property '{$propertyName}' must contain entity or relationship");
                 }
             } else {
                 $this->setValueForPropertyWithName($value, $propertyName);
