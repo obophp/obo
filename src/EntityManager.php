@@ -139,13 +139,13 @@ abstract class EntityManager  extends \obo\Object {
         }
 
         if ($entity->primaryPropertyValue() AND !$entity->isInitialized() AND $loadOriginalData) {
-            $entity->changeValuesPropertiesFromArray($repositoryData = self::rawDataForEntity($entity));
+            $entity->setValuesPropertiesFromArray($repositoryData = self::rawDataForEntity($entity));
             $entity->setBasedInRepository((bool) $repositoryData);
         }
 
         if ($overwriteOriginalData) {
             if ($entity->isInitialized()) {
-                $entity->changeValuesPropertiesFromArray($data);
+                $entity->setValuesPropertiesFromArray($data, false);
             } else {
                 $entity->setInitialized();
                 $entity->setValuesPropertiesFromArray($data);
