@@ -436,24 +436,29 @@ abstract class Entity  extends \obo\Object {
 
         foreach ($formattedData as $propertyName => $value) {
             if (\is_array($value)) {
-                if ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\One) {
+                if (($relationship = $this->informationForPropertyWithName($propertyName)->relationship) instanceof \obo\Relationships\One) {
+
                     if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
-                        $targetEntity = $formattedData[$this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        $targetEntity = $formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName];
                     }
 
                     $manager = $targetEntity::entityInformation()->managerName;
 
-                    if ($connectViaProperty = $this->informationForPropertyWithName($propertyName)->relationship->connectViaProperty) {
+                    if ($connectViaProperty = $relationship->connectViaProperty) {
                         $value[$connectViaProperty] = $this;
                     }
 
-                    if ($ownerNameInProperty = $this->informationForPropertyWithName($propertyName)->relationship->ownerNameInProperty) {
+                    if ($ownerNameInProperty = $relationship->ownerNameInProperty) {
                         $value[$ownerNameInProperty] = $this->className();
                     }
 
-                    $entity = $manager::entityFromArray($value, false, $overwriteEntities);
+                    if (isset($value[$targetEntity::entityInformation()->primaryPropertyName]) OR !($entity = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
+                        $entity = $manager::entityFromArray($value, false, $overwriteEntities);
+                        $this->setValueForPropertyWithName($entity, $propertyName);
+                    } else {
+                        $entity->setValuesPropertiesFromArray($value, $overwriteEntities);
+                    }
 
-                    $this->setValueForPropertyWithName($entity, $propertyName);
                 } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\Many) {
                     foreach($value as $subPropertyName => $subProeprtyName)  $this->setValueForPropertyWithName($subProeprtyName, $propertyName . "_" . $subPropertyName);
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
