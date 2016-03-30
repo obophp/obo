@@ -421,11 +421,11 @@ abstract class Entity  extends \obo\Object {
             } else {
                 $parts = \explode ("_", $propertyName, 2);
 
-                if (isset($entitiesProperties[$parts[0]]) AND !\is_array($entitiesProperties[$parts[0]])) {
+                if (isset($entityProperties[$parts[0]]) AND !\is_array($entityProperties[$parts[0]])) {
                     if (!$targetEntity = $this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnected) {
                         $targetEntity = $entitiesProperties[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName];
                     }
-                    $entitiesProperties[$parts[0]] = [$targetEntity::entityInformation()->primaryPropertyName => $entitiesProperties[$parts[0]]];
+                    $entitiesProperties[$parts[0]][$targetEntity::entityInformation()->primaryPropertyName] = $entityProperties[$parts[0]];
                 }
 
                 $entitiesProperties[$parts[0]] = (isset($entitiesProperties[$parts[0]]) AND is_array($entitiesProperties[$parts[0]])) ? $entitiesProperties[$parts[0]] + [$parts[1] => $value] : [$parts[1] => $value];
