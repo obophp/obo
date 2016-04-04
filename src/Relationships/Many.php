@@ -83,7 +83,7 @@ class Many extends \obo\Relationships\Relationship {
             $specification->where("AND {{$this->connectViaPropertyWithName}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
             if ($this->ownerNameInProperty !== "") $specification->where("AND {{$this->ownerNameInProperty}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->entityInformation()->name);
         } elseif ($this->connectViaRepositoryWithName !== "") {
-            $specification->where("{*{$this->connectViaRepositoryWithName}," . $this->owner->className() . "*} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
+            $specification->where("AND {*{$this->connectViaRepositoryWithName}," . $this->owner->className() . "*} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
         }
 
         if ($this->sortVia !== null) $specification->orderBy($this->sortVia);
