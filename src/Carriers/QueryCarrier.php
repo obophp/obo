@@ -126,6 +126,9 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
      * @return \obo\Carriers\QueryCarrier
      */
     public function addQueryCarrier(\obo\Carriers\QueryCarrier $queryCarrier) {
+        if ($this->defaultEntityClassName === null OR $queryCarrier->defaultEntityClassName === null) throw new \obo\Exceptions\Exception("Cannot merge queryCarriers because some of the queryCarriers have no default entity");
+        if ($this->defaultEntityClassName !== $queryCarrier->defaultEntityClassName) throw new \obo\Exceptions\Exception("Cannot merge queryCarriers because queryCarriers does not originate from the same source");
+
         parent::addSpecification($queryCarrier);
 
         $join = $queryCarrier->getJoin();
