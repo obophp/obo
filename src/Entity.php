@@ -191,6 +191,14 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public function setPrimaryPropertyValue($value) {
+        return $this->setValueForPropertyWithName($value, $this->entityInformation()->primaryPropertyName);
+    }
+
+    /**
      * @param string $propertyName
      * @param bool $entityAsPrimaryPropertyValue
      * @param bool $triggerEvents
