@@ -405,7 +405,7 @@ abstract class EntityManager  extends \obo\Object {
         } else {
             $entity->discardNonPersistedChanges();
             $entity->setValueForPropertyWithName(true, $propertyNameForSoftDelete);
-            self::saveEntity($entity, true, false);
+            if ($entity->isBasedInRepository()) self::saveEntity($entity, true, false);
         }
 
         $entity->setDeleted(true);
