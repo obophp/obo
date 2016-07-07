@@ -75,7 +75,8 @@ class Many extends \obo\Annotation\Base\Property {
 
         if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship '" . self::name() . "' could not be built. Target entity '{$values["targetEntity"]}' doesn't exist.");
 
-        $this->targetEntity = $values["targetEntity"];
+        if (!\is_subclass_of($values["targetEntity"], \obo\Entity::className())) throw new \obo\Exceptions\BadAnnotationException("Target entity must extend " . \obo\Entity::className());
+        $this->targetEntity = $values["targetEntity"]::className();
 
         $relationship = $this->propertyInformation->relationship = new \obo\Relationships\Many($this->targetEntity, $this->propertyInformation->name);
 

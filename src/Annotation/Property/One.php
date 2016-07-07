@@ -86,7 +86,12 @@ class One extends \obo\Annotation\Base\Property {
             }
         }
 
-        if (!$this->targetEntityInProperty AND !\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
+        if (!$this->targetEntityInProperty) {
+            if (!\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
+            if (!\is_subclass_of($this->targetEntity, \obo\Entity::className())) throw new \obo\Exceptions\BadAnnotationException("Target entity must extend " . \obo\Entity::className());
+            $targetEntity = $this->targetEntity;
+            $this->targetEntity = $targetEntity::className();
+        }
 
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
 
