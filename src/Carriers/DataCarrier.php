@@ -204,7 +204,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function valid() {
-        return isset($this->variables()[$this->key()]) OR \array_key_exists($this->key(), $this->variables());
+        return $this->__isset($this->key());
     }
 
     /**
@@ -221,7 +221,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function offsetExists($offset) {
-        return isset($this->variables()[$offset]) OR \array_key_exists($offset, $this->variables());
+        return $this->__isset($offset);
     }
 
     /**
@@ -237,8 +237,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return mixed
      */
     public function offsetGet($offset) {
-        if (isset($this->variables()[$offset]) OR \array_key_exists($offset, $this->variables())) return $this->variables()[$offset];
-        throw new \obo\Exceptions\VariableNotFoundException("Can't return an element with offset '{$offset}' because it doesn't exist in a collection.");
+        return $this->variableForName($offset);
     }
 
     /**
