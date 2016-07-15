@@ -134,12 +134,11 @@ class Information extends \obo\Object {
             \fclose($fp);
         }
 
-        if (!$this->cacheValidity OR ($entityInformation = $this->cache->load($className)) === null) {
-            $this->createCache();
-            if (($entityInformation = $this->cache->load($className)) === null) throw new \obo\Exceptions\Exception ("Failed to load entity information cache for class {$className}. Possible cause could be that you can't write to the cache folder, folders with all models are not loaded, or you are missing a model directory in config file.");
-        } else {
-            $entityInformation = $this->cache->load($className);
-        }
+        $entityInformation = null;
+
+        if (!$this->cacheValidity OR ($entityInformation = $this->cache->load($className)) === null) $this->createCache();
+        if ($entityInformation === null) $entityInformation = $this->cache->load($className);
+        if ($entityInformation === null) throw new \obo\Exceptions\Exception ("Failed to load entity information cache for class {$className}. Possible cause could be that you can't write to the cache folder, folders with all models are not loaded, or you are missing a model directory in config file.");
 
         $this->registerRunTimeEventsForEntity($entityInformation);
         return $this->entitiesInformations[\ltrim($className, "\\")] = $entityInformation;
