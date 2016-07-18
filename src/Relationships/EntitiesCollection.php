@@ -69,13 +69,21 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
     /**
      * @internal
+     * @param array $requiredItems
      * @return array
      */
-    protected function &variables() {
-        if (!$this->entitiesAreLoaded) {
-            $this->entitiesAreLoaded = true;
-            $this->loadEntities();
+    protected function &variables(array $requiredItems = null) {
+        if($requiredItems !== null) {
+            $variables = parent::variables();
+            foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
+
+        if (!$this->entitiesAreLoaded AND ((\count($requiredItems) !== 0) OR $requiredItems === null)) {
+            $this->entitiesAreLoaded = $requiredItems === null;
+            $this->loadEntities($requiredItems);
+
+        }
+
         return parent::variables();
     }
 
@@ -247,11 +255,26 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     /**
      * @return void
      */
-    public function loadEntities() {
+    public function loadEntities(array $entityKeys = null) {
+
         if (!$this->owner->isBasedInRepository()) return;
-        foreach ($this->relationShip->findEntities() as $entity) {
+
+        $specification = new \obo\Carriers\QuerySpecification();
+
+        $ownedEntityClassName = $this->relationShip->entityClassNameToBeConnected;
+        $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
+
+        if ($entityKeys !== null) {
+            $entityClassName = $this->relationShip->entityClassNameToBeConnected;
+            $specification->where("AND {{$entityClassName::entityInformation()->primaryPropertyName}} IN (?)", $entityKeys);
+        }
+
+        $variables = &parent::variables();
+
+        foreach ($this->relationShip->findEntities($specification) as $entity) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
-            $this->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
+            $variables[$entity->primaryPropertyValue()] = $entity;
+
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity($this->relationShip->ownerPropertyName . "Connected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "addedEntity" => $entity]);
         }
@@ -312,6 +335,61 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         }
 
         return $dump;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \obo\Exceptions\VariableNotFoundException
+     */
+    public function &variableForName($name) {
+       $variables = $this->variables([$name]);
+       if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
+       throw new \obo\Exceptions\VariableNotFoundException("Variable with name '{$name}' does not exist");
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $variableName
+     * @return mixed
+     */
+    public function setValueForVariableWithName($value, $variableName) {
+        return $this->variables([$variableName])[$variableName] = $value;
+    }
+
+    /**
+     * @param string $variableName
+     * @return void
+     */
+    public function unsetValueForVariableWithName($variableName) {
+        $this->variableForName($variableName);
+        unset($this->variables([$variableName])[$variableName]);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name) {
+        $variables = $this->variables([$name]);
+        return isset($variables[$name]) OR \array_key_exists($name, $variables);
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value) {
+        $this->variables([$offset])[$offset] = $value;
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset) {
+        unset($this->variables($offset)[$offset]);
     }
 
 }

@@ -43,13 +43,20 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param array $requiredItems
      * @return array
      */
-    protected function &variables() {
-        if (!$this->entitiesAreLoaded) {
-            $this->entitiesAreLoaded = true;
-            $this->loadEntities();
+    protected function &variables(array $requiredItems = null) {
+        if($requiredItems !== null) {
+            $variables = parent::variables();
+            foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
+
+        if (!$this->entitiesAreLoaded AND ((\count($requiredItems) !== 0) OR $requiredItems === null)) {
+            $this->entitiesAreLoaded = $requiredItems === null;
+            $this->loadEntities($requiredItems);
+        }
+
         return parent::variables();
     }
 
@@ -153,13 +160,24 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param array $entityKeys
      * @return void
      */
-    public function loadEntities() {
+    public function loadEntities(array $entityKeys = null) {
         $entitiesClassName = $this->entitiesClassName;
         $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
-        foreach ($entitiesManagerClassName::findEntities($this->getSpecification()) as $entity) $this->setValueForVariableWithName($entity, $entity->primaryPropertyValue());
-        $this->entitiesAreLoaded  = true;
+
+        if ($entityKeys === null) {
+            $specification = $this->getSpecification();
+        } else {
+            $specification = new \obo\Carriers\QuerySpecification();
+            $specification->addSpecification($this->getSpecification());
+            $specification->where("AND {{$entitiesClassName::entityInformation()->primaryPropertyName}} IN (?)", $entityKeys);
+        }
+
+        $variables = &parent::variables();
+
+        foreach ($entitiesManagerClassName::findEntities($specification) as $entity) $variables[$entity->primaryPropertyValue()] = $entity;
     }
 
     /**
@@ -176,5 +194,60 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function clear() {
         parent::clear();
         $this->entitiesAreLoaded = false;
+    }
+
+    /**
+     * @param string $name
+     * @return mixed
+     * @throws \obo\Exceptions\VariableNotFoundException
+     */
+    public function &variableForName($name) {
+       $variables = $this->variables([$name]);
+       if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
+       throw new \obo\Exceptions\VariableNotFoundException("Variable with name '{$name}' does not exist");
+    }
+
+    /**
+     * @param mixed $value
+     * @param string $variableName
+     * @return mixed
+     */
+    public function setValueForVariableWithName($value, $variableName) {
+        return $this->variables([$variableName])[$variableName] = $value;
+    }
+
+    /**
+     * @param string $variableName
+     * @return void
+     */
+    public function unsetValueForVariableWithName($variableName) {
+        $this->variableForName($variableName);
+        unset($this->variables([$variableName])[$variableName]);
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function __isset($name) {
+        $variables = $this->variables([$name]);
+        return isset($variables[$name]) OR \array_key_exists($name, $variables);
+    }
+
+    /**
+     * @param mixed $offset
+     * @param mixed $value
+     * @return void
+     */
+    public function offsetSet($offset, $value) {
+        $this->variables([$offset])[$offset] = $value;
+    }
+
+    /**
+     * @param mixed $offset
+     * @return void
+     */
+    public function offsetUnset($offset) {
+        unset($this->variables($offset)[$offset]);
     }
 }
