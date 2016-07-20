@@ -90,6 +90,13 @@ abstract class Entity  extends \obo\Object {
     /**
      * @throws \obo\Exceptions\Exception
      */
+    public function __clone() {
+        throw new \obo\Exceptions\Exception('Obo entity is not cloneable');
+    }
+
+    /**
+     * @throws \obo\Exceptions\Exception
+     */
     public function __wakeup() {
         throw new \obo\Exceptions\Exception('Obo entity is not unserializable');
     }
