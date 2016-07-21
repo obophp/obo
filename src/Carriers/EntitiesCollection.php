@@ -250,4 +250,12 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function offsetUnset($offset) {
         unset($this->variables($offset)[$offset]);
     }
+
+    /**
+     * @throws \obo\Exceptions\Exception
+     */
+    public function __clone() {
+        throw new \obo\Exceptions\Exception('Obo entities collection is not cloneable');
+    }
+
 }
