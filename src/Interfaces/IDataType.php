@@ -15,6 +15,7 @@ interface IDataType {
     const DATA_TYPE_CLASS_ARRAY = "array";
     const DATA_TYPE_CLASS_BOOLEAN = "boolean";
     const DATA_TYPE_CLASS_DATETIME = "dateTime";
+    const DATA_TYPE_CLASS_DATEINTERVAL = "dateInterval";
     const DATA_TYPE_CLASS_ENTITY = "entity";
     const DATA_TYPE_CLASS_FLOAT = "float";
     const DATA_TYPE_CLASS_INTEGER = "integer";

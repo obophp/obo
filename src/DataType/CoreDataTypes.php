@@ -16,6 +16,7 @@ class CoreDataTypes extends \obo\Object {
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\ArrayDataType");
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\BooleanDataType");
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\DateTimeDataType");
+        $entitiesExplorer->registerDatatype("\\obo\\DataType\\DateIntervalDataType");
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\EntityDataType");
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\FloatDataType");
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\IntegerDataType");
