@@ -423,7 +423,11 @@ abstract class Entity  extends \obo\Object {
 
                 if (isset($entityProperties[$parts[0]]) AND !\is_array($entityProperties[$parts[0]])) {
                     if (!$targetEntity = $this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnected) {
-                        $targetEntity = $entitiesProperties[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        if (isset($entitiesProperties[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName])) {
+                            $targetEntity = $entitiesProperties[$this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        } else {
+                            $targetEntity = $this->valueForPropertyWithName($this->informationForPropertyWithName($parts[0])->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        }
                     }
                     $entitiesProperties[$parts[0]][$targetEntity::entityInformation()->primaryPropertyName] = $entityProperties[$parts[0]];
                 }
@@ -439,7 +443,11 @@ abstract class Entity  extends \obo\Object {
                 if (($relationship = $this->informationForPropertyWithName($propertyName)->relationship) instanceof \obo\Relationships\One) {
 
                     if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
-                        $targetEntity = $formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        if (isset($formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName])) {
+                            $targetEntity = $formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName];
+                        } else {
+                            $targetEntity = $this->valueForPropertyWithName($relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        }
                     }
 
                     $manager = $targetEntity::entityInformation()->managerName;
