@@ -69,7 +69,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         } else {
             $entityClass = $this->entitiesClassName;
             $managerClass = $entityClass::entityInformation()->managerName;
-            return $managerClass::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()));
+            return $managerClass::countRecords($managerClass::queryCarrier()->addSpecification($this->getSpecification()));
         }
     }
 
@@ -127,7 +127,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function find(\obo\Interfaces\IQuerySpecification $specification) {
         $entitiesClassName = $this->entitiesClassName;
         $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
-        return $entitiesManagerClassName::findEntities(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification())->addSpecification($specification));
+        return $entitiesManagerClassName::findEntities($entitiesManagerClassName::queryCarrier()->addSpecification($this->getSpecification())->addSpecification($specification));
     }
 
     /**
@@ -136,8 +136,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return \obo\Entity[]
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
-
-        $specification = new \obo\Carriers\QueryCarrier();
+        $ownedEntityClassName = $this->entitiesClassName;
+        $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
+        $specification = $ownedEntityManagerName::querySpecification();
 
         if ($filter !== null) {
             $specification->addSpecification($filter->getSpecification());
@@ -156,7 +157,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function countEntities (\obo\Interfaces\IQuerySpecification $specification = null) {
         $ownedEntityClassName = $this->entitiesClassName;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-        return $ownedEntityManagerName::countRecords(\obo\Carriers\QueryCarrier::instance()->addSpecification($this->getSpecification()->addSpecification($specification)));
+        return $ownedEntityManagerName::countRecords($ownedEntityManagerName::queryCarrier()->addSpecification($this->getSpecification()->addSpecification($specification)));
     }
 
     /**
