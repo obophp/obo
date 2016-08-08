@@ -362,10 +362,7 @@ abstract class Entity  extends \obo\Object {
         }
 
         if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange", $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
                 if(isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
 
@@ -379,10 +376,16 @@ abstract class Entity  extends \obo\Object {
                         $this->propertiesChanges[$propertyName]["newValue"] = $value;
                         $this->propertiesChanges[$propertyName]["persisted"] = false;
                     }
-
                 } else {
                     $this->propertiesChanges[$propertyName] = ["originalValue" => $oldValue, "lastPersistedValue" => $oldValue, "newValue" => $value, "persisted" => false];
                 }
+            }
+
+            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+
+            if ($change) {
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange", $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
             }
         }
 
