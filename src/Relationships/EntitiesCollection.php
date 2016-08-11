@@ -186,27 +186,25 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function remove(\obo\Entity $entity, $deleteEntity = false, $notifyEvents = true) {
 
+        $primaryPropertyValue = $entity->primaryPropertyValue();
+
+        if ($this->__isset($primaryPropertyValue)) {
+            $key = $primaryPropertyValue;
+        } elseif (!$key = \array_search($entity, $this->asArray())) {
+            throw new \obo\Exceptions\EntityNotFoundException("The entity you want to delete does not exist in the collection");
+        }
+
         if ($notifyEvents) {
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["removedEntity" => $entity]);
             \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
+        $this->unsetValueForVariableWithName($key);
+
         if ($deleteEntity) {
             $entity->delete();
         } else {
             $this->relationShip->remove($entity);
-        }
-
-        if ($this->entitiesAreLoaded) {
-            $primaryPropertyValue = $entity->primaryPropertyValue();
-
-            if ($this->__isset($primaryPropertyValue)) {
-                $key = $primaryPropertyValue;
-            } elseif (!$key = \array_search($entity, $this->asArray())) {
-                throw new \obo\Exceptions\EntityNotFoundException("The entity you want to delete does not exist in the collection");
-            }
-
-            $this->unsetValueForVariableWithName($key);
         }
 
         if ($notifyEvents) {
