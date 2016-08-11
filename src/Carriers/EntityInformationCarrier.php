@@ -20,6 +20,11 @@ class EntityInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
+    public $namespace = "";
+
+    /**
+     * @var string
+     */
     public $name = "";
 
     /**
