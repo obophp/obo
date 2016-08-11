@@ -151,6 +151,7 @@ class Explorer extends \obo\Object {
         $entityClassReflection = $entityClassName::getReflection();
         $entityInformation = new \obo\Carriers\EntityInformationCarrier();
         $entityInformation->className = $entityClassName;
+        $entityInformation->namespace = $entityClassReflection->getNamespaceName();
         $entityInformation->name = $this->defaultNameForEntityWithClassName($entityClassName);
         $entityInformation->propertiesClassName = $propertiesClassName = $this->propertiesClassNameForEntityWithClassName($entityClassName);
         $entityInformation->managerName = $this->managerClassNameForEntityWithClassName($entityClassName);
