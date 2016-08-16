@@ -50,7 +50,7 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-    public $access = "public";
+    public $accessLevel = \obo\Annotation\Property\AccessLevel::ACCESS_LEVEL_PUBLIC;
 
     /**
      * @var \obo\DataType\Base\DataType
