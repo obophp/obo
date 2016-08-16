@@ -25,6 +25,7 @@ class CoreAnnotations extends \obo\Object {
 
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Method\\Run");
 
+        $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\AccessLevel");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\Caption");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\ColumnName");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\Persistable");
