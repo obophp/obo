@@ -205,7 +205,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function &variableForName($name) {
        $variables = $this->variables([$name]);
        if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
-       throw new \obo\Exceptions\VariableNotFoundException("Variable with name '{$name}' does not exist");
+       throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->entitiesClassName . "' with primary property value '{$name}' does not exist in collection");
     }
 
     /**
@@ -241,7 +241,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function offsetSet($offset, $value) {
-        $this->variables([$offset])[$offset] = $value;
+        $this->setValueForVariableWithName($value, $offset);
     }
 
     /**
