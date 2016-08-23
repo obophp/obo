@@ -137,7 +137,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
 
         foreach ($entities as $key => $entity) {
 
-            if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entity of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
+            if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entities of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
             if (!$entityKey = $entity->primaryPropertyValue()) {
                 if (\strpos($key, "___") === 0 AND !$this->__isset($key)) {
@@ -343,7 +343,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function &variableForName($name) {
        $variables = $this->variables([$name]);
        if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
-       throw new \obo\Exceptions\VariableNotFoundException("Variable with name '{$name}' does not exist");
+       throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->relationShip->entityClassNameToBeConnected . "' with primary property value '{$name}' does not exist in collection");
     }
 
     /**
@@ -352,6 +352,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return mixed
      */
     public function setValueForVariableWithName($value, $variableName) {
+        if (!$value instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert " . (\is_object($value) ? "object of class '" . \get_class($value) : "value '" . print_r($value, true)) . "', because the collection is designed for entities of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
         return $this->variables([$variableName])[$variableName] = $value;
     }
 
@@ -379,7 +380,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function offsetSet($offset, $value) {
-        $this->variables([$offset])[$offset] = $value;
+        $this->setValueForVariableWithName($value, $offset);
     }
 
     /**
