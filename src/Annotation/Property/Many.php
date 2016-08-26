@@ -98,7 +98,7 @@ class Many extends \obo\Annotation\Base\Property {
         }
 
         $relationship->cascade = $this->cascadeOptions;
-        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\ObjectDataType::name(), $this->propertyInformation, ["className" => "\\obo\\Relationships\\EntitiesCollection"]);
+        $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\ObjectDataType::name(), $this->propertyInformation, ["className" => "\\obo\\Relationships\\EntitiesCollection"]);
         $this->propertyInformation->columnName = "";
         $this->propertyInformation->persistable = false;
     }
@@ -110,14 +110,14 @@ class Many extends \obo\Annotation\Base\Property {
 
         foreach ($this->cascadeOptions as $cascadeOption) {
             if ($cascadeOption == "save") {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "afterSave",
                     "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
                     "actionArguments" => ["propertyName" => $this->propertyInformation->name],
                 ]));
             } elseif ($cascadeOption == "delete") {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+                \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeDelete",
                     "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
@@ -126,7 +126,7 @@ class Many extends \obo\Annotation\Base\Property {
             }
         }
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {

@@ -42,7 +42,7 @@ class Run extends \obo\Annotation\Base\Method {
      */
     public function registerEvents() {
         foreach ($this->eventsNames as $eventName) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+            \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => $eventName,
                 "actionMessage" => $this->methodName,

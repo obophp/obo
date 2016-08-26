@@ -42,7 +42,7 @@ class DataType extends \obo\Annotation\Base\Property {
             $dataTypeOptions = [];
         }
 
-        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType($dataTypeName, $this->propertyInformation, $dataTypeOptions);
+        $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType($dataTypeName, $this->propertyInformation, $dataTypeOptions);
     }
 
 }

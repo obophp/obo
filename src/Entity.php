@@ -139,7 +139,7 @@ abstract class Entity  extends \obo\Object {
      */
     public static function entityInformation() {
         $selfClassName = self::className();
-        if (!isset(self::$entitiesInformations[$selfClassName])) self::$entitiesInformations[$selfClassName] = \obo\Services::serviceWithName(\obo\obo::ENTITIES_INFORMATION)->informationForEntityWithClassName($selfClassName);
+        if (!isset(self::$entitiesInformations[$selfClassName])) self::$entitiesInformations[$selfClassName] = \obo\obo::$entitiesInformation->informationForEntityWithClassName($selfClassName);
         return self::$entitiesInformations[$selfClassName];
     }
 
@@ -248,7 +248,7 @@ abstract class Entity  extends \obo\Object {
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
         if ($triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue, "autoCreate" => $autoCreate]);
+            \obo\obo::$eventManager->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue, "autoCreate" => $autoCreate]);
         }
 
         if ($propertyInformation->getterName === "") {
@@ -258,7 +258,7 @@ abstract class Entity  extends \obo\Object {
         }
 
         if ($triggerEvents) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
+            \obo\obo::$eventManager->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
         }
 
         if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) $value = $value->primaryPropertyValue();
@@ -316,11 +316,11 @@ abstract class Entity  extends \obo\Object {
             $dataType->validate($value);
         }
 
-        if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
+        if (\obo\obo::$eventManager->isRegisteredEntity($this) AND $triggerEvents) {
             $change = null;
             $oldValue = $this->valueForPropertyWithName($propertyName, false, true, false);
 
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => &$value]]);
+            \obo\obo::$eventManager->notifyEventForEntity("beforeWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => &$value]]);
 
             if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
                 if (\is_scalar($value)) {
@@ -350,8 +350,8 @@ abstract class Entity  extends \obo\Object {
             if ($change === null) $change = $oldValue !== $value;
 
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange", $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("beforeChange", $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("beforeChange" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
             }
         }
 
@@ -361,7 +361,7 @@ abstract class Entity  extends \obo\Object {
             $this->propertiesObject()->{$propertyInformation->setterName}($value);
         }
 
-        if (\obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->isRegisteredEntity($this) AND $triggerEvents) {
+        if (\obo\obo::$eventManager->isRegisteredEntity($this) AND $triggerEvents) {
             if ($change) {
                 if(isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
@@ -381,11 +381,11 @@ abstract class Entity  extends \obo\Object {
                 }
             }
 
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+            \obo\obo::$eventManager->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
 
             if ($change) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange", $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("afterChange", $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
             }
         }
 
@@ -539,11 +539,11 @@ abstract class Entity  extends \obo\Object {
      * @return \obo\Entity
      */
     public function setInitialized() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEntity($this);
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInitialize", $this);
+        \obo\obo::$eventManager->registerEntity($this);
+        \obo\obo::$eventManager->notifyEventForEntity("beforeInitialize", $this);
         $this->initialized = true;
         $this->deleted = ($propertyNameForSoftDelete = $this->entityInformation()->propertyNameForSoftDelete) === "" ? false : (bool) $this->valueForPropertyWithName($propertyNameForSoftDelete);
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInitialize", $this);
+        \obo\obo::$eventManager->notifyEventForEntity("afterInitialize", $this);
         return $this;
     }
 
@@ -613,7 +613,7 @@ abstract class Entity  extends \obo\Object {
      * @return string
      */
     public function entityIdentificationKey() {
-        if ($this->entityIdentificationKey === null) return $this->entityIdentificationKey = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->identificationKeyForEntity($this);
+        if ($this->entityIdentificationKey === null) return $this->entityIdentificationKey = \obo\obo::$identityMapper->identificationKeyForEntity($this);
         return $this->entityIdentificationKey;
     }
 
@@ -648,7 +648,7 @@ abstract class Entity  extends \obo\Object {
      * @param callable $callback
      */
     final public function on($eventName, callable $callback) {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onObject" => $this,
             "name" => $eventName,
             "actionAnonymousFunction" => $callback,

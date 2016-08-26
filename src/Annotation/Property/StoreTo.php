@@ -87,7 +87,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
@@ -96,7 +96,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
             "actionArguments" => ["propertyName" => $this->propertyInformation->name, "annotation" => $this],
         ]));
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {

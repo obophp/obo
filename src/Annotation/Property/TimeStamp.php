@@ -37,7 +37,7 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\DateTimeDataType::name(), $this->propertyInformation);
+        $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\DateTimeDataType::name(), $this->propertyInformation);
         $this->eventsNames = $values;
     }
 
@@ -46,7 +46,7 @@ class TimeStamp extends \obo\Annotation\Base\Property {
      */
     public function registerEvents() {
         foreach ($this->eventsNames as $eventName) {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+            \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => $eventName,
                 "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->setValueForPropertyWithName(new \DateTime, $arguments["propertyName"]);},
