@@ -40,7 +40,7 @@ class ReadOnly extends \obo\Annotation\Base\Property {
      */
     public function registerEvents() {
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {

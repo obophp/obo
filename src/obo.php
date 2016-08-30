@@ -18,14 +18,6 @@ class obo extends \obo\Object {
     const _LICENCE = "Apache License, Version 2.0";
     const _WWW = "http://www.obophp.org/";
 
-    const ENTITIES_EXPLORER = "obo-entitiesExplorer";
-    const ENTITIES_INFORMATION = "obo-entitiesInformation";
-    const IDENTITY_MAPPER = "obo-identityMapper";
-    const EVENT_MANAGER = "obo-eventManager";
-    const DEFAULT_DATA_STORAGE = "obo-defaultDataStorage";
-    const CACHE = "obo-cache";
-    const UUID_GENERATOR = "obo-uuidGenerator";
-
     /**
      * @var bool
      */
@@ -42,11 +34,47 @@ class obo extends \obo\Object {
     protected static $tempDir = "";
 
     /**
+     * @var \obo\Services\EntitiesInformation\Explorer
+     */
+    public static $entitiesExplorer = null;
+
+    /**
+     * @var \obo\Services\EntitiesInformation\Information
+     */
+    public static $entitiesInformation = null;
+
+    /**
+     * @var \obo\Services\IdentityMapper\IdentityMapper
+     */
+    public static $identityMapper = null;
+
+    /**
+     * @var \obo\Services\Events\EventManager
+     */
+    public static $eventManager = null;
+
+    /**
+     * @var \obo\Interfaces\IDataStorage
+     */
+    public static $defaultDataStorage = null;
+
+    /**
+     * @var \obo\Interfaces\ICache
+     */
+    public static $cache = null;
+
+    /**
+     * @var \obo\Interfaces\IUuidGenerator
+     */
+    public static $uuidGenerator = null;
+
+
+    /**
      * @param \obo\Interfaces\IDataStorage $defaultDataStorage
      * @return void
      */
     public static function setDefaultDataStorage(\obo\Interfaces\IDataStorage $defaultDataStorage) {
-        \obo\Services::registerServiceWithName($defaultDataStorage, self::DEFAULT_DATA_STORAGE);
+        self::$defaultDataStorage = $defaultDataStorage;
     }
 
     /**
@@ -54,7 +82,7 @@ class obo extends \obo\Object {
      * @return void
      */
     public static function setCache(\obo\Interfaces\ICache $cache) {
-        \obo\Services::registerServiceWithName($cache, self::CACHE);
+        self::$cache = $cache;
     }
 
     /**
@@ -62,7 +90,7 @@ class obo extends \obo\Object {
      * @return void
      */
     public static function setUuidGenerator(\obo\Interfaces\IUuidGenerator $uuidGenerator) {
-        \obo\Services::registerServiceWithName($uuidGenerator, self::UUID_GENERATOR);
+        self::$uuidGenerator = $uuidGenerator;
     }
 
     /**
@@ -92,12 +120,14 @@ class obo extends \obo\Object {
      */
     public static function run() {
         self::checkConfiguration();
-        \obo\Services::registerServiceWithName(new \obo\Services\Events\EventManager, self::EVENT_MANAGER);
-        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Explorer(), self::ENTITIES_EXPLORER);
-        \obo\Annotation\CoreAnnotations::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
-        \obo\DataType\CoreDataTypes::register(\obo\Services::serviceWithName(self::ENTITIES_EXPLORER));
-        \obo\Services::registerServiceWithName(new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, \obo\Services::serviceWithName(self::ENTITIES_EXPLORER), \obo\Services::serviceWithName(self::CACHE)), self::ENTITIES_INFORMATION);
-        \obo\Services::registerServiceWithName(new \obo\Services\IdentityMapper\IdentityMapper, self::IDENTITY_MAPPER);
+        self::$identityMapper = new \obo\Services\IdentityMapper\IdentityMapper();
+        self::$eventManager = new \obo\Services\Events\EventManager();
+        self::$entitiesExplorer = new \obo\Services\EntitiesInformation\Explorer();
+
+        \obo\Annotation\CoreAnnotations::register(self::$entitiesExplorer);
+        \obo\DataType\CoreDataTypes::register(self::$entitiesExplorer);
+
+        self::$entitiesInformation = new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, self::$entitiesExplorer, self::$cache);
     }
 
     /**

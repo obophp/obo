@@ -155,7 +155,7 @@ class Information extends \obo\Object {
             if ($propertyInformation->dataType instanceof \obo\DataType\Base\DataType) $propertyInformation->dataType->registerEvents();
         }
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $entityInformation->className,
             "name" => "beforeChange".\ucfirst($entityInformation->primaryPropertyName),
             "actionAnonymousFunction" => function($arguments) {
@@ -165,7 +165,7 @@ class Information extends \obo\Object {
                 }},
         ]));
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $entityInformation->className,
             "name" => "beforeChange",
             "actionAnonymousFunction" => function($arguments) {

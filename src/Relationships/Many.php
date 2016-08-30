@@ -99,7 +99,7 @@ class Many extends \obo\Relationships\Relationship {
             if ($entity->isBasedInRepository() AND $this->owner->isBasedInRepository()) $entity->save();
 
             if (!$this->owner->isBasedInRepository()) {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                \obo\obo::$eventManager->registerEvent(
                     new \obo\Services\Events\Event([
                         "onObject" => $this->owner,
                         "name" => "afterInsert",
@@ -117,7 +117,7 @@ class Many extends \obo\Relationships\Relationship {
             } else {
                 if (!$entity->isBasedInRepository()) {
                     $owner = $this->owner;
-                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                    \obo\obo::$eventManager->registerEvent(
                         new \obo\Services\Events\Event([
                             "onObject" => $entity,
                             "name" => "afterInsert",
@@ -130,7 +130,7 @@ class Many extends \obo\Relationships\Relationship {
                 }
 
                 if (!$this->owner->isBasedInRepository()) {
-                    \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                    \obo\obo::$eventManager->registerEvent(
                         new \obo\Services\Events\Event([
                             "onObject" => $this->owner,
                             "name" => "afterInsert",

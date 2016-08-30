@@ -36,7 +36,7 @@ class Uuid extends \obo\Annotation\Base\Property {
     public function process(array $values) {
         parent::process($values);
         $this->registerUuidGenerator = $values[0];
-        $this->propertyInformation->dataType = \obo\Services::serviceWithName(\obo\obo::ENTITIES_EXPLORER)->createDataType(\obo\DataType\StringDataType::name(), $this->propertyInformation);
+        $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\StringDataType::name(), $this->propertyInformation);
     }
 
     /**
@@ -45,7 +45,7 @@ class Uuid extends \obo\Annotation\Base\Property {
      */
     public function generateUuid(array $arguments) {
         try {
-            $uuidGenerator = \obo\Services::serviceWithName(\obo\obo::UUID_GENERATOR);
+            $uuidGenerator = \obo\obo::$uuidGenerator;
         } catch (\obo\Exceptions\ServicesException $e) {
             throw new \obo\Exceptions\BadAnnotationException("UUID generator is not registered, register it via obo::setUuidGenerator()", null, $e);
         }
@@ -62,7 +62,7 @@ class Uuid extends \obo\Annotation\Base\Property {
 
         if (!$this->registerUuidGenerator) return;
 
-        \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeInsert",
             "actionAnonymousFunction" => function($arguments) {

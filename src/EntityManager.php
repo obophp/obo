@@ -35,7 +35,7 @@ abstract class EntityManager  extends \obo\Object {
      */
     public static function dataStorage() {
         if (isset(self::$dataStorages[self::className()])) return self::$dataStorages[self::className()];
-        return self::setDataStorage(\obo\Services::serviceWithName(\obo\obo::DEFAULT_DATA_STORAGE));
+        return self::setDataStorage(\obo\obo::$defaultDataStorage);
     }
 
     /**
@@ -101,7 +101,7 @@ abstract class EntityManager  extends \obo\Object {
         $primaryPropertyDataType = $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType;
         if (!$primaryPropertyDataType->validate($primaryPropertyDataType->sanitizeValue($primaryPropertyValue), false)) throw new \obo\Exceptions\BadDataTypeException("Can't create entity from value " . (\is_scalar($primaryPropertyValue) ? "'" . print_r($primaryPropertyValue, true) . "'" : "") . " of '" . \gettype($primaryPropertyValue) . "' datatype. Primary property '" . $primaryPropertyName . "' in entity '" . self::classNameManagedEntity() . "' is of '" . $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->name() . "' datatype.");
         $entity->setValueForPropertyWithName($primaryPropertyValue, $primaryPropertyName);
-        $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
+        $entity = \obo\obo::$identityMapper->mappedEntity($entity);
 
         if (!$entity->isInitialized()) {
             $data = self::rawDataForEntity($entity, $ignoreSoftDelete);
@@ -125,14 +125,14 @@ abstract class EntityManager  extends \obo\Object {
 
         if (isset($data[$primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $data)) {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
-            $entity = \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($entity);
+            $entity = \obo\obo::$identityMapper->mappedEntity($entity);
             unset($data[$primaryPropertyName]);
         } else {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(new \obo\Services\Events\Event([
+            \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onObject" => $entity,
                 "name" => "afterInsert",
                 "actionAnonymousFunction" => function($arguments) {
-                   \obo\Services::serviceWithName(\obo\obo::IDENTITY_MAPPER)->mappedEntity($arguments["entity"]);
+                   \obo\obo::$identityMapper->mappedEntity($arguments["entity"]);
                    $arguments["entity"]->setBasedInRepository(true);
                 }
             ]));
@@ -366,25 +366,25 @@ abstract class EntityManager  extends \obo\Object {
         if ($entity->entityInformation()->repositoryName === null) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
         $entity->setSavingInProgress();
-        if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeSave", $entity);
+        if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeSave", $entity);
 
         if (count($entity->changedProperties($entity->entityInformation()->persistablePropertiesNames, true, true))) {
             if ($entity->isBasedInRepository()) {
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeUpdate", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeUpdate", $entity);
                 $entity->dataStorage()->updateEntity($entity);
                 $entity->markUnpersistedPropertiesAsPersisted();
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterUpdate", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterSave", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterUpdate", $entity);
             } else {
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeInsert", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeInsert", $entity);
                 $entity->dataStorage()->insertEntity($entity);
                 $entity->setBasedInRepository(true);
                 $entity->markUnpersistedPropertiesAsPersisted();
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
-                if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterInsert", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterSave", $entity);
+                if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterInsert", $entity);
             }
         } else {
-            if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterSave", $entity);
+            if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterSave", $entity);
         }
         $entity->setSavingInProgress(false);
     }
@@ -398,7 +398,7 @@ abstract class EntityManager  extends \obo\Object {
     public static function deleteEntity(\obo\Entity $entity, $triggerEvents = true) {
         if (!$entity->isInitialized()) throw new \obo\Exceptions\EntityIsNotInitializedException("Cannot delete entity which is not initialized");
         $entity->setDeletingInProgress();
-        if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("beforeDelete", $entity);
+        if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeDelete", $entity);
 
         if (($propertyNameForSoftDelete = $entity->entityInformation()->propertyNameForSoftDelete) === "") {
             $entity->dataStorage()->removeEntity($entity);
@@ -409,7 +409,7 @@ abstract class EntityManager  extends \obo\Object {
         }
 
         $entity->setDeleted(true);
-        if ($triggerEvents) \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->notifyEventForEntity("afterDelete", $entity);
+        if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("afterDelete", $entity);
         $entity->setDeletingInProgress(false);
     }
 }
