@@ -53,6 +53,11 @@ class PropertyInformationCarrier extends \obo\Object {
     public $accessLevel = \obo\Annotation\Property\AccessLevel::ACCESS_LEVEL_PUBLIC;
 
     /**
+     * @var boolean
+     */
+    public $readOnly = false;
+
+    /**
      * @var \obo\DataType\Base\DataType
      */
     public $dataType = null;
