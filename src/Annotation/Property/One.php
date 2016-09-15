@@ -262,7 +262,9 @@ class One extends \obo\Annotation\Base\Property {
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                     if ($arguments["owner"] instanceof $propertyInformation->relationship->entityClassNameToBeConnected
                             && $arguments["columnName"] === $propertyInformation->relationship->connectViaProperty) {
-                        $arguments["entity"]->setValueForPropertyWithName($arguments["owner"], $propertyInformation->relationship->ownerPropertyName);
+                        if ($arguments["entity"]->isEditable()) {
+                            $arguments["entity"]->setValueForPropertyWithName($arguments["owner"], $propertyInformation->relationship->ownerPropertyName);
+                        }
                     }
                 },
                 "actionArguments" => ["propertyName" => $this->propertyInformation->name],
@@ -275,7 +277,9 @@ class One extends \obo\Annotation\Base\Property {
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                     if ($arguments["owner"] instanceof $propertyInformation->relationship->entityClassNameToBeConnected
                             && $arguments["columnName"] === $propertyInformation->relationship->connectViaProperty) {
-                        $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->ownerPropertyName);
+                        if ($arguments["entity"]->isEditable()) {
+                            $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->ownerPropertyName);
+                        }
                     }
                 },
                 "actionArguments" => ["propertyName" => $this->propertyInformation->name],

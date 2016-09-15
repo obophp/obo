@@ -610,6 +610,13 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @return bool
+     */
+    public function isEditable() {
+        return !$this->isDeleted();
+    }
+
+    /**
      * @return string
      */
     public function entityIdentificationKey() {
