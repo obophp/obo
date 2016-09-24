@@ -8,9 +8,9 @@
  * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, Version 2.0
  */
 
-namespace obo\Annotation\Entity;
+namespace obo\Annotation\Property;
 
-class RepositoryName extends \obo\Annotation\Base\Entity {
+class RepositoryName extends \obo\Annotation\Base\Property {
 
     /**
      * @return string
@@ -32,7 +32,7 @@ class RepositoryName extends \obo\Annotation\Base\Entity {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->entityInformation->repositoryName = $values[0];
+        $this->propertyInformation->repositoryName = $values[0];
     }
 
 }
