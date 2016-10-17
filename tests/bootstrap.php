@@ -7,22 +7,20 @@ if (@!include __DIR__ . "/../vendor/autoload.php") {
     exit(1);
 }
 
+require_once __DIR__ . '/__assets/Storage.php';
+
 // configure environment
 Tester\Environment::setup();
 date_default_timezone_set("Europe/Prague");
 
 \obo\obo::$developerMode = true;
-\obo\obo::setDefaultDataStorage(new \obo\DataStorage\MemoryStorage([
-    "test" => [
-        "id",
-        "testProperty",
-    ]
-]));
-\obo\obo::setCache(new Obo\Tests\Cache(__DIR__ . DIRECTORY_SEPARATOR . "temp"));
+\obo\obo::setCache(new obo\Tests\Assets\Cache(__DIR__ . DIRECTORY_SEPARATOR . "temp"));
 \obo\obo::setTempDir(__DIR__ . DIRECTORY_SEPARATOR . "temp");
 \obo\obo::addModelsDirs([
-   __DIR__ . DIRECTORY_SEPARATOR . "obo" . DIRECTORY_SEPARATOR . "Entities",
+   __DIR__ . DIRECTORY_SEPARATOR . "__assets" . DIRECTORY_SEPARATOR . "Entities",
 ]);
+
+\obo\obo::setDefaultDataStorage(\obo\Tests\Assets\Storage::getMockDataStorage());
 \obo\obo::run();
 
 function test(\Closure $function) {

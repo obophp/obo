@@ -1,6 +1,6 @@
 <?php
 
-namespace Obo\Tests;
+namespace obo\Tests\Assets;
 
 class Cache implements \obo\Interfaces\ICache {
 
