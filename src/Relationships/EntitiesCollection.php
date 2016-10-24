@@ -300,9 +300,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function save() {
-        if (!$this->entitiesAreLoaded) return;
         $this->savingInProgress = true;
-        foreach ($this->asArray() as $entity) if (!$entity->isDeleted()) $entity->save();
+        foreach (parent::variables() as $entity) if (!$entity->isDeleted()) $entity->save();
         if ($this->afterSavingNeedReload) $this->reloadEntities();
         $this->savingInProgress = false;
     }
