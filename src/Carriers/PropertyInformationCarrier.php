@@ -75,6 +75,16 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
+     public $storageName = "";
+
+    /**
+     * @var string
+     */
+     public $repositoryName = "";
+
+    /**
+     * @var string
+     */
     public $columnName = "";
 
     /**

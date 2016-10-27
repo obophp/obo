@@ -65,6 +65,11 @@ class EntityInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
+     public $storageName = "";
+
+    /**
+     * @var string
+     */
     public $repositoryName = "";
 
     /**
