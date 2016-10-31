@@ -238,7 +238,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
 
-        $specification = new \obo\Carriers\QuerySpecification();
+        $specification = new \obo\Carriers\QueryCarrier();
 
         if ($filter !== null) {
             $specification->addSpecification($filter->getSpecification());
