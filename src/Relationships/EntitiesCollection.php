@@ -238,7 +238,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
 
-        $specification = new \obo\Carriers\QueryCarrier();
+        $ownedEntityClassName = $this->relationShip->entityClassNameToBeConnected;
+        $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
+        $specification = $ownedEntityManagerName::queryCarrier();
 
         if ($filter !== null) {
             $specification->addSpecification($filter->getSpecification());
