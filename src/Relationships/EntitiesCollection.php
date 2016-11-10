@@ -95,13 +95,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if ($specification !== null) {
             return $this->relationShip->countEntities($specification);
         } else {
-            if ($this->entitiesAreLoaded) {
-                return parent::count();
-            } elseif ($this->owner->isBasedInRepository()) {
-                return $this->relationShip->countEntities();
-            } else {
-                return 0;
-            }
+            if (!$this->entitiesAreLoaded AND $this->owner->isBasedInRepository()) $this->relationShip->countEntities();
+            return parent::count();
         }
     }
 
