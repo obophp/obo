@@ -219,7 +219,7 @@ abstract class Entity  extends \obo\Object {
             if ($pos = \strpos($propertyName, "_")) {
                 if (($subPropertyValue = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity) {
                     return $subPropertyValue->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsPrimaryPropertyValue, $triggerEvents);
-                } elseif($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
 
                     if (($pos = \strpos($propertyName, "_")) === 0) {
@@ -276,13 +276,12 @@ abstract class Entity  extends \obo\Object {
      * @throws \obo\Exceptions\ServicesException
      */
     public function &setValueForPropertyWithName($value, $propertyName, $triggerEvents = true) {
-
         if (!$this->hasPropertyWithName($propertyName)) {
             if ($pos = \strpos($propertyName, "_")) {
 
                 if (($subPropertyValue = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity) {
                     return $subPropertyValue->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
-                } elseif($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
 
                     if (($pos = \strpos($propertyName, "_")) === 0) {
@@ -363,7 +362,7 @@ abstract class Entity  extends \obo\Object {
 
         if (\obo\obo::$eventManager->isRegisteredEntity($this) AND $triggerEvents) {
             if ($change) {
-                if(isset($this->propertiesChanges[$propertyName])) {
+                if (isset($this->propertiesChanges[$propertyName])) {
                     $compareValue = $value;
 
                     if ($compareValue instanceof \obo\Entity) {
@@ -384,8 +383,8 @@ abstract class Entity  extends \obo\Object {
             \obo\obo::$eventManager->notifyEventForEntity("afterWrite" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
 
             if ($change) {
-                \obo\obo::$eventManager->notifyEventForEntity("afterChange", $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
-                \obo\obo::$eventManager->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this,  ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("afterChange", $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
+                \obo\obo::$eventManager->notifyEventForEntity("afterChange" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "propertyValue" => ["old" => $oldValue, "new" => $value]]);
             }
         }
 
@@ -398,19 +397,21 @@ abstract class Entity  extends \obo\Object {
      * @return array
      */
     public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
-       $data = [];
+        $data = [];
 
-       if ($onlyFromList !== null) {
-           $propertiesNames = \array_keys((array) $onlyFromList);
-       } else {
-           $propertiesNames = \array_keys((array) $this->propertiesInformation());
-       }
+        if ($onlyFromList !== null) {
+            $propertiesNames = \array_keys((array) $onlyFromList);
+        } else {
+            $propertiesNames = \array_keys((array) $this->propertiesInformation());
+        }
 
-       foreach ($propertiesNames as $propertyName) {
+        foreach ($propertiesNames as $propertyName) {
             try {
                 $data[$propertyName] = $this->valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue);
-            } catch (\obo\Exceptions\PropertyNotFoundException $exc) {}
-       }
+            } catch (\obo\Exceptions\PropertyNotFoundException $exc) {
+
+            }
+        }
 
         return $data;
     }
@@ -485,7 +486,7 @@ abstract class Entity  extends \obo\Object {
                     }
 
                 } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\Many) {
-                    foreach($value as $subPropertyName => $subProeprtyName)  $this->setValueForPropertyWithName($subProeprtyName, $propertyName . "_" . $subPropertyName);
+                    foreach ($value as $subPropertyName => $subProeprtyName)  $this->setValueForPropertyWithName($subProeprtyName, $propertyName . "_" . $subPropertyName);
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
                     if (isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
                     $propertyValue->setValuesPropertiesFromArray($value);
@@ -722,7 +723,7 @@ abstract class Entity  extends \obo\Object {
                     ) {
                         $relationshipInformation["entity"] = "**RECURSION**";
                     } else {
-                        if($propertyInformation->relationship->className() == "obo\\Relationships\\One") {
+                        if ($propertyInformation->relationship->className() == "obo\\Relationships\\One") {
                             $relationshipInformation["entity"] = $propertyValue->dump($this);
                         } else {
                             $relationshipInformation["entitiesColection"] = $propertyValue->dump($this);
@@ -738,4 +739,5 @@ abstract class Entity  extends \obo\Object {
 
         return $dump;
     }
+
 }

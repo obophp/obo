@@ -54,4 +54,5 @@ class EntityDataType extends \obo\DataType\Base\DataType {
     public static function convertValue($value) {
         throw new \obo\Exceptions\Exception("Datatype 'Entity' can't convert any value.");
     }
+
 }

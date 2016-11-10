@@ -84,7 +84,6 @@ abstract class Definition extends \obo\Object {
      * @throws \obo\Exceptions\BadAnnotationException
      */
     public function checkAnnotationValueStructure($annotationValue) {
-
         if (isset(static::parametersDefinition()[self::PARAMETERS_NUMBER_DEFINITION])) {
             $this->checkNumberOfParametersForAnnotationValue($annotationValue);
         }
@@ -105,15 +104,15 @@ abstract class Definition extends \obo\Object {
         switch (true) {
             case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] == self::ZERO_OR_ONE_PARAMETER:
                 if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects zero or one parameter, more parameters given");
-            break;
+                break;
 
             case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] == self::ONE_OR_MORE_PARAMETERS:
                 if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects one or more parameters, no parameters given");
-            break;
+                break;
 
             case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] > 0:
                 if (count($annotationValue) != $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects {$parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION]} parameters, " . count($annotationValue) . " parameters given");
-            break;
+                break;
 
             default:
                 throw new \obo\Exceptions\BadAnnotationException("Bad '" . self::PARAMETERS_NUMBER_DEFINITION . "' definition");
@@ -133,7 +132,8 @@ abstract class Definition extends \obo\Object {
             $parametersDefinition[$parameterName] = false;
         }
 
-        if(\array_reduce($parametersDefinition, function($v, $w) {return $v OR $w;}, false)) {
+        if (\array_reduce($parametersDefinition, function($v, $w) {return $v OR $w;
+        }, false)) {
             foreach ($parametersDefinition as $parameterName => $parameterRequired) {
                 if ($parameterRequired) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' requires a parameter with name '{$parameterName}' which was not sent");
             }

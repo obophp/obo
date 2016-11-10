@@ -183,7 +183,7 @@ class Explorer extends \obo\Object {
 
         $propertiesInformations = [];
         $propertiesMethodAccess = [];
-        $classVariables =  \get_class_vars($entityInformation->propertiesClassName);
+        $classVariables = \get_class_vars($entityInformation->propertiesClassName);
 
         foreach ($propertiesClassReflection->getMethods() as $method) {
             $methodName = $method->name;
@@ -208,9 +208,9 @@ class Explorer extends \obo\Object {
             $propertyInformation->autoIncrement = $this->defaultAutoIncrementValueForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->nullable = $this->defaultNullableValueForPropertyWithName($property->name, $entityClassName);
 
-            if(isset($classVariables[$property->name]) OR \array_key_exists($property->name, $classVariables)) $propertyInformation->defaultValue = $classVariables[$property->name];
+            if (isset($classVariables[$property->name]) OR \array_key_exists($property->name, $classVariables)) $propertyInformation->defaultValue = $classVariables[$property->name];
 
-            if(isset($propertiesMethodAccess[$property->name])) {
+            if (isset($propertiesMethodAccess[$property->name])) {
 
                 foreach ($propertiesMethodAccess[$property->name] as $methodType => $methodName) {
                     $propertyInformation->$methodType = $methodName;
@@ -252,7 +252,6 @@ class Explorer extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     protected function validateEntityWithClassName($entityClassName) {
-
         foreach ($this->entitiesInformations[$entityClassName]->annotations as $annotation) $annotation->validate($this);
 
         foreach ($this->entitiesInformations[$entityClassName]->propertiesInformation as $propertyInformation) {
@@ -277,7 +276,7 @@ class Explorer extends \obo\Object {
             $classAnnotations = [];
 
             foreach ($class::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
-                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
+                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
 
@@ -300,7 +299,7 @@ class Explorer extends \obo\Object {
             $classAnnotations = [];
 
             foreach ($class::getReflection()->getMethod($methodName)->getAnnotations() as $annotationName => $annotationValue) {
-                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
+                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
 
@@ -323,7 +322,7 @@ class Explorer extends \obo\Object {
             $classAnnotations = [];
 
             foreach ($class::getReflection()->getProperty($propertyName)->getAnnotations() as $annotationName => $annotationValue) {
-                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !==0) continue;
+                if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
                 $classAnnotations[$annotationName] = (array) $annotationValue[0];
             }
 
@@ -448,10 +447,10 @@ class Explorer extends \obo\Object {
         $count = count($tokens = token_get_all($code));
         $namespace = "";
 
-        for($i = 0; $i < $count; $i++) {
-            if($tokens[$i][0] === T_NAMESPACE AND $i++) {
+        for ($i = 0; $i < $count; $i++) {
+            if ($tokens[$i][0] === T_NAMESPACE AND $i++) {
                 $namespace = "";
-                while($tokens[++$i][0] === T_STRING OR $tokens[$i][0] === T_NS_SEPARATOR) $namespace .= $tokens[$i][1];
+                while ($tokens[++$i][0] === T_STRING OR $tokens[$i][0] === T_NS_SEPARATOR)$namespace .= $tokens[$i][1];
             } elseif ($tokens[$i][0] === T_CLASS AND $tokens[$i - 1][0] !== T_DOUBLE_COLON) {
                 $classes[] = ($namespace ? $namespace . "\\" : "") . $tokens[$i += 2][1];
             }
@@ -474,4 +473,5 @@ class Explorer extends \obo\Object {
 
         return $classes;
     }
- }
+
+}

@@ -68,7 +68,6 @@ class obo extends \obo\Object {
      */
     public static $uuidGenerator = null;
 
-
     /**
      * @param \obo\Interfaces\IDataStorage $defaultDataStorage
      * @return void
@@ -138,4 +137,5 @@ class obo extends \obo\Object {
         if (!count(self::$modelsDirs)) throw new \obo\Exceptions\Exception("Obo can't run, path for models is not defined");
         if (self::$tempDir === "") throw new \obo\Exceptions\Exception("Obo can't run, path for temp dir is not defined");
     }
+
 }

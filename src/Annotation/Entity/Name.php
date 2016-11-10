@@ -10,7 +10,7 @@
 
 namespace obo\Annotation\Entity;
 
-class Name extends \obo\Annotation\Base\Entity {
+class EntityName extends \obo\Annotation\Base\Entity {
 
     /**
      * @return string

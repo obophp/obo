@@ -31,6 +31,7 @@ class One extends \obo\Annotation\Base\Property {
      * @var string
      */
     protected $ownerNameInProperty = null;
+
     /**
      * @var array
      */
@@ -107,7 +108,6 @@ class One extends \obo\Annotation\Base\Property {
             $this->propertyInformation->persistable = false;
         }
 
-
         if (isset($values["eager"])) $this->eager = $values["eager"];
         if ($this->eager) $this->entityInformation->eagerConnections[] = $this->propertyInformation->name;
 
@@ -122,7 +122,6 @@ class One extends \obo\Annotation\Base\Property {
      * @return array
      */
     public function registerEvents() {
-
         foreach ($this->cascadeOptions as $cascadeOption) {
             if ($cascadeOption == "save") {
                 \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
@@ -184,7 +183,6 @@ class One extends \obo\Annotation\Base\Property {
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-
                 $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                 if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
                     if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) \obo\obo::$eventManager->notifyEventForEntity("beforeDisconnectFromOwner", $arguments["propertyValue"]["old"], ["owner" => $arguments["entity"], "columnName" => $propertyInformation->columnName]);
@@ -216,7 +214,6 @@ class One extends \obo\Annotation\Base\Property {
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
                 "actionAnonymousFunction" => function($arguments) {
-
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
 
                     if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
@@ -234,7 +231,6 @@ class One extends \obo\Annotation\Base\Property {
             "onClassWithName" => $this->entityInformation->className,
             "name" => "afterChange" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-
                 $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                 if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
                     if ($arguments["propertyValue"]["old"] instanceof \obo\Entity) {
@@ -255,7 +251,7 @@ class One extends \obo\Annotation\Base\Property {
         ]));
 
         if ($this->connectViaProperty !== null) {
-           \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
+            \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => "afterConnectToOwner",
                 "actionAnonymousFunction" => function($arguments) {
@@ -286,4 +282,5 @@ class One extends \obo\Annotation\Base\Property {
             ]));
         }
     }
+
 }

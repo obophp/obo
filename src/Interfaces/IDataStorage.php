@@ -48,7 +48,6 @@ interface IDataStorage {
      */
     public function removeEntity(\obo\Entity $entity);
 
-
     /**
      * @param \obo\Carriers\QueryCarrier $specification
      * @param string $repositoryName
@@ -80,4 +79,5 @@ interface IDataStorage {
      * @return void
      */
     public function removeRelationshipBetweenEntities($repositoryName, array $entities);
+
 }

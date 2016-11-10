@@ -156,4 +156,5 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
         $managerClass = $defaultEntityClassName::entityInformation()->managerName;
         return $managerClass::dataStorage()->constructQuery($this);
     }
+
 }

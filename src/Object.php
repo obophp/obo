@@ -25,4 +25,5 @@ abstract class Object {
     public static function getReflection() {
         return new \Nette\Reflection\ClassType(get_called_class());
     }
+
 }

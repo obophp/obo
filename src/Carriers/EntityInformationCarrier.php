@@ -65,7 +65,7 @@ class EntityInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-     public $storageName = "";
+    public $storageName = "";
 
     /**
      * @var string
@@ -136,4 +136,5 @@ class EntityInformationCarrier extends \obo\Object {
         if (!$this->existInformationForPropertyWithName($propertyName)) throw new \obo\Exceptions\PropertyNotFoundException("Property with name '{$propertyName}' does not exist in entity '{$this->className}'");
         return $this->propertiesInformation[$propertyName];
     }
+
 }

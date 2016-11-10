@@ -45,4 +45,5 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
     public static function convertValue($value) {
         return $value === null ? $value : (array) $value;
     }
+
 }

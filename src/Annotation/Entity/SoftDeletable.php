@@ -39,7 +39,7 @@ class SoftDeletable extends \obo\Annotation\Base\Entity {
         if (isset($values[0])) {
             if (is_string($values[0])) {
                 $propertyNameForSoftDelete = $values[0];
-            } else if (is_bool($values[0])) {
+            } elseif (is_bool($values[0])) {
                 if (!$values[0]) $propertyNameForSoftDelete = "";
             } else {
                 throw new \obo\Exceptions\BadAnnotationException("Annotation '" . self::name() . "' expects single parameter of data type string or boolean");

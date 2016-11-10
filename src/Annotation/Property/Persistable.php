@@ -32,6 +32,7 @@ class Persistable extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-        $this->propertyInformation->persistable = $values[0] ;
+        $this->propertyInformation->persistable = $values[0];
     }
+
 }

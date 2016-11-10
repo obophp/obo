@@ -133,7 +133,6 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @return self
      */
     public function addSpecification(\obo\Interfaces\IQuerySpecification $specification) {
-
         $where = $specification->getWhere();
         $this->where["query"] .= $where["query"];
         $this->where["data"] = \array_merge($this->where["data"], $where["data"]);
@@ -160,7 +159,6 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
      * @param string $suffix
      */
     protected function processArguments(array $arguments, array &$targetPart, $prefix = "", $suffix = "" ) {
-
         if (\count($arguments) == 1 AND \is_array(\current($arguments))) $arguments = \current($arguments);
         $formatedArguments = [];
 
@@ -177,7 +175,7 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
             $targetPart["query"] .= $prefix . \preg_replace("#(" . \preg_quote(\obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) . "[a-zA-Z~_]([a-zA-Z0-9~_])+)#", \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $argument) . $suffix;
 
             if ($matched) {
-                foreach($matches[0] as $match) {
+                foreach ($matches[0] as $match) {
                     if (\strpos($match, \obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX) === 0) {
                         $parameterName = ltrim($match, \obo\Interfaces\IQuerySpecification::PARAMETER_PREFIX);
                         if (!(isset($this->parameters[$parameterName]) OR \array_key_exists($parameterName, $this->parameters))) throw new \obo\Exceptions\Exception("Can not use parameter '{$parameterName}'. Parametr is not bound.");
@@ -197,4 +195,5 @@ class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySp
     public static function instance() {
         return new static;
     }
+
 }

@@ -37,8 +37,8 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function &variableForName($name) {
-       if (isset($this->variables()[$name]) OR \array_key_exists($name, $this->variables())) return $this->variables()[$name];
-       throw new \obo\Exceptions\VariableNotFoundException("Variable with name '".$name."' does not exist");
+        if (isset($this->variables()[$name]) OR \array_key_exists($name, $this->variables())) return $this->variables()[$name];
+        throw new \obo\Exceptions\VariableNotFoundException("Variable with name '".$name."' does not exist");
     }
 
     /**
@@ -253,4 +253,5 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
     public function dump() {
         return \print_r($this->variables(), true);
     }
+
 }

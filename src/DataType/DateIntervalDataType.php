@@ -37,4 +37,5 @@ class DateIntervalDataType extends \obo\DataType\Base\DataType {
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write  value " . (\is_scalar($value) ? "'" . print_r($value, true) . "'" : "") . " of '" . \gettype($value) . "' datatype into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of 'DateInterval' datatype.");
         return false;
     }
+
 }

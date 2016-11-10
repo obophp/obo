@@ -35,4 +35,5 @@ class Nullable extends \obo\Annotation\Base\Property {
         if (\is_bool($values[0]) === false) throw new \obo\Exceptions\BadAnnotationException("Parameter for '". self::name() . "' annotation must be of boolean type");
         $this->propertyInformation->nullable = $values[0];
     }
+
 }

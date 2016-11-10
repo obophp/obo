@@ -9,7 +9,6 @@
 
 namespace obo\Annotation\Property;
 
-
 class AutoIncrement extends \obo\Annotation\Base\Property {
 
     /**

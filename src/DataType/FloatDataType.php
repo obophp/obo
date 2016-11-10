@@ -54,4 +54,5 @@ class FloatDataType extends \obo\DataType\Base\DataType {
         if ((\is_numeric($value) AND \is_float($value + 0.0)) OR $value === null OR $value === "") return self::convertValue($value);
         return $value;
     }
+
 }

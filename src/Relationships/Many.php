@@ -88,7 +88,7 @@ class Many extends \obo\Relationships\Relationship {
 
         if ($this->sortVia !== null) $specification->orderBy($this->sortVia);
 
-        return $specification ;
+        return $specification;
     }
 
     public function add(\obo\Entity $entity) {

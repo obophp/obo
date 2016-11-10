@@ -97,4 +97,5 @@ class One extends \obo\Relationships\Relationship {
             return ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([$foreignKey[0] => $owner]) : null;
         }
     }
+
 }

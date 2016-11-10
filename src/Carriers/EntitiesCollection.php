@@ -47,7 +47,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return array
      */
     protected function &variables(array $requiredItems = null) {
-        if($requiredItems !== null) {
+        if ($requiredItems !== null) {
             $variables = parent::variables();
             foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
@@ -203,9 +203,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function &variableForName($name) {
-       $variables = $this->variables([$name]);
-       if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
-       throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->entitiesClassName . "' with primary property value '{$name}' does not exist in collection");
+        $variables = $this->variables([$name]);
+        if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
+        throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->entitiesClassName . "' with primary property value '{$name}' does not exist in collection");
     }
 
     /**

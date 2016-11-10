@@ -47,7 +47,7 @@ class EventManager extends \obo\Object {
     public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = []) {
         if ($this->isRegisteredEntity($entity)) {
             $objectEventKey = $eventName.$entity->objectIdentificationKey();
-            $classEventKey =  $eventName.$entity->className();
+            $classEventKey = $eventName.$entity->className();
 
             if (isset($this->events[$objectEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
                 try {
@@ -63,8 +63,8 @@ class EventManager extends \obo\Object {
             if (isset($this->events[$classEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
                 try {
                     $this->addIgnoreNotifyForEventWithKey($objectEventKey);
-                foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
-                $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
+                    foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
+                    $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
                 } catch (\Exception $e) {
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
                     throw $e;

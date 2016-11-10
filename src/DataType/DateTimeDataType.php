@@ -54,4 +54,5 @@ class DateTimeDataType extends \obo\DataType\Base\DataType {
         if (!$value instanceof \DateTime) return self::convertValue($value);
         return $value;
     }
+
 }

@@ -87,10 +87,10 @@ class Many extends \obo\Annotation\Base\Property {
         }
 
         if (isset($values["connectViaProperty"])) {
-            $relationship->connectViaPropertyWithName = $this->connectViaProperty =  $values["connectViaProperty"];
+            $relationship->connectViaPropertyWithName = $this->connectViaProperty = $values["connectViaProperty"];
             if (isset($values["ownerNameInProperty"])) $relationship->ownerNameInProperty = $this->ownerNameInProperty = $values["ownerNameInProperty"];
         } elseif (isset($values["connectViaRepository"])) {
-            $relationship->connectViaRepositoryWithName = $this->connectViaRepository =  $values["connectViaRepository"];
+            $relationship->connectViaRepositoryWithName = $this->connectViaRepository = $values["connectViaRepository"];
             if (!\array_search("delete", $this->cascadeOptions)) $this->cascadeOptions[] = "delete";
             if (isset($values["ownerNameInProperty"])) throw new \obo\Exceptions\BadAnnotationException("Annotation 'ownerNameInProperty' may be used only with 'connectViaProperty' annotation");
         } else {
@@ -107,20 +107,21 @@ class Many extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-
         foreach ($this->cascadeOptions as $cascadeOption) {
             if ($cascadeOption == "save") {
                 \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "afterSave",
-                    "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save(); },
+                    "actionAnonymousFunction" => function($arguments) { if ($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"], false, false)->save();
+                    },
                     "actionArguments" => ["propertyName" => $this->propertyInformation->name],
                 ]));
             } elseif ($cascadeOption == "delete") {
                 \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                     "onClassWithName" => $this->entityInformation->className,
                     "name" => "beforeDelete",
-                    "actionAnonymousFunction" => function($arguments) { if($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]); },
+                    "actionAnonymousFunction" => function($arguments) { if ($arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]) instanceof \obo\Relationships\EntitiesCollection) $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"])->delete($arguments["removeEntity"]);
+                    },
                     "actionArguments" => ["propertyName" => $this->propertyInformation->name, "removeEntity" => (bool) $this->connectViaProperty],
                 ]));
             }
@@ -135,11 +136,11 @@ class Many extends \obo\Annotation\Base\Property {
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                     $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
 
-                    if (!$currentPropertyValue instanceof $propertyInformation->relationship->entityClassNameToBeConnected AND !$currentPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
-                        $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"], false);
-                    }
+                if (!$currentPropertyValue instanceof $propertyInformation->relationship->entityClassNameToBeConnected AND !$currentPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
+                    $arguments["entity"]->setValueForPropertyWithName($propertyInformation->relationship->relationshipForOwnerAndPropertyValue($arguments["entity"], $currentPropertyValue), $arguments["propertyName"], false);
+                }
 
-                },
+            },
             "actionArguments" => ["propertyName" => $this->propertyInformation->name],
         ]));
 
