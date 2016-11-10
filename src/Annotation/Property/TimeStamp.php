@@ -49,9 +49,11 @@ class TimeStamp extends \obo\Annotation\Base\Property {
             \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onClassWithName" => $this->entityInformation->className,
                 "name" => $eventName,
-                "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->setValueForPropertyWithName(new \DateTime, $arguments["propertyName"]);},
+                "actionAnonymousFunction" => function($arguments) {$arguments["entity"]->setValueForPropertyWithName(new \DateTime, $arguments["propertyName"]);
+                },
                 "actionArguments" => ["propertyName" => $this->propertyInformation->name],
             ]));
         }
     }
+
 }

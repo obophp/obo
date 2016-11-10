@@ -34,8 +34,8 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                         $arguments["entity"]->setValueForPropertyWithName($arguments["defaultAddress"], "defaultAddress");
                         $arguments["entity"]->save();
                     },
-                    "actionArguments" => ["defaultAddress" => $this->addresses->rewind()],
-                ]));
+                        "actionArguments" => ["defaultAddress" => $this->addresses->rewind()],
+                        ]));
             }
         }
     }
@@ -58,8 +58,8 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                         $arguments["entity"]->setValueForPropertyWithName($arguments["defaultEmail"], "defaultEmail");
                         $arguments["entity"]->save();
                     },
-                    "actionArguments" => ["defaultEmail" => $this->emails->rewind()],
-                ]));
+                        "actionArguments" => ["defaultEmail" => $this->emails->rewind()],
+                        ]));
             }
         }
     }
@@ -82,8 +82,8 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                         $arguments["entity"]->setValueForPropertyWithName($arguments["defaultPhone"], "defaultPhone");
                         $arguments["entity"]->save();
                     },
-                    "actionArguments" => ["defaultPhone" => $this->phones->rewind()],
-                ]));
+                        "actionArguments" => ["defaultPhone" => $this->phones->rewind()],
+                        ]));
             }
         }
     }
@@ -171,8 +171,8 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                     $arguments["contact"]->setValueForPropertyWithName($arguments["entity"], "owner");
                     $arguments["contact"]->save();
                 },
-                "actionArguments" => ["contact" => $this],
-            ]));
+                    "actionArguments" => ["contact" => $this],
+                    ]));
         }
     }
 
@@ -195,8 +195,8 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                     $arguments["contact"]->setValueForPropertyWithName(null, "owner");
                     $arguments["contact"]->save();
                 },
-                "actionArguments" => ["contact" => $this],
-            ]));
+                    "actionArguments" => ["contact" => $this],
+                    ]));
         }
     }
 

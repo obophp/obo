@@ -75,12 +75,12 @@ class PropertyInformationCarrier extends \obo\Object {
     /**
      * @var string
      */
-     public $storageName = "";
+    public $storageName = "";
 
     /**
      * @var string
      */
-     public $repositoryName = "";
+    public $repositoryName = "";
 
     /**
      * @var string

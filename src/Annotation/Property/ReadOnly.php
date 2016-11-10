@@ -39,7 +39,6 @@ class ReadOnly extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-
         \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeChange" . \ucfirst($this->propertyInformation->name),
@@ -72,4 +71,5 @@ class ReadOnly extends \obo\Annotation\Base\Property {
     protected function throwAccessException($source) {
         throw new \obo\Exceptions\PropertyAccessException("Can't access property '{$this->propertyInformation->name}' of entity '{$this->entityInformation->className}' from '{$source}'. Property is read only");
     }
+
 }

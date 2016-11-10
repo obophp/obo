@@ -54,4 +54,5 @@ class IntegerDataType extends \obo\DataType\Base\DataType {
         if (((\is_numeric($value) AND \is_int($value * 1))) OR $value === null OR $value === "") return self::convertValue($value);
         return $value;
     }
+
 }

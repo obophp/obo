@@ -73,7 +73,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return array
      */
     protected function &variables(array $requiredItems = null) {
-        if($requiredItems !== null) {
+        if ($requiredItems !== null) {
             $variables = parent::variables();
             foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
@@ -128,7 +128,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @throws \obo\Exceptions\ServicesException
      */
     public function add($entities, $permanently = true, $notifyEvents = true) {
-
         $originalValue = $entities;
 
         if (!$entities instanceof \Iterator AND !\is_array($entities)) {
@@ -152,7 +151,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                     new \obo\Services\Events\Event([
                         "onObject" => $entity,
                         "name" => "afterInsert",
-                        "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress() AND $arguments["entitiesCollection"]->containsValue($arguments["entity"])) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);},
+                        "actionAnonymousFunction" => function($arguments) {if (!$arguments["entitiesCollection"]->isSavingInProgress() AND $arguments["entitiesCollection"]->containsValue($arguments["entity"])) $arguments["entitiesCollection"]->changeVariableNameForValue($arguments["entity"]->primaryPropertyValue(), $arguments["entity"]);
+                        },
                         "actionArguments" => ["entitiesCollection" => $this],
                     ]));
             } else {
@@ -185,7 +185,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @throws \obo\Exceptions\ServicesException
      */
     public function remove(\obo\Entity $entity, $deleteEntity = false, $notifyEvents = true) {
-
         $primaryPropertyValue = $entity->primaryPropertyValue();
 
         if ($this->__isset($primaryPropertyValue)) {
@@ -237,7 +236,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return \obo\Entity[]
      */
     public function getSubset(\obo\Interfaces\IPaginator $paginator, \obo\Interfaces\IFilter $filter = null) {
-
         $ownedEntityClassName = $this->relationShip->entityClassNameToBeConnected;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         $specification = $ownedEntityManagerName::queryCarrier();
@@ -256,7 +254,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function loadEntities(array $entityKeys = null) {
-
         if (!$this->owner->isBasedInRepository()) return;
 
         $specification = new \obo\Carriers\QuerySpecification();
@@ -342,9 +339,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @throws \obo\Exceptions\VariableNotFoundException
      */
     public function &variableForName($name) {
-       $variables = $this->variables([$name]);
-       if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
-       throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->relationShip->entityClassNameToBeConnected . "' with primary property value '{$name}' does not exist in collection");
+        $variables = $this->variables([$name]);
+        if (isset($variables[$name]) OR \array_key_exists($name, $variables)) return $variables[$name];
+        throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $this->relationShip->entityClassNameToBeConnected . "' with primary property value '{$name}' does not exist in collection");
     }
 
     /**

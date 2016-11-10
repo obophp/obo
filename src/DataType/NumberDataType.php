@@ -45,4 +45,5 @@ class NumberDataType extends \obo\DataType\Base\DataType {
     public static function convertValue($value) {
         throw new \obo\Exceptions\Exception("Datatype 'Number' can't convert any value.");
     }
+
 }

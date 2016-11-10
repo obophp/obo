@@ -43,4 +43,5 @@ class MixedDataType extends \obo\DataType\Base\DataType {
     public static function convertValue($value) {
         return $value;
     }
+
 }

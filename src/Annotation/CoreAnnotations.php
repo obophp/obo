@@ -17,7 +17,7 @@ class CoreAnnotations extends \obo\Object {
      * @return void
      */
     public static function register(\obo\Services\EntitiesInformation\Explorer $entitiesExplorer) {
-        $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Entity\\Name");
+        $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Entity\\EntityName");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Entity\\Description");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Entity\\PrimaryProperty");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Entity\\StorageName");
@@ -42,4 +42,5 @@ class CoreAnnotations extends \obo\Object {
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\AutoIncrement");
         $entitiesExplorer->registerAnnotation("\\obo\\Annotation\\Property\\Nullable");
     }
+
 }

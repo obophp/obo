@@ -9,6 +9,7 @@
 namespace obo\Annotation\Property;
 
 class RepositoryName extends \obo\Annotation\Base\Property {
+
     /**
      * @return string
      */

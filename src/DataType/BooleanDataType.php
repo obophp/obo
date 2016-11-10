@@ -54,4 +54,5 @@ class BooleanDataType extends \obo\DataType\Base\DataType {
         if (!($value !== false AND $value !== true AND $value !== "false" AND $value !== "true") OR $value === null) return self::convertValue($value);
         return $value;
     }
+
 }

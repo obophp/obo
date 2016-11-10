@@ -63,4 +63,5 @@ class ObjectDataType extends \obo\DataType\Base\DataType {
         if (!\is_object($value) AND @$object = \unserialize($value)) return $object;
         return $value;
     }
+
 }

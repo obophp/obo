@@ -22,18 +22,18 @@ abstract class DataType extends \obo\Object implements \obo\Interfaces\IDataType
      * @param array $options
      */
     public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options = []) {
-
-        foreach(static::optionsStructure() as $optionName => $requiredOption) {
-            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter($structure, function($value) {return $value;}))) . "]");
+        foreach (static::optionsStructure() as $optionName => $requiredOption) {
+            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter($structure, function($value) {return $value;
+            }))) . "]");
         }
 
-        foreach($options as $optionName => $optionValue) {
+        foreach ($options as $optionName => $optionValue) {
             if (!(isset(static::optionsStructure()[$optionName]) OR \array_key_exists($optionName, static::optionsStructure()))) throw new \obo\Exceptions\Exception("Option '{$optionName}' can not be set, the data type is not supported");
             $this->$optionName = $optionValue;
         }
 
         $this->propertyInformation = $propertyInformation;
-        foreach($options as $optionName => $optionValue) $this->$optionName = $optionValue;
+        foreach ($options as $optionName => $optionValue) $this->$optionName = $optionValue;
     }
 
     /**
@@ -74,4 +74,5 @@ abstract class DataType extends \obo\Object implements \obo\Interfaces\IDataType
     public function registerEvents() {
 
     }
+
 }

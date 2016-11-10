@@ -14,14 +14,19 @@ class Information extends \obo\Object {
 
     /** @var array */
     protected $modelsDirs = [];
+
     /** @var \obo\Services\EntitiesInformation\Explorer */
     protected $explorer = null;
+
     /** @var \obo\Interfaces\ICache */
     protected $cache = null;
+
     /** @var \obo\Carriers\EntityInformationCarrier[] */
     protected $entitiesInformations = [];
+
     /** @var bool */
     protected $cacheValidity = true;
+
     /** @var string */
     protected $lockFilePath = "";
 
@@ -43,8 +48,8 @@ class Information extends \obo\Object {
      * @return \obo\Carriers\EntityInformationCarrier
      */
     public function informationForEntityWithClassName($className) {
-       $className = \ltrim($className, "\\");
-       return isset($this->entitiesInformations[$className]) ? $this->entitiesInformations[$className] : $this->loadClassInformationForEntityWithClassName($className);
+        $className = \ltrim($className, "\\");
+        return isset($this->entitiesInformations[$className]) ? $this->entitiesInformations[$className] : $this->loadClassInformationForEntityWithClassName($className);
     }
 
     /**
@@ -67,7 +72,7 @@ class Information extends \obo\Object {
             if (($entitiesList = $this->cache->load("entitiesList")) === null) throw new \obo\Exceptions\Exception("Failed to load entities information cache. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
         }
 
-        foreach($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName($entityClassName);
+        foreach ($entitiesList as $entityClassName) $entitiesInformations[$entityClassName] = $this->informationForEntityWithClassName($entityClassName);
 
         return $entitiesInformations;
     }
@@ -125,7 +130,6 @@ class Information extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     protected function loadClassInformationForEntityWithClassName($className) {
-
         if (\is_file($this->lockFilePath)) {
             $fp = \fopen($this->lockFilePath, "c+" );
             if (!\flock($fp, \LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
@@ -162,7 +166,8 @@ class Information extends \obo\Object {
                 if ($arguments["entity"]->isInitialized()) {
                     $backTrace = \debug_backtrace();
                     if ($backTrace[4]["function"] !== "insertEntity") throw new \obo\Exceptions\PropertyAccessException("Primary entity property can't be changed, has been marked as initialized");
-                }},
+                }
+            },
         ]));
 
         \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
@@ -173,4 +178,5 @@ class Information extends \obo\Object {
             },
         ]));
     }
+
 }

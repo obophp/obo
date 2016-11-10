@@ -8,6 +8,7 @@ class AddressProperties extends \obo\Tests\Assets\Entities\EntityProperties {
      * @obo-one(targetEntity="property:ownerEntity")
      */
     public $owner = null;
+
     public $ownerEntity = "";
 
     /**

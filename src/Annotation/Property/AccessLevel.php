@@ -47,24 +47,22 @@ class AccessLevel extends \obo\Annotation\Base\Property {
      * @return void
      */
     public function registerEvents() {
-
         \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-
                 $backtrace = \debug_backtrace();
 
                 if (isset($backtrace[5]["class"])) {
                     $sourceClassName = $backtrace[5]["class"];
 
-                    switch ($this->propertyInformation->accessLevel){
-                        case self::ACCESS_LEVEL_NAMESPACE :
+                    switch ($this->propertyInformation->accessLevel) {
+                        case self::ACCESS_LEVEL_NAMESPACE:
                             $sorceNamespace = substr($sourceClassName, 0, \strlen(strrchr($sourceClassName, "\\")) * -1);
-                            if (\strpos($sorceNamespace, $this->entityInformation->namespace) !== 0  AND \strpos($this->entityInformation->namespace, $sorceNamespace) !== 0) $this->throwAccessException($sourceClassName);
+                            if (\strpos($sorceNamespace, $this->entityInformation->namespace) !== 0 AND \strpos($this->entityInformation->namespace, $sorceNamespace) !== 0) $this->throwAccessException($sourceClassName);
                             break;
 
-                        case self::ACCESS_LEVEL_PROTECTED :
+                        case self::ACCESS_LEVEL_PROTECTED:
                             if (\is_subclass_of($sourceClassName, "\obo\Entity")) {
                                 if (!\is_subclass_of($sourceClassName, $this->entityInformation->className) AND !\is_subclass_of($this->entityInformation->className, $sourceClassName)) $this->throwAccessException($sourceClassName);
                             } elseif ((\is_subclass_of($sourceClassName, "\obo\EntityProperties"))) {
@@ -72,7 +70,7 @@ class AccessLevel extends \obo\Annotation\Base\Property {
                             }
                             break;
 
-                        case self::ACCESS_LEVEL_PRIVATE :
+                        case self::ACCESS_LEVEL_PRIVATE:
                             if (\is_subclass_of($sourceClassName, "\obo\Entity")) {
                                 if ($sourceClassName !== $this->entityInformation->className) $this->throwAccessException($sourceClassName);
                             } elseif (\is_subclass_of($sourceClassName, "\obo\EntityProperties")) {
@@ -82,7 +80,7 @@ class AccessLevel extends \obo\Annotation\Base\Property {
                     }
 
                 } else {
-                   $this->throwAccessException("closure function");
+                    $this->throwAccessException("closure function");
                 }
 
             },
@@ -98,4 +96,5 @@ class AccessLevel extends \obo\Annotation\Base\Property {
     protected function throwAccessException($source) {
         throw new \obo\Exceptions\PropertyAccessException("Can't access property '{$this->propertyInformation->name}' of entity '{$this->entityInformation->className}' from '{$source}'. Property has accessLevel set to '{$this->propertyInformation->accessLevel}'");
     }
+
 }
