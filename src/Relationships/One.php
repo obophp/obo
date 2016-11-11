@@ -79,7 +79,12 @@ class One extends \obo\Relationships\Relationship {
         if ($owner->primaryPropertyValue() === null) return null;
         $this->owner = $owner;
 
-        $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
+        if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
+            $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
+        } else {
+            if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
+        }
+
         $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
 
         $specification = $entityManagerName::querySpecification();
