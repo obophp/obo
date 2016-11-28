@@ -365,8 +365,8 @@ abstract class EntityManager  extends \obo\Object {
         if (!$forced AND $entity->isDeleted() AND !$entity->isDeletingInProgress()) throw new \obo\Exceptions\EntityIsDeletedException("Cannot save entity which is deleted");
         if ($entity->entityInformation()->repositoryName === null) throw new \obo\Exceptions\Exception("Entity '" . $entity->className() . "' cannot be persisted. No entity storage exists");
 
-        $entity->setSavingInProgress();
         if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeSave", $entity);
+        $entity->setSavingInProgress();
 
         if (count($entity->changedProperties($entity->entityInformation()->persistablePropertiesNames, true, true))) {
             if ($entity->isBasedInRepository()) {
