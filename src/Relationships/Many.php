@@ -64,6 +64,16 @@ class Many extends \obo\Relationships\Relationship {
     }
 
     /**
+     * @param array $specification
+     * @return \obo\Entity
+     */
+    public function createEntity($specification) {
+        $entityClassNameTobeConnected = $this->entityClassNameToBeConnected;
+        $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
+        return $entityManager::entity($specification);
+    }
+
+    /**
      * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Carriers\QueryCarrier
      */
@@ -91,6 +101,11 @@ class Many extends \obo\Relationships\Relationship {
         return $specification;
     }
 
+    /**
+     * @param \obo\Entity $entity
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
     public function add(\obo\Entity $entity) {
         if ($this->connectViaPropertyWithName !== "") {
             $entity->setValueForPropertyWithName($this->owner, $this->connectViaPropertyWithName);
@@ -147,6 +162,11 @@ class Many extends \obo\Relationships\Relationship {
         }
     }
 
+    /**
+     * @param \obo\Entity $entity
+     * @return void
+     * @throws \obo\Exceptions\Exception
+     */
     public function remove(\obo\Entity $entity) {
         if ($this->connectViaPropertyWithName !== "") {
             $entity->setValueForPropertyWithName(null, $this->connectViaPropertyWithName);

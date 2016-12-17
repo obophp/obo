@@ -32,6 +32,11 @@ class AddressProperties extends \obo\Tests\Assets\Entities\EntityProperties {
     public $zip = "";
 
     /**
+     * @obo-one(targetEntity = "obo\Tests\Assets\Entities\Note", connectViaProperty="owner", ownerNameInProperty = "ownerEntityName", eager = true, cascade = "save, delete")
+     */
+    public $note = null;
+
+    /**
      * @return string
      */
     public function getCompleteAddress() {

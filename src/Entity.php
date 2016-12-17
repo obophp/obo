@@ -283,24 +283,7 @@ abstract class Entity  extends \obo\Object {
                     return $subPropertyValue->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
                 } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
-
-                    if (($pos = \strpos($propertyName, "_")) === 0) {
-                        $propertyName = \ltrim($propertyName, "_");
-                        $position = "___" . \substr($propertyName, 0, \strpos($propertyName, "_"));
-                        $propertyName = \substr($propertyName, \strpos($propertyName, "_") + 1);
-
-                        if ($subPropertyValue->__isset($position)) {
-                            $entity = $subPropertyValue->variableForName($position);
-                        } else {
-                            $entityClassNameTobeConnected = $subPropertyValue->getEntitiesClassName();
-                            $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
-                            $subPropertyValue->add([$position => $entity = $entityManager::entity([])]);
-                        }
-
-                        return $entity->setValueForPropertyWithName($value, $propertyName);
-                    } elseif ($pos) {
-                        return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
-                    }
+                    return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->setValueForPropertyWithName($value, \substr($propertyName, $pos + 1));
                 }
             }
 
@@ -486,7 +469,24 @@ abstract class Entity  extends \obo\Object {
                     }
 
                 } elseif ($this->informationForPropertyWithName($propertyName)->relationship instanceof \obo\Relationships\Many) {
-                    foreach ($value as $subPropertyName => $subProeprtyName)  $this->setValueForPropertyWithName($subProeprtyName, $propertyName . "_" . $subPropertyName);
+                    $newEntitiesData = [];
+                    $newEntities = [];
+                    $collection = $this->valueForPropertyWithName($propertyName);
+
+                    foreach ($value as $subPropertyName => $subPropertyValue) {
+                        if (\strpos($subPropertyName, "_") === 0) {
+                            \preg_match("#\_(.*?)\_(.*)#", $subPropertyName, $matches);
+                            $newEntitiesData[$matches[1]][$matches[2]] = $subPropertyValue;
+                        } else {
+                            $this->setValueForPropertyWithName($subPropertyValue, $propertyName . "_" . $subPropertyName);
+                        }
+                    }
+
+                    foreach ($newEntitiesData as $entityKey => $newEntityData) {
+                        $newEntities["___" . $entityKey] = $collection->getRelationship()->createEntity($newEntityData);
+                    }
+
+                    $collection->add($newEntities);
                 } elseif (($propertyValue = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {
                     if (isset($value[$primaryPropertyName = $propertyValue->entityInformation()->primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $value)) unset($value[$primaryPropertyName]);
                     $propertyValue->setValuesPropertiesFromArray($value);
