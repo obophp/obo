@@ -218,6 +218,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return \obo\Relationships\Many
+     */
+    public function getRelationShip() {
+        return $this->relationShip;
+    }
+
+    /**
      * @param \obo\Interfaces\IQuerySpecification $specification
      * @return \obo\Entity[]
      */

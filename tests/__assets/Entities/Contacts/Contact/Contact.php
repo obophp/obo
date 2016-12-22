@@ -25,7 +25,7 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
             if ($this->isBasedInRepository()) {
                 $this->defaultAddress = $this->addresses->rewind();
             } else {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                \obo\obo::$eventManager->registerEvent(
                         new \obo\Services\Events\Event([
                     "onObject" => $this,
                     "name" => "afterInsert",
@@ -49,7 +49,7 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
             if ($this->isBasedInRepository()) {
                 $this->defaultEmail = $this->emails->rewind();
             } else {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                \obo\obo::$eventManager->registerEvent(
                         new \obo\Services\Events\Event([
                     "onObject" => $this,
                     "name" => "afterInsert",
@@ -73,7 +73,7 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
             if ($this->isBasedInRepository()) {
                 $this->defaultPhone = $this->phones->rewind();
             } else {
-                \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+                \obo\obo::$eventManager->registerEvent(
                         new \obo\Services\Events\Event([
                     "onObject" => $this,
                     "name" => "afterInsert",
@@ -163,7 +163,7 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
         if ($event["owner"]->isBasedInRepository()) {
             $this->owner = $event["owner"];
         } else {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+            \obo\obo::$eventManager->registerEvent(
                     new \obo\Services\Events\Event([
                 "onObject" => $event["owner"],
                 "name" => "afterInsert",
@@ -187,7 +187,7 @@ class Contact extends \obo\Tests\Assets\Entities\Entity {
                 $this->owner = null;
             }
         } else {
-            \obo\Services::serviceWithName(\obo\obo::EVENT_MANAGER)->registerEvent(
+            \obo\obo::$eventManager->registerEvent(
                     new \obo\Services\Events\Event([
                 "onObject" => $event["owner"],
                 "name" => "afterInsert",
