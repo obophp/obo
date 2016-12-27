@@ -314,11 +314,11 @@ class Explorer extends \obo\Object {
 
             if ($method->class === "obo\\EntityProperties" OR $method->class === "obo\\Object") continue;
 
-            if (!\preg_match("#^((get)|(set))[A-Z].+#", $methodName)) continue;
+            if (!\preg_match("#^((get)|(set))[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff].+#", $methodName)) continue;
 
             $propertyName = lcfirst(\preg_replace("#^((get)|(set))#", "", $methodName));
 
-            $propertiesMethodAccess[$propertyName][\preg_match("#^get[A-Z].+#", $methodName) ? "getterName" : "setterName"] = $methodName;
+            $propertiesMethodAccess[$propertyName][\preg_match("#^get[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff].+#", $methodName) ? "getterName" : "setterName"] = $methodName;
         }
 
         $propertiesOwnerEntityHistoryMap = $this->loadPropertiesOwnerEntityHistoryMap($entityClassName);
