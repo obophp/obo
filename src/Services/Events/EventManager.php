@@ -41,18 +41,20 @@ class EventManager extends \obo\Object {
      * @param string $eventName
      * @param \obo\Entity $entity
      * @param array $arguments
-     * @return void
+     * @return array
      * @throws \Exception
      */
     public function notifyEventForEntity($eventName, \obo\Entity $entity, array $arguments = []) {
+        $results = [];
+
         if ($this->isRegisteredEntity($entity)) {
-            $objectEventKey = $eventName.$entity->objectIdentificationKey();
-            $classEventKey = $eventName.$entity->className();
+            $objectEventKey = $eventName . $entity->objectIdentificationKey();
+            $classEventKey = $eventName . $entity->className();
 
             if (isset($this->events[$objectEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
                 try {
                     $this->addIgnoreNotifyForEventWithKey($objectEventKey);
-                    foreach ($this->events[$objectEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
+                    foreach ($this->events[$objectEventKey] as $event) $results[$entity->entityIdentificationKey() ?: $entity->objectIdentificationKey()] = $this->executeAction($event, $entity, $arguments);
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
                 } catch (\Exception $e) {
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
@@ -63,7 +65,7 @@ class EventManager extends \obo\Object {
             if (isset($this->events[$classEventKey]) AND !$this->isActiveIgnoreNotifyForEventWithKey($objectEventKey)) {
                 try {
                     $this->addIgnoreNotifyForEventWithKey($objectEventKey);
-                    foreach ($this->events[$classEventKey] as $event) $this->executeAction ($event, $entity, $arguments);
+                    foreach ($this->events[$classEventKey] as $event) $results[$entity->entityIdentificationKey() ?: $entity->objectIdentificationKey()] = $this->executeAction($event, $entity, $arguments);
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
                 } catch (\Exception $e) {
                     $this->removeIgnoreNotifyForEventWithKey($objectEventKey);
@@ -71,23 +73,25 @@ class EventManager extends \obo\Object {
                 }
             }
         }
+
+        return $results;
     }
 
     /**
      * @param \obo\Services\Events\Event $event
      * @param \obo\Entity $entity
      * @param array $arguments
-     * @return void
+     * @return mixed
      */
     private function executeAction(\obo\Services\Events\Event $event, \obo\Entity $entity, array $arguments) {
         if ($event->actionAnonymousFunction !== null) {
             $arguments = \array_merge ($event->actionArguments, $arguments, ["entity" => $entity]);
             $actionAnonymousFunction = $event->actionAnonymousFunction;
-            $actionAnonymousFunction($arguments);
+            return $actionAnonymousFunction($arguments);
         } else {
             $message = $event->actionMessage;
             $arguments = \array_merge ($event->actionArguments, $arguments);
-            if ($event->actionEntity === null) $entity->$message($arguments); else $event->actionEntity->$message($arguments);
+            if ($event->actionEntity === null) return $entity->$message($arguments); else return $event->actionEntity->$message($arguments);
         }
     }
 
