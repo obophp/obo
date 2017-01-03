@@ -10,6 +10,9 @@
 
 namespace obo;
 
+/**
+ * @method void on($eventName, callable $callback)
+ */
 abstract class Entity  extends \obo\Object {
 
     /**
@@ -77,6 +80,32 @@ abstract class Entity  extends \obo\Object {
      */
     public function __set($propertyName, $value) {
         return $this->setValueForPropertyWithName($value, $propertyName);
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return array
+     */
+    public function __call($name, $arguments) {
+        if ($name === "on") {
+            return $this->dynamicOn($arguments[0], $arguments[1]);
+        }
+
+        throw new \obo\Exceptions\MethodNotFoundException("Can't call to the method with name '{$name}', does not exist in entity '" . $this->className() . "'");
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return array
+     */
+    public static function __callStatic($name, $arguments) {
+        if ($name === "on") {
+            return static::staticOn($arguments[0], $arguments[1]);
+        }
+
+        throw new \obo\Exceptions\MethodNotFoundException("Can't call to the method with name '{$name}', does not exist in entity '" . static::className() . "'");
     }
 
     /**
@@ -655,12 +684,33 @@ abstract class Entity  extends \obo\Object {
      * @param string $eventName
      * @param callable $callback
      */
-    final public function on($eventName, callable $callback) {
+    private function dynamicOn($eventName, callable $callback) {
         \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
             "onObject" => $this,
             "name" => $eventName,
             "actionAnonymousFunction" => $callback,
         ]));
+    }
+
+    /**
+     * @param string $eventName
+     * @param callable $callback
+     */
+    private static function staticOn($eventName, callable $callback) {
+        \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
+            "onClassWithName" => static::className(),
+            "name" => $eventName,
+            "actionAnonymousFunction" => $callback,
+        ]));
+    }
+
+    /**
+     * @param string $eventName
+     * @param array $arguments
+     * @return type
+     */
+    public function notifyEvent($eventName, $arguments = []) {
+        return \obo\obo::$eventManager->notifyEventForEntity($eventName, $this, $arguments);
     }
 
     /**
