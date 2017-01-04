@@ -650,7 +650,7 @@ abstract class Entity  extends \obo\Object {
      * @return string
      */
     public function entityIdentificationKey() {
-        if ($this->entityIdentificationKey === null) return $this->entityIdentificationKey = \obo\obo::$identityMapper->identificationKeyForEntity($this);
+        if (!$this->entityIdentificationKey) return $this->entityIdentificationKey = \obo\obo::$identityMapper->identificationKeyForEntity($this);
         return $this->entityIdentificationKey;
     }
 
