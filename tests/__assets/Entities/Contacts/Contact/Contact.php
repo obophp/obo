@@ -3,6 +3,7 @@
 namespace obo\Tests\Assets\Entities\Contacts;
 
 /**
+ * @obo-name(Contact)
  * @obo-repositoryName(TestsEntitiesContactsContact)
  * @property string $name
  * @property \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone[] $phones

@@ -78,7 +78,7 @@ class One extends \obo\Annotation\Base\Property {
     public function process(array $values) {
         parent::process($values);
 
-        $this->targetEntity = $values["targetEntity"];
+        $this->targetEntity = \trim($values["targetEntity"], "\\");
 
         if (\strpos($this->targetEntity, "property:") === 0) {
             $this->targetEntityInProperty = \substr($this->targetEntity, 9);
@@ -87,19 +87,9 @@ class One extends \obo\Annotation\Base\Property {
             }
         }
 
-        if (!$this->targetEntityInProperty) {
-            if (!\class_exists($this->targetEntity)) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one' could not be built. Entity '{$this->targetEntity}' could not be connected because it does not exist.");
-            if (!\is_subclass_of($this->targetEntity, \obo\Entity::className())) throw new \obo\Exceptions\BadAnnotationException("Target entity must extend " . \obo\Entity::className());
-            $targetEntity = $this->targetEntity;
-            $this->targetEntity = $targetEntity::className();
-        }
-
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
 
-        if (isset($values["autoCreate"])) {
-            if (!\is_bool($values["autoCreate"])) throw new \obo\Exceptions\BadAnnotationException("Parameter 'autoCreate' for relationship 'one' must be boolean");
-            $this->autoCreate = $values["autoCreate"];
-        }
+        if (isset($values["autoCreate"])) $this->autoCreate = $values["autoCreate"];
 
         if (isset($values["connectViaProperty"])) {
             $this->connectViaProperty = $values["connectViaProperty"];
@@ -110,11 +100,28 @@ class One extends \obo\Annotation\Base\Property {
 
         if (isset($values["eager"])) $this->eager = $values["eager"];
         if ($this->eager) $this->entityInformation->eagerConnections[] = $this->propertyInformation->name;
+    }
 
-        $this->propertyInformation->relationship = new \obo\Relationships\One($this->targetEntity, $this->propertyInformation->name, $this->cascadeOptions);
-        $this->propertyInformation->relationship->autoCreate = $this->autoCreate;
-        $this->propertyInformation->relationship->ownerNameInProperty = $this->ownerNameInProperty;
-        $this->propertyInformation->relationship->connectViaProperty = $this->connectViaProperty;
+    /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
+     */
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
+        if ($this->targetEntityInProperty === null AND !isset($explorer->entitiesInformationsByEntitiesNames()[$this->targetEntity])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'one', in class '{$this->entityInformation->className}', could not be built. Entity with name '{$this->targetEntity}' could not be connected because it does not exist.");
+        if (!\is_bool($this->autoCreate)) throw new \obo\Exceptions\BadAnnotationException("Parameter 'autoCreate' for relationship 'one' must be boolean");
+    }
+
+    /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
+     */
+    public function finalize(\obo\Services\EntitiesInformation\Explorer $explorer) {
+        $this->propertyInformation->relationship = $relationship = new \obo\Relationships\One($this->targetEntityInProperty === null ? $explorer->entitiesInformationsByEntitiesNames()[$this->targetEntity]->className : $this->targetEntity, $this->propertyInformation->name, $this->cascadeOptions);
+        $relationship->autoCreate = $this->autoCreate;
+        $relationship->ownerNameInProperty = $this->ownerNameInProperty;
+        $relationship->connectViaProperty = $this->connectViaProperty;
+
         $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\EntityDataType::name(), $this->propertyInformation, $this->targetEntityInProperty === null ? ["className" => $this->targetEntity] : []);
     }
 
@@ -217,7 +224,7 @@ class One extends \obo\Annotation\Base\Property {
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
 
                     if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                        $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->className(), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->entityInformation()->name, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     } elseif ($arguments["propertyValue"]["new"] === null) {
                         $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }

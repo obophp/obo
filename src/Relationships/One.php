@@ -55,12 +55,13 @@ class One extends \obo\Relationships\Relationship {
         $this->owner = $owner;
 
         if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
-            $entityClassNameToBeConnected = $this->entityClassNameToBeConnected;
+            $entityInformation = \obo\obo::$entitiesInformation->informationForEntityWithClassName($this->entityClassNameToBeConnected);
         } else {
-            if (!$entityClassNameToBeConnected = $owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName)) return null;
+            if (!$entityNameToBeConnected = \trim($owner->valueForPropertyWithName($this->entityClassNameToBeConnectedInPropertyWithName, "\\"))) return null;
+            $entityInformation = \obo\obo::$entitiesInformation->informationForEntityWithEntityName($entityNameToBeConnected);
         }
 
-        $entityManagerName = $entityClassNameToBeConnected::entityInformation()->managerName;
+        $entityManagerName = $entityInformation->managerName;
 
         if ($propertyValue) {
             return $entityManagerName::entityWithPrimaryPropertyValue($propertyValue, true);
@@ -93,7 +94,7 @@ class One extends \obo\Relationships\Relationship {
             $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
         } else {
             $this->ownerNameInProperty = $foreignKey[1];
-            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->className);
+            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->name);
         }
 
         if ($entity = $entityManagerName::findEntity($specification, false)) {

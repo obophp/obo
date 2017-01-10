@@ -30,10 +30,34 @@ class Explorer extends \obo\Object {
     protected $entitiesInformations = [];
 
     /**
+     * @var \obo\Carriers\EntityInformationCarrier[]
+     */
+    protected $entitiesInformationsByClassNames = [];
+
+    /**
+     * @var \obo\Carriers\EntityInformationCarrier[]
+     */
+    protected $entitiesInformationsByEntitiesNames = [];
+
+    /**
      * @return \obo\Carriers\EntityInformationCarrier[]
      */
     public function entitiesInformations() {
         return $this->entitiesInformations;
+    }
+
+    /**
+     * @return \obo\Carriers\EntityInformationCarrier[]
+     */
+    public function entitiesInformationsByClassNames() {
+        return $this->entitiesInformationsByClassNames;
+    }
+
+    /**
+     * @return \obo\Carriers\EntityInformationCarrier[]
+     */
+    public function entitiesInformationsByEntitiesNames() {
+        return $this->entitiesInformationsByEntitiesNames;
     }
 
     /**
@@ -119,6 +143,7 @@ class Explorer extends \obo\Object {
      */
     public function analyze(array $dirPaths) {
         $entitiesClasses = [];
+        $entities = [];
 
         foreach ($dirPaths as $dirPath) {
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dirPath), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
@@ -133,14 +158,36 @@ class Explorer extends \obo\Object {
         }
 
         foreach ($entitiesClasses as $entityClassName) {
-            $this->entitiesInformations[$entityClassName] = $this->analyzeEntityWithClassName($entityClassName);
+            $this->entitiesInformationsByClassNames[$entityClassName] = $this->entitiesInformations[] = $entityInformation = $this->analyzeEntityWithClassName($entityClassName);
+            if (!isset($entities[$entityInformation->name]["__leaves"])) $entities[$entityInformation->name]["__leaves"] = [];
+
+            if (!isset($entities[$entityInformation->name][$entityClassName])) {
+                $entities[$entityInformation->name][$entityClassName] = ["className" => $entityClassName, "childs" => []];
+                if (!$entityInformation->isAbstract)$entities[$entityInformation->name]["__leaves"][$entityClassName] = &$entities[$entityInformation->name][$entityClassName];
+            }
+
+            if (!isset($entities[$entityInformation->name][$entityInformation->parentClassName])) {
+                $entities[$entityInformation->name][$entityInformation->parentClassName] = ["className" => $entityInformation->parentClassName, "childs" => &$entities[$entityInformation->name][$entityClassName]];
+            } else {
+                $entities[$entityInformation->name][$entityInformation->parentClassName]["childs"][] = &$entities[$entityInformation->name][$entityClassName];
+                unset($entities[$entityInformation->name]["__leaves"][$entityInformation->parentClassName]);
+            }
+        }
+
+        foreach ($entities as $entityName => $entity) {
+            if (count($entity["__leaves"]) > 1) throw new \obo\Exceptions\Exception("Unable to resolve class for entity with name '{$entityName}' because more then one class exists which could be used (" . \implode(", ", \array_keys($entity["__leaves"])) . ")");
+            if (count($entity["__leaves"]) !== 0) $this->entitiesInformationsByEntitiesNames[$entityName] = $this->entitiesInformationsByClassNames[\current($entity["__leaves"])["className"]];
         }
 
         foreach ($entitiesClasses as $entityClassName) {
             $this->validateEntityWithClassName($entityClassName);
         }
 
-        return $this->entitiesInformations;
+        foreach ($entitiesClasses as $entityClassName) {
+            $this->finalizeEntityWithClassName($entityClassName);
+        }
+
+        return $this->entitiesInformationsByClassNames;
     }
 
     /**
@@ -153,6 +200,7 @@ class Explorer extends \obo\Object {
         $entityInformation->className = $entityClassName;
         $entityInformation->namespace = $entityClassReflection->getNamespaceName();
         $entityInformation->name = $this->defaultNameForEntityWithClassName($entityClassName);
+        $entityInformation->parentClassName = $entityClassReflection->parentClass->name;
         $entityInformation->propertiesClassName = $propertiesClassName = $this->propertiesClassNameForEntityWithClassName($entityClassName);
         $entityInformation->managerName = $this->managerClassNameForEntityWithClassName($entityClassName);
         $entityInformation->repositoryName = $this->defaultRepositoryNameForEntityWithClassName($entityClassName);
@@ -252,13 +300,27 @@ class Explorer extends \obo\Object {
      * @throws \obo\Exceptions\Exception
      */
     protected function validateEntityWithClassName($entityClassName) {
-        foreach ($this->entitiesInformations[$entityClassName]->annotations as $annotation) $annotation->validate($this);
+        if ($this->entitiesInformationsByClassNames[$entityClassName]->isAbstract) return;
+        foreach ($this->entitiesInformationsByClassNames[$entityClassName]->annotations as $annotation) $annotation->validate($this);
 
-        foreach ($this->entitiesInformations[$entityClassName]->propertiesInformation as $propertyInformation) {
+        foreach ($this->entitiesInformationsByClassNames[$entityClassName]->propertiesInformation as $propertyInformation) {
             foreach ($propertyInformation->annotations as $annotation) $annotation->validate($this);
         }
+    }
 
-        foreach ($this->entitiesInformations[$entityClassName]->propertiesInformation as $propertyInformation) {
+    /**
+     * @param string $entityClassName
+     * @return void
+     */
+    protected function finalizeEntityWithClassName($entityClassName) {
+        if ($this->entitiesInformationsByClassNames[$entityClassName]->isAbstract) return;
+        foreach ($this->entitiesInformationsByClassNames[$entityClassName]->annotations as $annotation) $annotation->finalize($this);
+
+        foreach ($this->entitiesInformationsByClassNames[$entityClassName]->propertiesInformation as $propertyInformation) {
+            foreach ($propertyInformation->annotations as $annotation) $annotation->finalize($this);
+        }
+
+        foreach ($this->entitiesInformationsByClassNames[$entityClassName]->propertiesInformation as $propertyInformation) {
             if ($propertyInformation->dataType === null AND ($propertyInformation->varName !== "")) {
                 throw new \obo\Exceptions\Exception("Property with name '{$propertyInformation->name}' in entity '{$entityClassName}' have not set data type");
             }
