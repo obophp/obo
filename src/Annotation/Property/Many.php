@@ -72,35 +72,48 @@ class Many extends \obo\Annotation\Base\Property {
      */
     public function process(array $values) {
         parent::process($values);
-
-        if (!\class_exists($values["targetEntity"])) throw new \obo\Exceptions\BadAnnotationException("Relationship '" . self::name() . "' could not be built. Target entity '{$values["targetEntity"]}' doesn't exist.");
-
-        if (!\is_subclass_of($values["targetEntity"], \obo\Entity::className())) throw new \obo\Exceptions\BadAnnotationException("Target entity must extend " . \obo\Entity::className());
-        $this->targetEntity = $values["targetEntity"]::className();
-
-        $relationship = $this->propertyInformation->relationship = new \obo\Relationships\Many($this->targetEntity, $this->propertyInformation->name);
+        $this->targetEntity = \trim($values["targetEntity"], "\\");
 
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
 
-        if (isset($values["sortVia"])) {
-            $relationship->sortVia = $this->sortVia = $values["sortVia"];
-        }
+        if (isset($values["sortVia"])) $this->sortVia = $values["sortVia"];
 
         if (isset($values["connectViaProperty"])) {
-            $relationship->connectViaPropertyWithName = $this->connectViaProperty = $values["connectViaProperty"];
-            if (isset($values["ownerNameInProperty"])) $relationship->ownerNameInProperty = $this->ownerNameInProperty = $values["ownerNameInProperty"];
+            $this->connectViaProperty = $values["connectViaProperty"];
+            if (isset($values["ownerNameInProperty"])) $this->ownerNameInProperty = $values["ownerNameInProperty"];
         } elseif (isset($values["connectViaRepository"])) {
-            $relationship->connectViaRepositoryWithName = $this->connectViaRepository = $values["connectViaRepository"];
+            $this->connectViaRepository = $values["connectViaRepository"];
             if (!\array_search("delete", $this->cascadeOptions)) $this->cascadeOptions[] = "delete";
-            if (isset($values["ownerNameInProperty"])) throw new \obo\Exceptions\BadAnnotationException("Annotation 'ownerNameInProperty' may be used only with 'connectViaProperty' annotation");
-        } else {
-            throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built because it relies on a parameter 'connectViaProperty' or 'connectViaRepository'");
         }
 
-        $relationship->cascade = $this->cascadeOptions;
         $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\ObjectDataType::name(), $this->propertyInformation, ["className" => "\\obo\\Relationships\\EntitiesCollection"]);
         $this->propertyInformation->columnName = "";
         $this->propertyInformation->persistable = false;
+    }
+
+    /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
+     * @throws \obo\Exceptions\BadAnnotationException
+     */
+    public function validate(\obo\Services\EntitiesInformation\Explorer $explorer) {
+        if (!isset($explorer->entitiesInformationsByEntitiesNames()[$this->targetEntity])) throw new \obo\Exceptions\BadAnnotationException("Relationship 'many', in class '{$this->entityInformation->className}' could not be built. Entity with name '{$this->targetEntity}' could not be connected because it does not exist.");
+        if ($this->connectViaRepository === "" AND $this->connectViaProperty === "") throw new \obo\Exceptions\BadAnnotationException("Relationship 'many' could not be built because it relies on a parameter 'connectViaProperty' or 'connectViaRepository'");
+        if ($this->connectViaRepository !== "" AND $this->ownerNameInProperty !== "") throw new \obo\Exceptions\BadAnnotationException("Annotation 'ownerNameInProperty' may be used only with 'connectViaProperty' annotation");
+    }
+
+    /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
+     */
+    public function finalize(\obo\Services\EntitiesInformation\Explorer $explorer) {
+        $relationship = new \obo\Relationships\Many($explorer->entitiesInformationsByEntitiesNames()[$this->targetEntity]->className, $this->propertyInformation->name);
+        $relationship->sortVia = $this->sortVia;
+        $relationship->cascade = $this->cascadeOptions;
+        $relationship->connectViaPropertyWithName = $this->connectViaProperty;
+        $relationship->connectViaRepositoryWithName = $this->connectViaRepository;
+        $relationship->ownerNameInProperty = $this->ownerNameInProperty;
+        $this->propertyInformation->relationship = $relationship;
     }
 
     /**

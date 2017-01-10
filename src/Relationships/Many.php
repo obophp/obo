@@ -30,7 +30,7 @@ class Many extends \obo\Relationships\Relationship {
     /**
      * @var string
      */
-    public $sortVia = null;
+    public $sortVia = "";
 
     /**
      * @param \obo\Entity $owner
@@ -96,7 +96,7 @@ class Many extends \obo\Relationships\Relationship {
             $specification->where("AND {*{$this->connectViaRepositoryWithName}," . $this->owner->className() . "*} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $this->owner->primaryPropertyValue());
         }
 
-        if ($this->sortVia !== null) $specification->orderBy($this->sortVia);
+        if ($this->sortVia !== "") $specification->orderBy($this->sortVia);
 
         return $specification;
     }

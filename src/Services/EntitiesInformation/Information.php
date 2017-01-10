@@ -21,8 +21,14 @@ class Information extends \obo\Object {
     /** @var \obo\Interfaces\ICache */
     protected $cache = null;
 
+    /** @var array */
+    protected $entitiesListByEntitiesNames = null;
+
     /** @var \obo\Carriers\EntityInformationCarrier[] */
-    protected $entitiesInformations = [];
+    protected $entitiesInformationsByClassNames = [];
+
+    /** @var \obo\Carriers\EntityInformationCarrier[] */
+    protected $entitiesInformationsByEntitiesNames = [];
 
     /** @var bool */
     protected $cacheValidity = true;
@@ -44,11 +50,33 @@ class Information extends \obo\Object {
     }
 
     /**
+     * @param string $entityName
+     * @return string
+     * @throws \obo\Exceptions\Exception
+     */
+    public function entityClassNameForEntityWithName($entityName) {
+        if ($this->entitiesListByEntitiesNames === null AND ($this->entitiesListByEntitiesNames = $this->cache->load("entitiesListByEntitiesNames")) === null) {
+            $this->createCache();
+            if (($this->entitiesListByEntitiesNames = $this->cache->load("entitiesListByEntitiesNames")) === null) throw new \obo\Exceptions\Exception("Failed to load entities information cache. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
+        }
+        return $this->entitiesListByEntitiesNames[$entityName];
+    }
+
+    /**
      * @param string $className
      * @return \obo\Carriers\EntityInformationCarrier
      */
     public function informationForEntityWithClassName($className) {
         $className = \ltrim($className, "\\");
+        return isset($this->entitiesInformations[$className]) ? $this->entitiesInformations[$className] : $this->loadClassInformationForEntityWithClassName($className);
+    }
+
+    /**
+     * @param string $entityName
+     * @return \obo\Carriers\EntityInformationCarrier
+     */
+    public function informationForEntityWithEntityName($entityName) {
+        $className = $this->entityClassNameForEntityWithName($entityName);
         return isset($this->entitiesInformations[$className]) ? $this->entitiesInformations[$className] : $this->loadClassInformationForEntityWithClassName($className);
     }
 
@@ -108,6 +136,7 @@ class Information extends \obo\Object {
      */
     public function createCache() {
         $entitiesList = [];
+        $entitiesListByEntitiesNames = [];
         $fp = \fopen($this->lockFilePath, "c+" );
         if (!\flock($fp, LOCK_EX)) throw new \obo\Exceptions\Exception("Unable to acquire exclusive lock");
 
@@ -116,7 +145,12 @@ class Information extends \obo\Object {
             $entitiesList[] = $className;
         }
 
+        foreach ($this->explorer->entitiesInformationsByEntitiesNames() as $entityName => $entityInformation) {
+            $entitiesListByEntitiesNames[$entityName] = $entityInformation->className;
+        }
+
         $this->cache->store("entitiesList", $entitiesList);
+        $this->cache->store("entitiesListByEntitiesNames", $entitiesListByEntitiesNames);
         $this->cache->store("changesHash", $this->calculateChangesHash());
         $this->cacheValidity = true;
         \flock($fp, \LOCK_UN);
