@@ -10,6 +10,6 @@
 
 namespace obo\Exceptions;
 
-class PropertyNotFoundException extends \obo\Exceptions\Exception {
+class MethodNotFoundException extends \obo\Exceptions\Exception {
 
 }
