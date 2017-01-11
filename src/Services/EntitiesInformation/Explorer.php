@@ -14,6 +14,8 @@ class Explorer extends \obo\Object {
 
     const ANNOTATION_PREFIX = "obo-";
 
+    const NAME_ANNOTATION = "name";
+
     /**
      * @var array
      */
@@ -192,6 +194,40 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $entityClassName
+     */
+    protected function getEntityNameForClass($entityClassName) {
+        $classAnnotations = $this->loadEntityAnnotationForEntityWithClassName($entityClassName);
+        $entityName = $entityClassName;
+        foreach ($classAnnotations as $annotationName => $annotationValue) {
+            if ($annotationName === self::ANNOTATION_PREFIX . self::NAME_ANNOTATION) {
+                $entityName = $annotationValue[0];
+            }
+        }
+        return $entityName;
+    }
+
+    protected function getEntityNameForParentClass($entityClassName) {
+        $classReflection = $entityClassName::getReflection();
+        return $this->getEntityNameForClass($classReflection->getParentClass()->name);
+    }
+
+    protected function propertiesDeclaringClassNameMap($entityClassName) {
+        $array = $this->ancestorsForClassWithName($entityClassName);
+        $propertiesArray = [];
+
+        foreach ($array as $className) {
+            $propertyClass = $this->propertiesClassNameForEntityWithClassName($className);
+            $classReflection = $propertyClass::getReflection();
+            foreach ($classReflection->getProperties() as $propertyReflection) {
+                if (isset($propertiesArray[$propertyReflection->name])) continue;
+                $propertiesArray[$propertyReflection->name] = $className;
+            }
+        }
+        return $propertiesArray;
+    }
+
+    /**
+     * @param string $entityClassName
      * @return \obo\Carriers\EntityInformationCarrier
      */
     protected function analyzeEntityWithClassName($entityClassName) {
@@ -245,6 +281,7 @@ class Explorer extends \obo\Object {
             $propertiesMethodAccess[$propertyName][\preg_match("#^get[A-Z].+#", $methodName) ? "getterName" : "setterName"] = $methodName;
         }
 
+        $propertiesDeclaringClassNameMap = $this->propertiesDeclaringClassNameMap($entityClassName);
         foreach ($propertiesClassReflection->getProperties() as $property) {
             if (!$property->isPublic() OR $property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object") continue;
 
@@ -255,7 +292,11 @@ class Explorer extends \obo\Object {
             $propertyInformation->persistable = $this->defaultPersistableValuePropertiesForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->autoIncrement = $this->defaultAutoIncrementValueForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->nullable = $this->defaultNullableValueForPropertyWithName($property->name, $entityClassName);
-
+            $propertyInformation->firstDeclaringClassName = $propertiesDeclaringClassNameMap[$property->name];
+            $propertyInformation->firstDeclaringClassOboName = $this->getEntityNameForClass($propertiesDeclaringClassNameMap[$property->name]);
+            $propertyInformation->firstDeclaringClassOboNameSameAsParent = ($this->getEntityNameForParentClass($propertiesDeclaringClassNameMap[$property->name]) === $this->getEntityNameForClass($propertiesDeclaringClassNameMap[$property->name])) ? true : false;
+            $propertyInformation->lastDeclaringClassName = $this->entityClassNameForPropertiesWithClassName($property->getDeclaringClass()->name);
+            $propertyInformation->lastDeclaringClassOboName = $this->getEntityNameForClass($entityClassName);
             if (isset($classVariables[$property->name]) OR \array_key_exists($property->name, $classVariables)) $propertyInformation->defaultValue = $classVariables[$property->name];
 
             if (isset($propertiesMethodAccess[$property->name])) {
@@ -412,6 +453,16 @@ class Explorer extends \obo\Object {
     protected function propertiesClassNameForEntityWithClassName($entityClassName) {
         if (\class_exists($propertiesClassName = $entityClassName . "Properties")) return $propertiesClassName;
         throw new \obo\Exceptions\DefinitionException("Properties class for entity with name '{$entityClassName}' does not exist");
+    }
+
+    /**
+     * @param string $propertiesClassName
+     * @return string
+     * @throws \obo\Exceptions\DefinitionException
+     */
+    protected function entityClassNameForPropertiesWithClassName($propertiesClassName) {
+        if (\class_exists($entityClassName = \str_replace("Properties", "", $propertiesClassName))) return $entityClassName;
+        throw new \obo\Exceptions\DefinitionException("Entity className for property with className '{$propertiesClassName}' does not exist");
     }
 
     /**

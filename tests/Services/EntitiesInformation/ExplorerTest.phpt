@@ -33,10 +33,19 @@ class ExplorerTest extends \Tester\TestCase {
         $explorer = new \obo\Services\EntitiesInformation\Explorer();
         \obo\DataType\CoreDataTypes::register($explorer);
         \obo\Annotation\CoreAnnotations::register($explorer);
+
         $foundEntitiesInformations = $explorer->analyze([$path]);
         $entityInformation = $foundEntitiesInformations[\obo\Tests\Assets\Entities\Contacts\Contact::class];
+
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::class, $entityInformation->className);
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $entityInformation->name);
+
+        Assert::equal(\obo\Tests\Assets\Entities\Entity::class, $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->firstDeclaringClassName);
+        Assert::equal(\obo\Tests\Assets\Entities\Entity::class, $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->firstDeclaringClassOboName);
+        Assert::false($entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->firstDeclaringClassOboNameSameAsParent);
+
+        Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::class, $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->lastDeclaringClassName);
+        Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->lastDeclaringClassOboName);
     }
 }
 
