@@ -5,7 +5,7 @@ namespace obo\Tests\Assets\Entities\Contacts;
 class AdditionalInformationProperties extends \obo\Tests\Assets\Entities\EntityProperties {
 
     /**
-     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\Contact")
+     * @obo-one(targetEntity="Contact")
      */
     public $contact = null;
 

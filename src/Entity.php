@@ -487,7 +487,7 @@ abstract class Entity  extends \obo\Object {
                     }
 
                     if ($ownerNameInProperty = $relationship->ownerNameInProperty) {
-                        $value[$ownerNameInProperty] = $this->className();
+                        $value[$ownerNameInProperty] = $this->entityInformation()->name;
                     }
 
                     if (isset($value[$targetEntity::entityInformation()->primaryPropertyName]) OR !($entity = $this->valueForPropertyWithName($propertyName)) instanceof \obo\Entity) {

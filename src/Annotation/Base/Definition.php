@@ -72,6 +72,14 @@ abstract class Definition extends \obo\Object {
     }
 
     /**
+     * @param \obo\Services\EntitiesInformation\Explorer $explorer
+     * @return void
+     */
+    public function finalize(\obo\Services\EntitiesInformation\Explorer $explorer) {
+
+    }
+
+    /**
      * @return void
      */
     public function registerEvents() {

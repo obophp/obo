@@ -101,4 +101,30 @@ class PropertyInformationCarrier extends \obo\Object {
      * @var bool
      */
     public $nullable = null;
+
+    /**
+     * @var string
+     */
+    public $firstDeclaringClassName = "";
+
+    /**
+     * @var string
+     */
+    public $firstDeclaringClassOboName = "";
+
+    /**
+     * @var string
+     */
+    public $firstDeclaringClassOboNameSameAsParent = false;
+
+    /**
+     * @var string
+     */
+    public $lastDeclaringClassName = "";
+
+    /**
+     * @var string
+     */
+    public $lastDeclaringClassOboName = "";
+
 }
