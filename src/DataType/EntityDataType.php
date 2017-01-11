@@ -42,7 +42,7 @@ class EntityDataType extends \obo\DataType\Base\DataType {
      * @throws \obo\Exceptions\BadDataTypeException
      */
     public function validate($value, $throwException = true) {
-        if ($value === null OR \is_string($value) OR \is_integer($value) OR ($value instanceof \obo\Entity AND ($this->className === null OR $value instanceof $this->className))) return true;
+        if ($value === null OR \is_string($value) OR \is_integer($value) OR ($value instanceof \obo\Entity AND ($this->className === null OR $value->entityInformation()->name === $this->className))) return true;
         if ($throwException) throw new \obo\Exceptions\BadDataTypeException("Can't write " . (\is_object($value) ? "object of class '" . \get_class($value) : "value '" . print_r($value, true)) . "' into property '" . $this->propertyInformation->name . "' in class '" . $this->propertyInformation->entityInformation->className . "' which is of '" . (($this->className === null) ? "entity" : $this->className) . "' datatype.");
         return false;
     }

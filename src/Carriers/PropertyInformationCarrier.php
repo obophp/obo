@@ -101,4 +101,5 @@ class PropertyInformationCarrier extends \obo\Object {
      * @var bool
      */
     public $nullable = null;
+
 }
