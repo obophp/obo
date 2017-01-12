@@ -102,4 +102,8 @@ class PropertyInformationCarrier extends \obo\Object {
      */
     public $nullable = null;
 
+    /**
+     * @var array
+     */
+    public $ownerEntityHistory = [];
 }

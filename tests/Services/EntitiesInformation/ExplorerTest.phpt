@@ -33,10 +33,16 @@ class ExplorerTest extends \Tester\TestCase {
         $explorer = new \obo\Services\EntitiesInformation\Explorer();
         \obo\DataType\CoreDataTypes::register($explorer);
         \obo\Annotation\CoreAnnotations::register($explorer);
+
         $foundEntitiesInformations = $explorer->analyze([$path]);
         $entityInformation = $foundEntitiesInformations[\obo\Tests\Assets\Entities\Contacts\Contact::class];
+
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::class, $entityInformation->className);
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $entityInformation->name);
+
+        $ownerEntityHistory = $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->ownerEntityHistory;
+        Assert::equal(\obo\Tests\Assets\Entities\Entity::class, $ownerEntityHistory[\obo\Tests\Assets\Entities\Entity::class]);
+        Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $ownerEntityHistory[\obo\Tests\Assets\Entities\Contacts\Contact::class]);
     }
 }
 

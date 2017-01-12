@@ -14,6 +14,8 @@ class Explorer extends \obo\Object {
 
     const ANNOTATION_PREFIX = "obo-";
 
+    const NAME_ANNOTATION = "name";
+
     /**
      * @var array
      */
@@ -192,6 +194,48 @@ class Explorer extends \obo\Object {
 
     /**
      * @param string $entityClassName
+     * @return string
+     */
+    protected function getEntityNameForClass($entityClassName) {
+        $classAnnotations = $this->loadEntityAnnotationForEntityWithClassName($entityClassName);
+        $entityName = $entityClassName;
+
+        foreach ($classAnnotations as $annotationName => $annotationValue) {
+            if ($annotationName === self::ANNOTATION_PREFIX . self::NAME_ANNOTATION) {
+                $entityName = $annotationValue[0];
+            }
+        }
+
+        return $entityName;
+    }
+
+    /**
+     * @param string $entityClassName
+     * @return string
+     */
+    protected function loadPropertiesOwnerEntityHistoryMap($entityClassName) {
+        $lastEntityName = null;
+        $classes = $this->ancestorsForClassWithName($entityClassName);
+        $propertiesArray = [];
+
+        foreach ($classes as $className) {
+            $propertyClass = $this->propertiesClassNameForEntityWithClassName($className);
+            $classReflection = $propertyClass::getReflection();
+            $currentEntityName = $this->getEntityNameForClass($className);
+
+            foreach ($classReflection->getProperties() as $propertyReflection) {
+                if ($lastEntityName !== $currentEntityName OR !isset($propertiesArray[$propertyReflection->name]) OR !array_key_exists($propertyReflection->name, $propertiesArray)) {
+                    $propertiesArray[$propertyReflection->name][$className] = $currentEntityName;
+                }
+            }
+
+            $lastEntityName = $currentEntityName;
+        }
+        return $propertiesArray;
+    }
+
+    /**
+     * @param string $entityClassName
      * @return \obo\Carriers\EntityInformationCarrier
      */
     protected function analyzeEntityWithClassName($entityClassName) {
@@ -245,6 +289,8 @@ class Explorer extends \obo\Object {
             $propertiesMethodAccess[$propertyName][\preg_match("#^get[A-Z].+#", $methodName) ? "getterName" : "setterName"] = $methodName;
         }
 
+        $propertiesOwnerEntityHistoryMap = $this->loadPropertiesOwnerEntityHistoryMap($entityClassName);
+
         foreach ($propertiesClassReflection->getProperties() as $property) {
             if (!$property->isPublic() OR $property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object") continue;
 
@@ -255,6 +301,7 @@ class Explorer extends \obo\Object {
             $propertyInformation->persistable = $this->defaultPersistableValuePropertiesForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->autoIncrement = $this->defaultAutoIncrementValueForPropertyWithName($property->name, $entityClassName);
             $propertyInformation->nullable = $this->defaultNullableValueForPropertyWithName($property->name, $entityClassName);
+            $propertyInformation->ownerEntityHistory = $propertiesOwnerEntityHistoryMap[$property->name];
 
             if (isset($classVariables[$property->name]) OR \array_key_exists($property->name, $classVariables)) $propertyInformation->defaultValue = $classVariables[$property->name];
 
