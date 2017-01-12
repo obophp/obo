@@ -1,8 +1,8 @@
 <?php
 
-namespace obo\Tests\Assets\Entities;
+namespace obo\Tests\Assets\AbstractEntities;
 
-class NoteProperties extends \obo\Tests\Assets\AbstractEntities\NoteProperties {
+abstract class NoteProperties extends \obo\Tests\Assets\AbstractEntities\EntityProperties {
 
     /**
      *  @obo-one(targetEntity = "property:ownerEntityName")

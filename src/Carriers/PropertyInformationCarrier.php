@@ -106,4 +106,9 @@ class PropertyInformationCarrier extends \obo\Object {
      * @var array
      */
     public $ownerEntityHistory = [];
+
+    /**
+     * @var array
+     */
+    public $declaredInClasses = [];
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace obo\Tests\Assets\Entities\Contacts;
+namespace obo\Tests\Assets\AbstractEntities\Contacts;
 
 /**
  * @obo-repositoryName(TestsEntitiesContactsAddress)
- * @property \obo\Tests\Assets\Entities\Entity $owner
+ * @property \obo\Tests\Assets\AbstractEntities\Entity $owner
  * @property string $street
  * @property string $city
  * @property string $region
@@ -14,6 +14,6 @@ namespace obo\Tests\Assets\Entities\Contacts;
  * @property double $gpsLongitude
  * @property string $completeAddress
  */
-class Address extends \obo\Tests\Assets\AbstractEntities\Contacts\Address {
+abstract class Address extends \obo\Tests\Assets\AbstractEntities\Entity {
 
 }

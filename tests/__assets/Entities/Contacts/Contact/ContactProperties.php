@@ -2,18 +2,13 @@
 
 namespace obo\Tests\Assets\Entities\Contacts;
 
-class ContactProperties extends \obo\Tests\Assets\Entities\EntityProperties {
+class ContactProperties extends \obo\Tests\Assets\AbstractEntities\Contacts\ContactProperties {
 
     /**
      * @obo-dataType(integer)
      * @obo-autoIncrement
      */
     public $id = "";
-
-    /**
-     * @obo-dataType(string)
-     */
-    public $name = "";
 
     /**
      * @obo-many(targetEntity="\obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone", connectViaProperty="contact", cascade="save,delete")
@@ -31,7 +26,8 @@ class ContactProperties extends \obo\Tests\Assets\Entities\EntityProperties {
     public $addresses = null;
 
     /**
-     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\Address", autoCreate=true, cascade="save", eager="true")
+     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\Address", autoCreate=true, cascade="save, delete")
+     * @obo-repositoryName(TestsEntitiesContactsContact)
      */
     public $defaultAddress = null;
 
@@ -44,11 +40,5 @@ class ContactProperties extends \obo\Tests\Assets\Entities\EntityProperties {
      * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Email", autoCreate=true, cascade="save")
      */
     public $defaultEmail = null;
-
-    /**
-     *
-     * @obo-dataType(string)
-     */
-    public $note;
 
 }
