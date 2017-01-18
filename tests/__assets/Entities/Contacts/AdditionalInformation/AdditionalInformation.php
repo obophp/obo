@@ -7,6 +7,6 @@ namespace obo\Tests\Assets\Entities\Contacts;
  * @property string $value
  * @property string $type
  */
-class AdditionalInformation extends \obo\Tests\Assets\Entities\Entity {
+class AdditionalInformation extends \obo\Tests\Assets\AbstractEntities\Contacts\AdditionalInformation {
 
 }

@@ -2,6 +2,6 @@
 
 namespace obo\Tests\Assets\Entities;
 
-class Entity extends \obo\Entity {
+class Entity extends \obo\Tests\Assets\AbstractEntities\Entity {
 
 }
