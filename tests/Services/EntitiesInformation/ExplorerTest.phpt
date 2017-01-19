@@ -79,6 +79,7 @@ class ExplorerTest extends \Tester\TestCase {
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $entityInformation->name);
 
         $ownerEntityHistory = $entityInformation->propertiesInformation[$entityInformation->primaryPropertyName]->ownerEntityHistory;
+
         Assert::equal(\obo\Tests\Assets\AbstractEntities\Entity::class, $ownerEntityHistory[\obo\Tests\Assets\AbstractEntities\Entity::class]);
         Assert::equal(\obo\Tests\Assets\Entities\Contacts\Contact::getReflection()->getShortName(), $ownerEntityHistory[\obo\Tests\Assets\AbstractEntities\Contacts\Contact::class]);
         Assert::false(array_key_exists(\obo\Tests\Assets\Entities\Entity::class, $ownerEntityHistory), "Entity with name " . \obo\Tests\Assets\Entities\Entity::class . " should not be in the ownerHistory list, because entity name matches parent entity name.");
@@ -98,6 +99,39 @@ class ExplorerTest extends \Tester\TestCase {
         Assert::false(array_key_exists("obo-columnName", $contactEntityDeclaredInClasses["annotations"]));
 
         Assert::equal(self::$declaredInClassesForContactDefaultAddressProperty, $entityInformation->propertiesInformation["defaultAddress"]->declaredInClasses);
+    }
+
+    public function testGettersAndSettersForEntity() {
+        $path = __DIR__ . "/../../__assets";
+        $explorer = new \obo\Services\EntitiesInformation\Explorer();
+        \obo\DataType\CoreDataTypes::register($explorer);
+        \obo\Annotation\CoreAnnotations::register($explorer);
+
+        $foundEntitiesInformation = $explorer->analyze([$path]);
+        $entityInformation = $foundEntitiesInformation[\obo\Tests\Assets\Entities\Entity\StaticAnalysis\Dummy::class];
+
+        Assert::equal("get_property", $entityInformation->propertiesInformation["_property"]->getterName);
+        Assert::equal("set_property", $entityInformation->propertiesInformation["_property"]->setterName);
+
+        Assert::equal("get__property", $entityInformation->propertiesInformation["__property"]->getterName);
+        Assert::equal("set__property", $entityInformation->propertiesInformation["__property"]->setterName);
+
+        Assert::equal("get___property", $entityInformation->propertiesInformation["___property"]->getterName);
+        Assert::equal("set___property", $entityInformation->propertiesInformation["___property"]->setterName);
+
+        Assert::equal("getProperty", $entityInformation->propertiesInformation["property"]->getterName);
+        Assert::equal("setProperty", $entityInformation->propertiesInformation["property"]->setterName);
+
+        Assert::false(isset($entityInformation->propertiesInformation["8property"]));
+
+        Assert::equal("get__5Property", $entityInformation->propertiesInformation["__5Property"]->getterName);
+        Assert::equal("set__5Property", $entityInformation->propertiesInformation["__5Property"]->setterName);
+
+        Assert::equal("get_4_property", $entityInformation->propertiesInformation["_4_property"]->getterName);
+        Assert::equal("set_4_property", $entityInformation->propertiesInformation["_4_property"]->setterName);
+
+        Assert::equal("getA5Property", $entityInformation->propertiesInformation["a5Property"]->getterName);
+        Assert::equal("setA5Property", $entityInformation->propertiesInformation["a5Property"]->setterName);
     }
 }
 
