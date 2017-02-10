@@ -22,7 +22,7 @@ class IdentityMapper extends \obo\Object {
      * @return string
      */
     public function identificationKeyForEntity(\obo\Entity $entity) {
-        return $entity->className() . $entity->valueForPropertyWithName($entity->entityInformation()->primaryPropertyName);
+        return $entity->primaryPropertyValue() ? $entity->className() . $entity->primaryPropertyValue() : null;
     }
 
     /**
