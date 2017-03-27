@@ -30,6 +30,7 @@ class IdentityMapper extends \obo\Object {
      * @return \obo\Entity
      */
     public function mappedEntity(\obo\Entity $entity) {
+        if ($entity->entityIdentificationKey() === null) return null;
         if (isset($this->entities[$entity->entityIdentificationKey()])) {
             return $this->entities[$entity->entityIdentificationKey()]["entity"];
         } else {
