@@ -125,8 +125,11 @@ abstract class EntityManager  extends \obo\Object {
 
         if (isset($data[$primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $data)) {
             $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
-            $entity = \obo\obo::$identityMapper->mappedEntity($entity);
             unset($data[$primaryPropertyName]);
+        }
+
+        if (($mappedEntity = \obo\obo::$identityMapper->mappedEntity($entity)) instanceof \obo\Entity) {
+            $entity = $mappedEntity;
         } else {
             \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onObject" => $entity,
