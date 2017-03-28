@@ -68,6 +68,35 @@ class EntityTest extends \Tester\TestCase {
         \Tester\Assert::same($contact->phones->___1->value, self::DEFAULT_CONTACT_PHONE);
         \Tester\Assert::same($contact->addresses->___0->note->text, self::DEFAULT_NOTE);
     }
+
+    public function testIdentityMapper() {
+        $data = [
+            "name" => self::DEFAULT_CONTACT_NAME,
+            "note" => self::DEFAULT_NOTE,
+        ];
+
+        $e1 = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact($data);
+        $e2 = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact($data);
+
+        \Tester\Assert::true(!\obo\obo::$identityMapper->isMappedEntity($e1));
+        \Tester\Assert::true(!\obo\obo::$identityMapper->isMappedEntity($e2));
+
+        \Tester\Assert::notSame($e1, $e2);
+
+        $data = [
+            "id" => 1,
+            "name" => self::DEFAULT_CONTACT_NAME,
+            "note" => self::DEFAULT_NOTE,
+        ];
+
+        $e3 = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact($data);
+        $e4 = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact($data);
+
+        \Tester\Assert::true(\obo\obo::$identityMapper->isMappedEntity($e3));
+        \Tester\Assert::true(\obo\obo::$identityMapper->isMappedEntity($e4));
+
+        \Tester\Assert::same($e3, $e4);
+    }
 }
 
 $testCase = new EntityTest();
