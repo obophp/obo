@@ -23,7 +23,7 @@ class DataType extends \obo\Annotation\Base\Property {
      * @return array
      */
     public static function parametersDefinition() {
-        return [self::PARAMETERS_NUMBER_DEFINITION => 1];
+        return [self::PARAMETERS_NUMBER_DEFINITION => self::ONE_OR_MORE_PARAMETERS];
     }
 
     /**
