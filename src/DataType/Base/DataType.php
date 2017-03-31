@@ -23,7 +23,7 @@ abstract class DataType extends \obo\Object implements \obo\Interfaces\IDataType
      */
     public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options = []) {
         foreach (static::optionsStructure() as $optionName => $requiredOption) {
-            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter($structure, function($value) {return $value;
+            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter(static::optionsStructure(), function($value) {return $value;
             }))) . "]");
         }
 
