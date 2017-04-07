@@ -20,6 +20,7 @@ abstract class Definition extends \obo\Object {
     const PARAMETERS_DEFINITION = "parameters";
 
     const ZERO_OR_ONE_PARAMETER = "?";
+    const ZERO_PARAMETERS = 0;
     const ONE_OR_MORE_PARAMETERS = -1;
 
     /**
@@ -108,18 +109,22 @@ abstract class Definition extends \obo\Object {
      */
     private function checkNumberOfParametersForAnnotationValue($annotationValue) {
         $parametersDefinition = static::parametersDefinition();
+        $definitionValue = $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION];
+        if (!\is_numeric($definitionValue) AND $definitionValue !== self::ZERO_OR_ONE_PARAMETER) {
+            throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects number or one of predefined constants, '{$definitionValue}' given");
+        }
 
         switch (true) {
-            case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] == self::ZERO_OR_ONE_PARAMETER:
+            case $definitionValue === self::ZERO_OR_ONE_PARAMETER:
                 if (count($annotationValue) > 1) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects zero or one parameter, more parameters given");
                 break;
 
-            case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] == self::ONE_OR_MORE_PARAMETERS:
+            case $definitionValue == self::ONE_OR_MORE_PARAMETERS:
                 if (count($annotationValue) == 0) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects one or more parameters, no parameters given");
                 break;
 
-            case $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION] > 0:
-                if (count($annotationValue) != $parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION]) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects {$parametersDefinition[self::PARAMETERS_NUMBER_DEFINITION]} parameters, " . count($annotationValue) . " parameters given");
+            case $definitionValue >= 0:
+                if (count($annotationValue) != $definitionValue) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' expects {$definitionValue} parameters, " . count($annotationValue) . " parameters given");
                 break;
 
             default:
@@ -134,9 +139,15 @@ abstract class Definition extends \obo\Object {
      */
     private function checkParametersForAnnotationValue($annotationValue) {
         $parametersDefinition = static::parametersDefinition()[self::PARAMETERS_DEFINITION];
-
+        $allParametersOptional = true;
+        foreach ($parametersDefinition as $parameterRequired) {
+            if ($parameterRequired) {
+                $allParametersOptional = false;
+                break;
+            }
+        }
         foreach ($annotationValue as $parameterName => $parameterRequired) {
-            if (!(isset($parametersDefinition[$parameterName]) OR \array_key_exists($parameterName, $parametersDefinition))) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' does not accept parameter with name '{$parameterName}'");
+            if (!($allParametersOptional AND ($parameterName === 0 AND $parameterRequired)) AND (!(isset($parametersDefinition[$parameterName]) OR \array_key_exists($parameterName, $parametersDefinition)))) throw new \obo\Exceptions\BadAnnotationException("Annotation with name '" . static::name() . "' does not accept parameter with name '{$parameterName}'");
             $parametersDefinition[$parameterName] = false;
         }
 
