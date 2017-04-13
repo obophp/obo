@@ -6,6 +6,9 @@ use Tester\Assert;
 
 require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 
+/**
+ * @testCase
+ */
 class EventsTest extends \Tester\TestCase {
 
     private static $contactData = [
