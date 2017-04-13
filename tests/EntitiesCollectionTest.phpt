@@ -6,6 +6,9 @@ use Tester\Assert;
 
 require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 
+/**
+ * @testCase
+ */
 class EntitiesCollectionTest extends \Tester\TestCase {
 
     const DEFAULT_CONTACT_ID = 1;

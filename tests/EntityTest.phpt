@@ -6,6 +6,9 @@ use Tester\Assert;
 
 require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 
+/**
+ * @testCase
+ */
 class EntityTest extends \Tester\TestCase {
 
     const DEFAULT_CONTACT_ID = 1;
@@ -17,6 +20,7 @@ class EntityTest extends \Tester\TestCase {
     const DEFAULT_NOTE = "Default note";
 
     private static $contactData = [
+        "id" => self::DEFAULT_CONTACT_ID,
         "name" => self::DEFAULT_CONTACT_NAME
     ];
 
@@ -29,21 +33,13 @@ class EntityTest extends \Tester\TestCase {
 
     public function testPropertiesAsArray() {
         $contact = $this->getContact();
-        Assert::equal(static::$contactData, $contact->propertiesAsArray(["name" => true]));
+        Assert::equal(static::$contactData, $contact->propertiesAsArray(["id" => true, "name" => true]));
     }
 
-    public function testSave() {
-        $contact = $this->getContact();
-        Assert::false($contact->isBasedInRepository());
-        $contact->save();
-        Assert::true($contact->isBasedInRepository());
-    }
-
-    public function testDelete() {
-        $contact = $this->getContact();
-        Assert::false($contact->isDeleted());
-        $contact->delete();
-        Assert::true($contact->isDeleted());
+    public function testEntityWithPrimaryProeprtyValue () {
+        \Tester\Assert::exception(function(){Assets\Entities\Contacts\ContactManager::entityWithPrimaryPropertyValue(999);}, "\obo\Exceptions\EntityNotFoundException");
+        \Tester\Assert::exception(function(){Assets\Entities\Contacts\ContactManager::entityWithPrimaryPropertyValue(0);}, "\obo\Exceptions\EntityNotFoundException");
+        \Tester\Assert::same($this->getContact(), Assets\Entities\Contacts\ContactManager::entityWithPrimaryPropertyValue(static::DEFAULT_CONTACT_ID));
     }
 
     public function testSetProperties() {
@@ -96,6 +92,20 @@ class EntityTest extends \Tester\TestCase {
         \Tester\Assert::true(\obo\obo::$identityMapper->isMappedEntity($e4));
 
         \Tester\Assert::same($e3, $e4);
+    }
+
+    public function testSave() {
+        $contact = $this->getContact();
+        Assert::false($contact->isBasedInRepository());
+        $contact->save();
+        Assert::true($contact->isBasedInRepository());
+    }
+
+    public function testDelete() {
+        $contact = $this->getContact();
+        Assert::false($contact->isDeleted());
+        $contact->delete();
+        Assert::true($contact->isDeleted());
     }
 }
 
