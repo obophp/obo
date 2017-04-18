@@ -320,22 +320,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @return array
-     */
-    public function dump() {
-        $dump = [];
-        $arguments = func_get_args();
-
-        if (isset ($arguments[0])) {
-            foreach ($this->asArray() as $entity) $dump[] = $entity->dump($arguments[0]);
-        } else {
-            foreach ($this->asArray() as $entity) $dump[] = $entity->dump();
-        }
-
-        return $dump;
-    }
-
-    /**
      * @param string $name
      * @return mixed
      * @throws \obo\Exceptions\VariableNotFoundException
