@@ -730,4 +730,80 @@ abstract class Entity  extends \obo\Object {
         $managerName::deleteEntity($this);
     }
 
+    /**
+     * @return array
+     */
+    public function metaData() {
+        $entityInformation = $this->entityInformation();
+        $propertiesInformation = $this->propertiesInformation();
+        $properties = [];
+
+        foreach ($propertiesInformation as $propertyInformation) {
+            $properties[$propertyInformation->name]["dataType"] = isset($propertyInformation->dataType) ? $propertyInformation->dataType->name() : null;
+            $properties[$propertyInformation->name]["persistable"] = $propertyInformation->persistable;
+
+            if ($relationship = $propertyInformation->relationship) {
+                if ($relationship instanceof \obo\Relationships\One) {
+                    $relationshipInformation = [
+                        "type" => "one",
+                        "entityClassNameToBeConnected" => $relationship->entityClassNameToBeConnected,
+                    ];
+
+                    if (\is_array($relationship->cascade) AND (bool) $relationship->cascade) {
+                        $relationshipInformation["cascade"] = \implode(", ", $relationship->cascade);
+                    }
+
+                    $relationshipInformation["autocreate"] = $relationship->autoCreate;
+
+                    if ($relationship->entityClassNameToBeConnectedInPropertyWithName) $relationshipInformation["entityClassNameToBeConnectedInPropertyWithName"] = $relationship->entityClassNameToBeConnectedInPropertyWithName;
+                    if ($relationship->connectViaProperty) $relationshipInformation["connectViaProperty"] = $relationship->connectViaProperty;
+                    if ($relationship->ownerNameInProperty) $relationshipInformation["ownerNameInProperty"] = $relationship->ownerNameInProperty;
+                } elseif ($relationship instanceof \obo\Relationships\Many) {
+                    $relationshipInformation = [
+                        "type" => "many",
+                        "entityClassNameToBeConnected" => $relationship->entityClassNameToBeConnected,
+                    ];
+
+                    if (\is_array($relationship->cascade)) {
+                        $relationshipInformation["cascade"] = \implode(", ", $relationship->cascade);
+                    }
+
+                    if ($relationship->connectViaPropertyWithName) $relationshipInformation["connectViaProperty"] = $relationship->connectViaPropertyWithName;
+                    if ($relationship->ownerNameInProperty) $relationshipInformation["ownerNameInProperty"] = $relationship->ownerNameInProperty;
+                    if ($relationship->connectViaRepositoryWithName) $relationshipInformation["connectViaRepositoryWithName"] = $relationship->connectViaRepositoryWithName;
+                    if ($relationship->sortVia) $relationshipInformation["sortVia"] = $relationship->sortVia;
+                }
+
+                $properties[$propertyInformation->name]["relationship"] = $relationshipInformation;
+            }
+
+            if ($propertyInformation->persistable) {
+                $properties[$propertyInformation->name]["columnName"] = $propertyInformation->columnName;
+            }
+
+            $properties[$propertyInformation->name]["ownerEntityHistory"] = $propertyInformation->ownerEntityHistory;
+            $properties[$propertyInformation->name]["declaredInClasses"] = $propertyInformation->declaredInClasses;
+        }
+
+        return [
+            "static" => [
+                "name" => $entityInformation->name,
+                "className" => $entityInformation->className,
+                "parentClassName" => $entityInformation->parentClassName,
+                "storageName" => $entityInformation->storageName,
+                "repositoryName" => $entityInformation->repositoryName,
+                "primaryPropertyName" => $entityInformation->primaryPropertyName,
+                "properties" => $properties,
+                "eagerConnections" => $entityInformation->eagerConnections,
+            ],
+            "dynamic" => [
+                "objectIdentificationKey" => $this->objectIdentificationKey(),
+                "entityIdentificationKey" => $this->entityIdentificationKey(),
+                "primaryPropertyValue" => $this->primaryPropertyValue(),
+                "initialized" => $this->isInitialized(),
+                "basedInRepository" => $this->isbasedInRepository(),
+            ]
+        ];
+    }
+
 }
