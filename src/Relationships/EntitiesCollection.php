@@ -193,13 +193,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             \obo\obo::$eventManager->notifyEventForEntity("beforeDisconnectFromOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
         }
 
-        $this->unsetValueForVariableWithName($key);
-
         if ($deleteEntity) {
             $entity->delete();
         } else {
             $this->relationShip->remove($entity);
         }
+
+        $this->unsetValueForVariableWithName($this->variableNameForValue($entity));
 
         if ($notifyEvents) {
             \obo\obo::$eventManager->notifyEventForEntity("afterRemoveFrom" . \ucfirst($this->relationShip->ownerPropertyName), $this->owner, ["removedEntity" => $entity]);
