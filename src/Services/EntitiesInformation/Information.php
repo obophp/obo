@@ -59,6 +59,11 @@ class Information extends \obo\Object {
             $this->createCache();
             if (($this->entitiesListByEntitiesNames = $this->cache->load("entitiesListByEntitiesNames")) === null) throw new \obo\Exceptions\Exception("Failed to load entities information cache. Possible cause could be that you can't write to the cache folder or folders with all models are not loaded");
         }
+
+        if (!isset($this->entitiesListByEntitiesNames[$entityName])) {
+            throw new \obo\Exceptions\EntityClassNotFoundException("For entity with name '{$entityName}' doesn't exist class which would implement it. Possible cause could be that folders with all models are not loaded");
+        }
+
         return $this->entitiesListByEntitiesNames[$entityName];
     }
 
