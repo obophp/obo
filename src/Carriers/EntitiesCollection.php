@@ -167,12 +167,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     public function loadEntities(array $entityKeys = null) {
         $entitiesClassName = $this->entitiesClassName;
         $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
+        $specification = $entitiesManagerClassName::queryCarrier()->addSpecification($this->getSpecification());
 
-        if ($entityKeys === null) {
-            $specification = $this->getSpecification();
-        } else {
-            $specification = new \obo\Carriers\QuerySpecification();
-            $specification->addSpecification($this->getSpecification());
+        if ($entityKeys !== null) {
             $specification->where("AND {{$entitiesClassName::entityInformation()->primaryPropertyName}} IN (?)", $entityKeys);
         }
 
