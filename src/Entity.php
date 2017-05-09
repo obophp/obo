@@ -155,6 +155,13 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @return string
+     */
+    public function repositoryAddress() {
+        return $this->dataStorage->repositoryAddressForEntity($this);
+    }
+
+    /**
      * @return \obo\EntityProperties
      */
     private function propertiesObject() {
