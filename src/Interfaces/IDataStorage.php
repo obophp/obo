@@ -13,6 +13,12 @@ namespace obo\Interfaces;
 interface IDataStorage {
 
     /**
+     * @param \obo\Entity $entity
+     * @return string
+     */
+    public function repositoryAddressForEntity(\obo\Entity $entity);
+
+    /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
      * @return string
      */
