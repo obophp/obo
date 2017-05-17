@@ -371,7 +371,7 @@ abstract class EntityManager  extends \obo\Object {
         if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeSave", $entity);
         $entity->setSavingInProgress();
 
-        if (count($entity->changedProperties($entity->entityInformation()->persistablePropertiesNames, true, true))) {
+        if ($entity->changed(true)) {
             if ($entity->isBasedInRepository()) {
                 if ($triggerEvents) \obo\obo::$eventManager->notifyEventForEntity("beforeUpdate", $entity);
                 $entity->dataStorage()->updateEntity($entity);
