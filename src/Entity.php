@@ -319,6 +319,7 @@ abstract class Entity  extends \obo\Object {
                     return $subPropertyValue->setValueForPropertyWithName($value, substr($propertyName, $pos + 1));
                 } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
+                    $pos = \strpos($propertyName, "_");
                     return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->setValueForPropertyWithName($value, \substr($propertyName, $pos + 1));
                 }
             }

@@ -74,11 +74,57 @@ class EntityTest extends \Tester\TestCase {
         $contact = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact([]);
         $contact->setValuesPropertiesFromArray(static::$extendedContactData);
 
-        \Tester\Assert::same($contact->propertiesAsArray(["name" => true, "note" => true]), ["name" => self::DEFAULT_CONTACT_NAME,"note" => self::DEFAULT_NOTE]);
-        \Tester\Assert::same($contact->defaultPhone->value, self::DEFAULT_CONTACT_PHONE);
-        \Tester\Assert::same($contact->phones->___0->value, self::DEFAULT_CONTACT_PHONE);
-        \Tester\Assert::same($contact->phones->___1->value, self::DEFAULT_CONTACT_PHONE);
-        \Tester\Assert::same($contact->addresses->___0->note->text, self::DEFAULT_NOTE);
+        \Tester\Assert::same(["name" => self::DEFAULT_CONTACT_NAME, "note" => self::DEFAULT_NOTE], $contact->propertiesAsArray(["name" => true, "note" => true]) );
+        \Tester\Assert::same(self::DEFAULT_CONTACT_PHONE, $contact->defaultPhone->value);
+        \Tester\Assert::same(self::DEFAULT_CONTACT_PHONE, $contact->phones->___0->value);
+        \Tester\Assert::same(self::DEFAULT_CONTACT_PHONE, $contact->phones->___1->value);
+        \Tester\Assert::same(self::DEFAULT_NOTE, $contact->addresses->___0->note->text);
+    }
+
+    public function testChangePropertiesOfStoredEntity() {
+        $dataStorageMock = $this->createDataStorageMockForChangePropertiesOfStoredEntity();
+        \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($dataStorageMock);
+        \obo\Tests\Assets\Entities\Contacts\AddressManager::setDataStorage($dataStorageMock);
+
+        $contact = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact(1);
+
+        $data = ["name" => "new_" . \obo\Tests\EntityTest::DEFAULT_CONTACT_NAME, "addresses_1_street" => "new_" . self::DEFAULT_ADDRESS_STREET,];
+        $contact->changeValuesPropertiesFromArray($data);
+
+        \Tester\Assert::same($data, $contact->propertiesAsArray(["name" => true, "addresses_1_street" => true]));
+    }
+
+    public function createDataStorageMockForChangePropertiesOfStoredEntity() {
+        $contactSpecification = Assets\Entities\Contacts\ContactManager::queryCarrier()
+                ->select(\obo\Tests\Assets\Entities\Contacts\ContactManager::constructSelect())
+                ->where("{id} = ?", 1);
+
+        $dataStorageMock = \Mockery::mock(new \obo\Tests\Assets\DataStorage);
+
+        $dataStorageMock->shouldReceive("dataForQuery")
+                        ->with(\equalTo($contactSpecification))
+                        ->andReturn([[
+                            "id" => 1,
+                            "name" => \obo\Tests\EntityTest::DEFAULT_CONTACT_NAME,
+                            "note" => \obo\Tests\EntityTest::DEFAULT_NOTE,
+                        ]]);
+
+        $addressSpecification = \obo\Tests\Assets\Entities\Contacts\AddressManager::queryCarrier()
+                ->select(\obo\Tests\Assets\Entities\Contacts\AddressManager::constructSelect())
+                ->where("AND {id} IN (?) AND {owner} = ? AND {ownerEntity} = ?", ["1"], 1, \obo\Tests\Assets\Entities\Contacts\Contact::entityInformation()->name);
+
+        $dataStorageMock->shouldReceive("dataForQuery")
+                        ->with(\equalTo($addressSpecification))
+                        ->andReturn([[
+                            "id" => 1,
+                            "street" => self::DEFAULT_ADDRESS_STREET,
+                            "city" => self::DEFAULT_ADDRESS_CITY,
+                            "zip" => self::DEFAULT_ADDRESS_ZIP,
+                        ]]);
+
+        $dataStorageMock->setDefaultDataForQueryBehavior($dataStorageMock);
+
+        return $dataStorageMock;
     }
 
     public function testIdentityMapper() {
