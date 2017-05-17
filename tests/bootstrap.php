@@ -7,9 +7,6 @@ if (@!include __DIR__ . "/../vendor/autoload.php") {
     exit(1);
 }
 
-require_once __DIR__ . '/__assets/Storage.php';
-
-// configure environment
 Tester\Environment::setup();
 date_default_timezone_set("Europe/Prague");
 
@@ -20,7 +17,7 @@ date_default_timezone_set("Europe/Prague");
    __DIR__ . DIRECTORY_SEPARATOR . "__assets" . DIRECTORY_SEPARATOR . "Entities",
 ]);
 
-\obo\obo::setDefaultDataStorage(\obo\Tests\Assets\Storage::getMockDataStorage());
+\obo\obo::setDefaultDataStorage(\obo\Tests\Assets\DefaultDataStorageFactory::createDataStorage());
 \obo\obo::run();
 
 function test(\Closure $function) {
