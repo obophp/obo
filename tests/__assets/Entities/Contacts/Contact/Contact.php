@@ -13,7 +13,8 @@ namespace obo\Tests\Assets\Entities\Contacts;
  * @property \obo\Tests\Assets\Entities\Contacts\Address $defaultAddress
  * @property \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone $defaultPhone
  * @property \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Email $defaultEmail
- * @property string note
+ * @property string $note
+ * @property string $noPersitedProperty
  */
 class Contact extends \obo\Tests\Assets\AbstractEntities\Contacts\Contact {
 

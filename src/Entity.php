@@ -210,6 +210,13 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @return boolean
+     */
+    public function changed($onlyPersistableProperties = false) {
+        return (bool) $this->changedProperties($onlyPersistableProperties ? $this->entityInformation()->persistablePropertiesNames : null, true, true);
+    }
+
+    /**
      * @return void
      * @throws \obo\Exceptions\Exception
      */
