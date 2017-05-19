@@ -12,6 +12,9 @@ require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
 class EntitiesCollectionTest extends \Tester\TestCase {
 
     const DEFAULT_CONTACT_ID = 1;
+    const DEFAULT_CONTACT_NAME = "John Doe";
+    const DEFAULT_CONTACT_PHONE = "777 777 777";
+    const DEFAULT_NOTE = "Default note";
 
     private static $contactData = [
         "name" => "John Doe"
@@ -90,6 +93,38 @@ class EntitiesCollectionTest extends \Tester\TestCase {
                 );
         $mockStorage->setDefaultDataForQueryBehavior($mockStorage);
         return $mockStorage;
+    }
+
+    public function testAddNew() {
+        \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($this->createDataStorageForTestAddNew());
+        $contact = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact(1);
+
+        \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone::on("beforeInsert", function($event) use ($contact) {
+            \Tester\Assert::same($contact, $event["entity"]->contact);
+        });
+
+        $phone = $contact->phones->addNew(["value" => static::DEFAULT_CONTACT_PHONE]);
+        \Tester\Assert::same($phone, $contact->phones->{$phone->primaryPropertyValue()});
+    }
+
+    public function createDataStorageForTestAddNew() {
+        $specification = Assets\Entities\Contacts\ContactManager::queryCarrier()
+                ->select(\obo\Tests\Assets\Entities\Contacts\ContactManager::constructSelect())
+                ->where("{id} = ?", 1);
+
+        $dataStorageMock = \Mockery::mock(new \obo\Tests\Assets\DataStorage);
+
+        $dataStorageMock->shouldReceive("dataForQuery")
+                        ->with(\equalTo($specification))
+                        ->andReturn([[
+                            "id" => static::DEFAULT_CONTACT_ID,
+                            "name" => static::DEFAULT_CONTACT_NAME,
+                            "note" => static::DEFAULT_NOTE,
+                        ]]);
+
+        $dataStorageMock->setDefaultDataForQueryBehavior($dataStorageMock);
+
+        return $dataStorageMock;
     }
 
 }

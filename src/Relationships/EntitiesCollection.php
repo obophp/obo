@@ -109,7 +109,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if ($this->relationShip->connectViaPropertyWithName AND \key_exists($this->relationShip->connectViaPropertyWithName, $data)) throw new \obo\Exceptions\Exception("Can't insert new entity created from data which contain foreign key '{$this->relationShip->connectViaPropertyWithName}'");
         $entityClassNameTobeConnected = $this->relationShip->entityClassNameToBeConnected;
         $entityManager = $entityClassNameTobeConnected::entityInformation()->managerName;
-        $this->add($entity = $entityManager::entity($data)->save(), true, $notifyEvents);
+        $this->add($entity = $entityManager::entity($data), true, $notifyEvents);
+        $entity->save();
         return $entity;
     }
 
