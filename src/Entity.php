@@ -353,7 +353,7 @@ abstract class Entity  extends \obo\Object {
                     if ($propertyInformation->relationship instanceof \obo\Relationships\One) {
 
                         if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
-                            $targetEntity = $this->valueForPropertyWithName($this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                            $targetEntity = \obo\obo::$entitiesInformation->entityClassNameForEntityWithName($this->valueForPropertyWithName($this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName));
                         }
 
                         if ($targetEntity) {

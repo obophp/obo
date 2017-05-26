@@ -209,10 +209,11 @@ class One extends \obo\Annotation\Base\Property {
                 "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
                 "actionAnonymousFunction" => function($arguments) {
                     if (\is_string($arguments["propertyValue"]["new"]) AND \count($parts = explode(":", $arguments["propertyValue"]["new"])) === 2) {
-                        if (!\class_exists($parts[1])) throw new \obo\Exceptions\Exception("Can not set property with dynamic relationship 'one', class '{$parts[1]}' does not exist");
+                        $entityName = ltrim($parts[1], "\\");
+                        \obo\obo::$entitiesInformation->entityClassNameForEntityWithName($entityName);
                         $arguments["propertyValue"]["new"] = $parts[0];
                         $propertyInformation = $arguments["entity"]->informationForPropertyWithName($this->propertyInformation->name);
-                        $arguments["entity"]->setValueForPropertyWithName(ltrim($parts[1], "\\"), $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        $arguments["entity"]->setValueForPropertyWithName($entityName, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }
                 },
             ]));
