@@ -210,13 +210,6 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
-     * @return boolean
-     */
-    public function changed($onlyPersistableProperties = false) {
-        return (bool) $this->changedProperties($onlyPersistableProperties ? $this->entityInformation()->persistablePropertiesNames : null, true, true);
-    }
-
-    /**
      * @return void
      * @throws \obo\Exceptions\Exception
      */
@@ -226,7 +219,7 @@ abstract class Entity  extends \obo\Object {
         if (($backTrace[1]["class"] === "obo\\EntityManager" AND $backTrace[1]["function"] === "saveEntity") OR ($backTrace[1]["class"] === "obo\\Entity" AND $backTrace[1]["function"] === "discardNonPersistedChanges")) {
             foreach ($this->propertiesChanges as $propertyName => $changeStatus) {
                 $this->propertiesChanges[$propertyName]["persisted"] = true;
-                $this->propertiesChanges[$propertyName]["lastPersistedValue"] = $this->propertiesChanges[$propertyName]["newValue"];
+                $this->propertiesChanges[$propertyName]["lastPersistedValue"] = $this->propertiesChanges[$propertyName]["newValue"] instanceof \obo\Entity ? $this->propertiesChanges[$propertyName]["newValue"]->primaryPropertyValue() : $this->propertiesChanges[$propertyName]["newValue"];
             }
         } else {
             throw new \obo\Exceptions\Exception("MarkUnpersistedPropertiesAsPersisted method can be only called from the obo framework");
@@ -546,6 +539,13 @@ abstract class Entity  extends \obo\Object {
     }
 
     /**
+     * @return boolean
+     */
+    public function changed($onlyPersistableProperties = false) {
+        return (bool) $this->changedProperties($onlyPersistableProperties ? $this->entityInformation()->persistablePropertiesNames : null, true, true);
+    }
+
+    /**
      * @param array | \Iterator | null $onlyFromList
      * @param bool $entityAsPrimaryPropertyValue
      * @param bool $onlyNonPersistentChanges
@@ -571,6 +571,34 @@ abstract class Entity  extends \obo\Object {
         } else {
             return $this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function existDataToStore() {
+        return (bool) $this->dataToStore();
+    }
+
+    /**
+     * @return array
+     */
+    public function dataToStore() {
+        $propertiesChanges = $this->propertiesChanges;
+        $changedProperties = $this->changedProperties($this->entityInformation()->persistablePropertiesNames, true, true);
+
+        foreach ($this->propertiesInformation() as $propertyInformation) {
+            if (($relationship = $propertyInformation->relationship) instanceof \obo\Relationships\One
+                    AND $relationship->connectViaProperty !== ""
+                    AND isset($propertiesChanges[$propertyInformation->name])
+                    AND $this->valueForPropertyWithName($propertyInformation->name, true) != ((($lastPersistedValue = $propertiesChanges[$propertyInformation->name]["lastPersistedValue"]) instanceof \obo\Entity) ? $lastPersistedValue->primaryPropertyValue() : $lastPersistedValue)
+                    AND !isset($changedProperties[$propertyInformation->name])
+                ) {
+                    $changedProperties[$propertyInformation->name] = $this->valueForPropertyWithName($propertyInformation->name, true);
+            }
+        }
+
+        return $changedProperties;
     }
 
     /**
