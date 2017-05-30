@@ -209,7 +209,7 @@ class Explorer extends \obo\Object {
 
                 foreach ($propertyReflection->getAnnotations() as $annotationName => $annotationValue) {
                     if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
-                    $propertyAnnotations[$annotationName] = (array) $annotationValue[0];
+                    $propertyAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue[0]);
                 }
 
                 $propertiesArray[$propertyReflection->name][] = [
@@ -420,7 +420,7 @@ class Explorer extends \obo\Object {
 
             foreach ($class::getReflection()->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
-                $classAnnotations[$annotationName] = (array) $annotationValue[0];
+                $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue[0]);
             }
 
             $annotations = array_replace_recursive($annotations, $classAnnotations);
@@ -443,7 +443,7 @@ class Explorer extends \obo\Object {
 
             foreach ($class::getReflection()->getMethod($methodName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
-                $classAnnotations[$annotationName] = (array) $annotationValue[0];
+                $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue[0]);
             }
 
             $annotations = array_replace_recursive($annotations, $classAnnotations);
@@ -466,7 +466,7 @@ class Explorer extends \obo\Object {
 
             foreach ($class::getReflection()->getProperty($propertyName)->getAnnotations() as $annotationName => $annotationValue) {
                 if (\strpos($annotationName, self::ANNOTATION_PREFIX) !== 0) continue;
-                $classAnnotations[$annotationName] = (array) $annotationValue[0];
+                $classAnnotations[$annotationName] = $this->standardizeAnnotationValue($annotationValue[0]);
             }
 
             $annotations = array_replace_recursive($annotations, $classAnnotations);
@@ -615,6 +615,20 @@ class Explorer extends \obo\Object {
         }
 
         return $classes;
+    }
+
+    /**
+     * @param mixed $annotationValue
+     * @return array
+     */
+    protected function standardizeAnnotationValue($annotationValue) {
+        if (\is_object($annotationValue)) {
+            return \json_decode(\json_encode($annotationValue), true);
+        } elseif (\is_array($annotationValue)) {
+            return $annotationValue;
+        } else {
+            return [$annotationValue];
+        }
     }
 
 }
