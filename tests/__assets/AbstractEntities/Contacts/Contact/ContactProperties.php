@@ -46,7 +46,6 @@ abstract class ContactProperties extends \obo\Tests\Assets\AbstractEntities\Enti
     public $defaultEmail = null;
 
     /**
-     *
      * @obo-dataType(string)
      */
     public $note;

@@ -17,6 +17,7 @@ class EntityTest extends \Tester\TestCase {
     const DEFAULT_ADDRESS_CITY = "Burbank";
     const DEFAULT_ADDRESS_ZIP = "CA 91505-5512";
     const DEFAULT_CONTACT_PHONE = "777 777 777";
+    const DEFAULT_CONTACT_EMAIL = "john.doe@mail.com";
     const DEFAULT_NOTE = "Default note";
 
     private static $simpleContactData = [
@@ -171,7 +172,7 @@ class EntityTest extends \Tester\TestCase {
     }
 
     public function testMetaData() {
-        $metaDataHash = "85adbebc35c133bcff94ac0d493bb74f";
+        $metaDataHash = "62d542a5e413d9b699cd3dced5cd2ba3";
         \Tester\Assert::same($metaDataHash, \md5(\preg_replace("#\"objectIdentificationKey\"\;s\:32\:\"([a-z0-9]{32})\"#", "\"objectIdentificationKey\";s:32:\"00000000000000000000000000000000\"", \serialize($this->getExtendedContact()->metaData()))));
     }
 
@@ -210,6 +211,23 @@ class EntityTest extends \Tester\TestCase {
         $dataStorageMock->setDefaultDataForQueryBehavior($dataStorageMock);
 
         return $dataStorageMock;
+    }
+
+    public function testDataToStore() {
+        $contact = $this->getSimpleContact();
+        \Tester\Assert::same($contact->changedProperties($contact->entityInformation()->persistablePropertiesNames), $contact->dataToStore());
+
+        $contact->save();
+        \Tester\Assert::same([], $contact->dataToStore());
+
+        $contact->name = "changed " . static::DEFAULT_CONTACT_NAME;
+        \Tester\Assert::same(["name" => "changed John Doe"], $contact->dataToStore());
+
+        $contact->administrativeEmail->value = static::DEFAULT_CONTACT_EMAIL;
+        $contact->save();
+
+        $contact->administrativeEmail->save();
+        \Tester\Assert::same(["administrativeEmail" => 2], $contact->dataToStore());
     }
 
 }

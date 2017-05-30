@@ -42,6 +42,11 @@ class ContactProperties extends \obo\Tests\Assets\AbstractEntities\Contacts\Cont
     public $defaultEmail = null;
 
     /**
+     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Email", autoCreate=true)
+     */
+    public $administrativeEmail = null;
+
+    /**
      * @obo-persistable(false)
      */
     public $noPersitedProperty = "";
