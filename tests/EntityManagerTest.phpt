@@ -30,6 +30,14 @@ class EntityManagerTest extends \Tester\TestCase {
         "zip" => "1234"
     ];
 
+    private static $addressWithOwnerData2 = [
+        "owner" => "1",
+        "ownerEntity" => "Contact",
+        "street" => "My Street 2",
+        "city" => "My City 2",
+        "zip" => "1234"
+    ];
+
     /**
      * @return \obo\Tests\Assets\Entities\Contacts\Contact
      */
@@ -51,6 +59,13 @@ class EntityManagerTest extends \Tester\TestCase {
         return Assets\Entities\Contacts\AddressManager::entityFromArray(static::$addressWithOwnerData);
     }
 
+    /**
+     * @return \obo\Tests\Assets\Entities\Contacts\Address
+     */
+    protected function createAddressWithOwner2() {
+        return Assets\Entities\Contacts\AddressManager::entityFromArray(static::$addressWithOwnerData2);
+    }
+
     public function testEntityFromArray() {
         $contact = $this->createContact();
         Assert::true($contact instanceof Assets\Entities\Contacts\Contact, "Entity has to be a Contact entity instance");
@@ -63,8 +78,10 @@ class EntityManagerTest extends \Tester\TestCase {
         $contact->addresses->remove($address);
 
         $addressWithOwner = $this->createAddressWithOwner();
-
         Assert::same($contact, $addressWithOwner->owner);
+
+        $addressWithOwner2 = $this->createAddressWithOwner2();
+        Assert::same($contact, $addressWithOwner2->owner);
     }
 
     public function testCollection() {
