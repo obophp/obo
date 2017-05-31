@@ -172,7 +172,7 @@ class EntityTest extends \Tester\TestCase {
     }
 
     public function testMetaData() {
-        $metaDataHash = "62d542a5e413d9b699cd3dced5cd2ba3";
+        $metaDataHash = "5f66bec2ccf6363e028619f2b340f604";
         \Tester\Assert::same($metaDataHash, \md5(\preg_replace("#\"objectIdentificationKey\"\;s\:32\:\"([a-z0-9]{32})\"#", "\"objectIdentificationKey\";s:32:\"00000000000000000000000000000000\"", \serialize($this->getExtendedContact()->metaData()))));
     }
 
@@ -224,10 +224,12 @@ class EntityTest extends \Tester\TestCase {
         \Tester\Assert::same(["name" => "changed John Doe"], $contact->dataToStore());
 
         $contact->administrativeEmail->value = static::DEFAULT_CONTACT_EMAIL;
+        $contact->defaultPhone->value = static::DEFAULT_CONTACT_PHONE;
         $contact->save();
 
         $contact->administrativeEmail->save();
-        \Tester\Assert::same(["administrativeEmail" => 2], $contact->dataToStore());
+        $contact->defaultPhone->save();
+        \Tester\Assert::same(["administrativeEmail" => 3], $contact->dataToStore());
     }
 
 }

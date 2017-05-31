@@ -588,7 +588,8 @@ abstract class Entity  extends \obo\Object {
         $changedProperties = $this->changedProperties($this->entityInformation()->persistablePropertiesNames, true, true);
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
-            if (($relationship = $propertyInformation->relationship) instanceof \obo\Relationships\One
+            if ($propertyInformation->persistable
+                    AND ($relationship = $propertyInformation->relationship) instanceof \obo\Relationships\One
                     AND $relationship->connectViaProperty !== ""
                     AND isset($propertiesChanges[$propertyInformation->name])
                     AND $this->valueForPropertyWithName($propertyInformation->name, true) != ((($lastPersistedValue = $propertiesChanges[$propertyInformation->name]["lastPersistedValue"]) instanceof \obo\Entity) ? $lastPersistedValue->primaryPropertyValue() : $lastPersistedValue)
