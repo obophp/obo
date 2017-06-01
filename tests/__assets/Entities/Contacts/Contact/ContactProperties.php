@@ -32,7 +32,7 @@ class ContactProperties extends \obo\Tests\Assets\AbstractEntities\Contacts\Cont
     public $defaultAddress = null;
 
     /**
-     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone", autoCreate=true, cascade="save")
+     * @obo-one(targetEntity="\obo\Tests\Assets\Entities\Contacts\AdditionalInformation\Phone", connectViaProperty="contact", autoCreate=true, cascade="save")
      */
     public $defaultPhone = null;
 
