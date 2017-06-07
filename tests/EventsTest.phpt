@@ -24,8 +24,22 @@ class EventsTest extends \Tester\TestCase {
 
     public function testBeforeSave() {
         $contact = $this->getContact();
+
+        $contact->on("beforeSave", function($arguments){
+            $arguments["entity"]->note .= "first";
+        });
+
+        $contact->on("beforeSave", function($arguments){
+            $arguments["entity"]->note .= "Second";
+        });
+
+        $contact->on("beforeSave", function($arguments){
+            $arguments["entity"]->note .= "Third";
+        });
+
         $contact->save();
-        Assert::same("firstSecondThird", $contact->note);
+
+        \Tester\Assert::same("firstSecondThird", $contact->note);
     }
 
     public function testOnAndNotify() {
