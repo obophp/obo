@@ -4,7 +4,40 @@ namespace obo\Tests\Assets;
 
 class DataStorage implements \obo\Interfaces\IDataStorage {
 
+    const EVENT_TYPE_INSERT = "inserts";
+    const EVENT_TYPE_UPDATE = "updates";
+    const EVENT_TYPE_DELETE = "deletes";
+
     public static $autoIncrementIndex = 0;
+
+    protected $eventsStack = [
+            "inserts" => ["all" => [], "byEntities" => []],
+            "updates" => ["all" => [], "byEntities" => []],
+            "deletes" => ["all" => [], "byEntities" => []],
+        ];
+
+    protected function logEventForEntity($data, $eventType, \obo\Entity $entity) {
+        $event = ["type" => $eventType, "data" => $data, "entity" => $entity];
+
+        $this->eventsStack[$eventType]["all"][] = $event;
+        $this->eventsStack[$eventType]["byEntities"][$entity->objectIdentificationKey()][] = $event;
+    }
+
+    public function getAllEventsForType($type) {
+        return $this->eventsStack[$type]["all"];
+    }
+
+    public function getLastEventForType($type) {
+        return \end($this->eventsStack[$type]["all"]);
+    }
+
+    public function getAllEventsForTypeAndEntity($type, \obo\Entity $entity) {
+        return $this->eventsStack[$type]["byEntities"][$entity->objectIdentificationKey()];
+    }
+
+    public function getLastEventForTypeAndEntity($type, \obo\Entity $entity) {
+        return \end($this->eventsStack[$type]["byEntities"][$entity->objectIdentificationKey()]);
+    }
 
     public function constructQuery(\obo\Carriers\QueryCarrier $queryCarrier) {
         $queryData = [];
@@ -40,12 +73,14 @@ class DataStorage implements \obo\Interfaces\IDataStorage {
     }
 
     public function insertEntity(\obo\Entity $entity) {
+        $this->logEventForEntity($entity->dataToStore(), static::EVENT_TYPE_INSERT, $entity);
         if ($entity->entityInformation()->informationForPropertyWithName($entity->entityInformation()->primaryPropertyName)->autoIncrement) {
             $entity->setValueForPropertyWithName(++static::$autoIncrementIndex, $entity->entityInformation()->primaryPropertyName, false);
         }
     }
 
     public function removeEntity(\obo\Entity $entity) {
+        $this->logEventForEntity([$entity->entityInformation()->primaryPropertyName => $entity->primaryPropertyValue(), "softDelete" => $entity->entityInformation()->propertyNameForSoftDelete], static::EVENT_TYPE_DELETE, $entity);
         return null;
     }
 
@@ -59,6 +94,7 @@ class DataStorage implements \obo\Interfaces\IDataStorage {
     }
 
     public function updateEntity(\obo\Entity $entity) {
+        $this->logEventForEntity($entity->dataToStore(), static::EVENT_TYPE_UPDATE, $entity);
         return null;
     }
 
