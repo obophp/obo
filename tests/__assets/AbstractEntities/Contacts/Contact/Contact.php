@@ -202,27 +202,6 @@ abstract class Contact extends \obo\Tests\Assets\AbstractEntities\Entity {
     }
 
     /**
-     * @obo-run(beforeSave)
-     */
-    public function firstBeforeSaveCallback() {
-        $this->note .= "first";
-    }
-
-    /**
-     * @obo-run('beforeSave')
-     */
-    public function secondBeforeSaveCallback() {
-        $this->note .= "Second";
-    }
-
-    /**
-     * @obo-run("beforeSave")
-     */
-    public function thirdBeforeSaveCallback() {
-        $this->note .= "Third";
-    }
-
-    /**
      * @param \obo\Tests\Assets\AbstractEntities\Contacts\Address $defaultAddress
      */
     public function changeDefaultAddress(\AbstractEntities\Contacts\Address $defaultAddress) {
