@@ -12,23 +12,40 @@ namespace obo\Relationships;
 
 class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Interfaces\IEntitiesCollection {
 
-    /** @var \obo\Relationships\Many */
+    /**
+     * @var \obo\Relationships\Many
+     */
     protected $relationShip = null;
 
-    /** @var \obo\Entity */
+    /**
+     *  @var \obo\Entity
+     */
     protected $owner = null;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $entitiesAreLoaded = false;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $savingInProgress = false;
 
-    /** @var bool */
+    /**
+     *  @var bool
+     */
     protected $afterSavingNeedReload = false;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     protected $deletingInProgress = false;
+
+    /**
+     * @var integer
+     */
+    protected $nonPersistedEntitiesCounter = 0;
 
     /**
      * @param \obo\Entity $owner
@@ -81,7 +98,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if (!$this->entitiesAreLoaded AND ((\count($requiredItems) !== 0) OR $requiredItems === null)) {
             $this->entitiesAreLoaded = $requiredItems === null;
             $this->loadEntities($requiredItems);
-
         }
 
         return parent::variables();
@@ -138,7 +154,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                 if (\strpos($key, "___") === 0 AND !$this->__isset($key)) {
                     $entityKey = $key;
                 } else {
-                    $entityKey = "__" . ($this->count() + 1);
+                    $entityKey = "__" . $this->nonPersistedEntitiesCounter++;
                 }
 
                 $this->afterSavingNeedReload = true;

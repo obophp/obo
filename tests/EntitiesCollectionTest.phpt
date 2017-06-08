@@ -95,6 +95,21 @@ class EntitiesCollectionTest extends \Tester\TestCase {
         return $mockStorage;
     }
 
+    public function testAdd() {
+        $contact = $this->getContact();
+
+        $phones = [
+            "__0" => \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\PhoneManager::phone(["value" => static::DEFAULT_CONTACT_PHONE]),
+            "__1" => \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\PhoneManager::phone(["value" => static::DEFAULT_CONTACT_PHONE]),
+            "__2" => \obo\Tests\Assets\Entities\Contacts\AdditionalInformation\PhoneManager::phone(["value" => static::DEFAULT_CONTACT_PHONE]),
+        ];
+
+        $contact->phones->add($phones);
+
+        \Tester\Assert::same(3, $contact->phones->count());
+        \Tester\Assert::same($phones, $contact->phones->asArray());
+    }
+
     public function testAddNew() {
         \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($this->createDataStorageForTestAddNew());
         $contact = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact(1);
