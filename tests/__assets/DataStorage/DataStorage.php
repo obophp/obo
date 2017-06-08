@@ -304,7 +304,7 @@ class DataStorage implements \obo\Interfaces\IDataStorage {
 
     /**
      * @param \obo\Carriers\QueryCarrier $queryCarrier
-     * @return arrya
+     * @return array
      */
     public function dataForQuery(\obo\Carriers\QueryCarrier $queryCarrier) {
         $this->logEventForDataForQuery($queryCarrier);
