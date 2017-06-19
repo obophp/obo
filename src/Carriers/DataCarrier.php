@@ -86,7 +86,7 @@ class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Coun
      * @return bool
      */
     public function containsValue($value) {
-        return \array_search($value, $this->variables()) === false ? false : true;
+        return \in_array($value, $this->variables());
     }
 
     /**

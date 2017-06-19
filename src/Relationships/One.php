@@ -77,7 +77,7 @@ class One extends \obo\Relationships\Relationship {
      * @return \obo\Entity|null
      */
     public function entityForOwnerForeignKey(\obo\Entity $owner, array $foreignKey, $autoCreate = true) {
-        if ($owner->primaryPropertyValue() === null) return null;
+        if (!$owner->isBasedInRepository()) return null;
         $this->owner = $owner;
 
         if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
