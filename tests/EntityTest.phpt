@@ -165,14 +165,14 @@ class EntityTest extends \Tester\TestCase {
         $contact->save();
 
         \Tester\Assert::true($contact->isBasedInRepository());
-        \Tester\Assert::same(\array_values($contact->entityInformation()->persistablePropertiesNames), \array_keys($contact->dataStorage()->getLastEventForTypeAndEntity(\obo\Tests\Assets\DataStorage::EVENT_TYPE_INSERT, $contact)["data"]));
+        \Tester\Assert::same(\array_values($contact->entityInformation()->persistablePropertiesNames), \array_keys($contact->dataStorage()->getLastEventForTypeAndKey(\obo\Tests\Assets\DataStorage::EVENT_TYPE_INSERT, $contact->objectIdentificationKey())["data"]["dataToStore"]));
 
         $newData = ["name" => "changed" . static::DEFAULT_CONTACT_NAME, "note" => "changed" . static::DEFAULT_NOTE];
         $contact->changeValuesPropertiesFromArray($newData);
         $contact->save();
         $newData["updatedAt"] = $contact->updatedAt;
 
-        \Tester\Assert::same($newData, $contact->dataStorage()->getLastEventForTypeAndEntity(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact)["data"]);
+        \Tester\Assert::same($newData, $contact->dataStorage()->getLastEventForTypeAndKey(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact->objectIdentificationKey())["data"]["dataToStore"]);
     }
 
     public function testComplicatedSave() {
@@ -189,14 +189,14 @@ class EntityTest extends \Tester\TestCase {
         $contact->save();
         $storedData = ["defaultEmail" => 3, "updatedAt" => $contact->updatedAt, "administrativeEmail" => 2];
 
-        \Tester\Assert::same($storedData, $contact->dataStorage()->getLastEventForTypeAndEntity(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact)["data"]);
+        \Tester\Assert::same($storedData, $contact->dataStorage()->getLastEventForTypeAndKey(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact->objectIdentificationKey())["data"]["dataToStore"]);
 
         $newDefaultEmail = $contact->emails->addNew(["value" => static::DEFAULT_CONTACT_EMAIL]);
         $contact->defaultEmail = $newDefaultEmail;
         $contact->save();
         $storedData = ["defaultEmail" => 4, "updatedAt" => $contact->updatedAt];
 
-        \Tester\Assert::same($storedData, $contact->dataStorage()->getLastEventForTypeAndEntity(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact)["data"]);
+        \Tester\Assert::same($storedData, $contact->dataStorage()->getLastEventForTypeAndKey(\obo\Tests\Assets\DataStorage::EVENT_TYPE_UPDATE, $contact->objectIdentificationKey())["data"]["dataToStore"]);
     }
 
     public function testDelete() {
@@ -212,7 +212,7 @@ class EntityTest extends \Tester\TestCase {
     }
 
     public function testChanged() {
-        \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($this->createDataStorageMockForTestChanged());
+        \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($dataStorage = $this->createDataStorageMockForTestChanged());
         $entity = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact(1);
         \Tester\Assert::false($entity->changed());
         $originalName = $entity->name;
@@ -234,6 +234,8 @@ class EntityTest extends \Tester\TestCase {
                 ->where("{id} = ?", 1);
 
         $dataStorageMock = \Mockery::mock(new \obo\Tests\Assets\DataStorage);
+
+        $dataStorageMock->enableDataForQueryLogging($dataStorageMock);
 
         $dataStorageMock->shouldReceive("dataForQuery")
                         ->with(\equalTo($specification))
