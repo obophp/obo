@@ -1,10 +1,10 @@
 <?php
 
-namespace obo\Tests;
+namespace obo\Tests\TestCases\EntitiesCollection;
 
 use Tester\Assert;
 
-require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
+require __DIR__ . "/../../bootstrap.php";
 
 /**
  * @testCase
@@ -24,7 +24,7 @@ class EntitiesCollectionTest extends \Tester\TestCase {
      * @return \obo\Tests\Assets\Entities\Contacts\Contact
      */
     protected function getContact() {
-        return Assets\Entities\Contacts\ContactManager::entityFromArray(static::$contactData);
+        return \obo\Tests\Assets\Entities\Contacts\ContactManager::entityFromArray(static::$contactData);
     }
 
     public function testCount() {
@@ -67,8 +67,8 @@ class EntitiesCollectionTest extends \Tester\TestCase {
         ];
 
         $dataStorage = $this->getDataStorageForLoadEntitiesWithOverwriteQueryCarrier();
-        Assets\Entities\BusinessSubjectManager::setDataStorage($dataStorage);
-        $collection = Assets\Entities\BusinessSubjectManager::findEntitiesAsCollection(Assets\Entities\BusinessSubjectManager::querySpecification());
+        \obo\Tests\Assets\Entities\BusinessSubjectManager::setDataStorage($dataStorage);
+        $collection = \obo\Tests\Assets\Entities\BusinessSubjectManager::findEntitiesAsCollection(\obo\Tests\Assets\Entities\BusinessSubjectManager::querySpecification());
 
         $array = [];
         foreach ($collection as $id => $entity) $array[$id] = $entity->propertiesAsArray();
@@ -79,8 +79,8 @@ class EntitiesCollectionTest extends \Tester\TestCase {
     public function getDataStorageForLoadEntitiesWithOverwriteQueryCarrier() {
         $mockStorage = \Mockery::mock(new \obo\Tests\Assets\DataStorage);
 
-        $corectSpecification = \obo\Carriers\QueryCarrier::instance()->select(Assets\Entities\BusinessSubjectManager::constructSelect())->where("AND {original} IS NULL")->where("AND {deleted} = ?", 0);
-        $corectSpecification->setDefaultEntityClassName(Assets\Entities\BusinessSubject::class);
+        $corectSpecification = \obo\Carriers\QueryCarrier::instance()->select(\obo\Tests\Assets\Entities\BusinessSubjectManager::constructSelect())->where("AND {original} IS NULL")->where("AND {deleted} = ?", 0);
+        $corectSpecification->setDefaultEntityClassName(\obo\Tests\Assets\Entities\BusinessSubject::class);
 
         $mockStorage->shouldReceive("dataForQuery")
             ->with(\equalTo($corectSpecification))
@@ -150,7 +150,7 @@ class EntitiesCollectionTest extends \Tester\TestCase {
     }
 
     public function createDataStorageForTestAddNew() {
-        $specification = Assets\Entities\Contacts\ContactManager::queryCarrier()
+        $specification = \obo\Tests\Assets\Entities\Contacts\ContactManager::queryCarrier()
                 ->select(\obo\Tests\Assets\Entities\Contacts\ContactManager::constructSelect())
                 ->where("{id} = ?", 1);
 
@@ -312,5 +312,4 @@ class EntitiesCollectionTest extends \Tester\TestCase {
 
 }
 
-$testCase = new EntitiesCollectionTest();
-$testCase->run();
+(new EntitiesCollectionTest())->run();
