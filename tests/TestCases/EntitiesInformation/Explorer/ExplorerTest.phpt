@@ -1,10 +1,10 @@
 <?php
 
-namespace obo\Tests\Services\EntitiesInformation;
+namespace obo\Tests\TestCases\EntitiesInformation\Explorer;
 
 use Tester\Assert;
 
-require __DIR__ . "/../../" . "bootstrap.php";
+require __DIR__ . "/../../../bootstrap.php";
 
 class ExplorerTest extends \Tester\TestCase {
 
@@ -47,7 +47,7 @@ class ExplorerTest extends \Tester\TestCase {
     ];
 
     public function testFindClasses() {
-        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . "/../../__assets/Entities/Entity"), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
+        $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__ . "/../../../__assets/Entities/Entity"), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
         $files = new \RegexIterator($iterator, '#^.+\.php$#', \RegexIterator::MATCH, \RegexIterator::USE_KEY);
         $content = "";
 
@@ -67,7 +67,7 @@ class ExplorerTest extends \Tester\TestCase {
     }
 
     public function testAnalyze() {
-        $path = __DIR__ . "/../../__assets";
+        $path = __DIR__ . "/../../../__assets";
         $explorer = new \obo\Services\EntitiesInformation\Explorer();
         \obo\DataType\CoreDataTypes::register($explorer);
         \obo\Annotation\CoreAnnotations::register($explorer);
@@ -102,7 +102,7 @@ class ExplorerTest extends \Tester\TestCase {
     }
 
     public function testGettersAndSettersForEntity() {
-        $path = __DIR__ . "/../../__assets";
+        $path = __DIR__ . "/../../../__assets";
         $explorer = new \obo\Services\EntitiesInformation\Explorer();
         \obo\DataType\CoreDataTypes::register($explorer);
         \obo\Annotation\CoreAnnotations::register($explorer);
@@ -135,5 +135,4 @@ class ExplorerTest extends \Tester\TestCase {
     }
 }
 
-$testCase = new ExplorerTest();
-$testCase->run();
+(new ExplorerTest())->run();

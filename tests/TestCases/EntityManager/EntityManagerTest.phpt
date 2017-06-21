@@ -4,7 +4,7 @@ namespace obo\Tests;
 
 use Tester\Assert;
 
-require __DIR__ . DIRECTORY_SEPARATOR . "bootstrap.php";
+require __DIR__ . "/../../bootstrap.php";
 
 /**
  * @testCase
@@ -126,5 +126,4 @@ class EntityManagerTest extends \Tester\TestCase {
 
 }
 
-$testCase = new EntityManagerTest();
-$testCase->run();
+(new EntityManagerTest())->run();
