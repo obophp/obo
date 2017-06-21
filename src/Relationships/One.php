@@ -77,7 +77,7 @@ class One extends \obo\Relationships\Relationship {
      * @return \obo\Entity|null
      */
     public function entityForOwnerForeignKey(\obo\Entity $owner, array $foreignKey, $autoCreate = true) {
-        if (!$owner->isBasedInRepository()) return null;
+        if (!$owner->isBasedInRepository() AND !$autoCreate) return null;
         $this->owner = $owner;
 
         if ($this->entityClassNameToBeConnectedInPropertyWithName === null) {
@@ -90,18 +90,22 @@ class One extends \obo\Relationships\Relationship {
 
         $specification = $entityManagerName::querySpecification();
 
-        if (\count($foreignKey) === 1) {
-            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
-        } else {
-            $this->ownerNameInProperty = $foreignKey[1];
-            $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->name);
+        if ($owner->isBasedInRepository()) {
+            if (\count($foreignKey) === 1) {
+                $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
+            } else {
+                $this->ownerNameInProperty = $foreignKey[1];
+                $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->name);
+            }
+
+            if ($entity = $entityManagerName::findEntity($specification, false)) return $entity;
         }
 
-        if ($entity = $entityManagerName::findEntity($specification, false)) {
-            return $entity;
-        } else {
-            return ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) ? $entityManagerName::entityFromArray([$foreignKey[0] => $owner]) : null;
+        if ($autoCreate AND $this->autoCreate AND !$owner->isDeleted()) {
+            return $entityManagerName::entityFromArray([$foreignKey[0] => $owner]);
         }
+
+        return null;
     }
 
 }
