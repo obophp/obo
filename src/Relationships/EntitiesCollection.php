@@ -179,6 +179,8 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             $entities = [$entities];
         }
 
+        $loadedItems = $this->variables([]);
+
         foreach ($entities as $key => $entity) {
             if (!$entity instanceof $this->relationShip->entityClassNameToBeConnected) throw new \obo\Exceptions\BadDataTypeException("Can't insert entity of {$entity->getReflection()->name} class, because the collection is designed for entities of {$this->relationShip->entityClassNameToBeConnected} class. Only entity of {$this->relationShip->entityClassNameToBeConnected} class can be loaded.");
 
@@ -198,7 +200,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
                         "actionArguments" => ["entitiesCollection" => $this],
                     ]));
             } else {
-                if ($this->__isset($entityKey)) throw new \obo\Exceptions\Exception("Can't add an element with key '{$entityKey}' into a collection because it already exists.");
+                if (isset($loadedItems[$entityKey])) throw new \obo\Exceptions\Exception("Can't add an element with key '{$entityKey}' into a collection because it already exists.");
             }
 
             if ($notifyEvents) {
@@ -306,9 +308,6 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         if ($this->owner->isBasedInRepository()) {
             $specification = new \obo\Carriers\QuerySpecification();
 
-            $ownedEntityClassName = $this->relationShip->entityClassNameToBeConnected;
-            $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
-
             if ($entityKeys !== null) {
                 $entityClassName = $this->relationShip->entityClassNameToBeConnected;
                 $specification->where("AND {{$entityClassName::entityInformation()->primaryPropertyName}} IN (?)", $entityKeys);
@@ -319,13 +318,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             foreach ($this->relationShip->findEntities($specification) as $entity) {
                 \obo\obo::$eventManager->notifyEventForEntity("beforeConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
                 $variables[$entity->primaryPropertyValue()] = $entity;
-
                 \obo\obo::$eventManager->notifyEventForEntity("afterConnectToOwner", $entity, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName]);
                 \obo\obo::$eventManager->notifyEventForEntity($this->relationShip->ownerPropertyName . "Connected", $this->owner, ["collection" => $this, "owner" => $this->owner, "columnName" => $this->relationShip->ownerPropertyName, "addedEntity" => $entity]);
             }
-        }
 
-        $this->entitiesAreLoaded = true;
+            if ($entityKeys === null) {
+                $this->entitiesAreLoaded = true;
+            }
+        } else {
+            $this->entitiesAreLoaded = true;
+        }
     }
 
     /**
@@ -396,8 +398,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @return void
      */
     public function unsetValueForVariableWithName($variableName) {
-        $this->variableForName($variableName);
-        unset($this->variables([$variableName])[$variableName]);
+        unset($this->variables([])[$variableName]);
     }
 
     /**
