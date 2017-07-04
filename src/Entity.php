@@ -344,7 +344,6 @@ abstract class Entity  extends \obo\Object {
             if ($propertyInformation->relationship !== null OR (\is_object($value) AND ($value instanceof \obo\Entity OR ($value instanceof \obo\Relationships\EntitiesCollection)))) {
                 if (\is_scalar($value)) {
                     if ($propertyInformation->relationship instanceof \obo\Relationships\One) {
-
                         if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
                             $targetEntity = ($propertyWithTargetEntityName = $this->valueForPropertyWithName($this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnectedInPropertyWithName)) ? \obo\obo::$entitiesInformation->entityClassNameForEntityWithName($propertyWithTargetEntityName) : null;
                         }
@@ -482,10 +481,12 @@ abstract class Entity  extends \obo\Object {
 
                     if (!$targetEntity = $this->informationForPropertyWithName($propertyName)->relationship->entityClassNameToBeConnected) {
                         if (isset($formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName])) {
-                            $targetEntity = $formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName];
+                            $targetEntityName = $formattedData[$relationship->entityClassNameToBeConnectedInPropertyWithName];
                         } else {
-                            $targetEntity = $this->valueForPropertyWithName($relationship->entityClassNameToBeConnectedInPropertyWithName);
+                            $targetEntityName = $this->valueForPropertyWithName($relationship->entityClassNameToBeConnectedInPropertyWithName);
                         }
+
+                        $targetEntity = \obo\obo::$entitiesInformation->entityClassNameForEntityWithName($targetEntityName);
                     }
 
                     $manager = $targetEntity::entityInformation()->managerName;
@@ -797,7 +798,7 @@ abstract class Entity  extends \obo\Object {
                         $relationshipInformation["cascade"] = \implode(", ", $relationship->cascade);
                     }
 
-                    $relationshipInformation["autocreate"] = $relationship->autoCreate;
+                    $relationshipInformation["autoCreate"] = $relationship->autoCreate;
 
                     if ($relationship->entityClassNameToBeConnectedInPropertyWithName) $relationshipInformation["entityClassNameToBeConnectedInPropertyWithName"] = $relationship->entityClassNameToBeConnectedInPropertyWithName;
                     if ($relationship->connectViaProperty) $relationshipInformation["connectViaProperty"] = $relationship->connectViaProperty;

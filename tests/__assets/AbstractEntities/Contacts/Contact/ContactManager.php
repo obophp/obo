@@ -9,7 +9,7 @@ abstract class ContactManager extends \obo\Tests\Assets\AbstractEntities\EntityM
      * @return \obo\Tests\Assets\AbstractEntities\Contacts\Contact
      */
     public static function contact($specification) {
-        return parent::entity($specification);
+        return static::entity($specification);
     }
 
     /**
@@ -18,7 +18,7 @@ abstract class ContactManager extends \obo\Tests\Assets\AbstractEntities\EntityM
      * @return \obo\Tests\Assets\AbstractEntities\Contacts\Contact[]
      */
     public static function contacts($paginator = null, $filter = null) {
-        return parent::findEntities(static::queryCarrier(), $paginator, $filter);
+        return static::findEntities(static::queryCarrier(), $paginator, $filter);
     }
 
 }
