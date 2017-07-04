@@ -207,7 +207,7 @@ class EntityTest extends \Tester\TestCase {
     }
 
     public function testMetaData() {
-        $metaDataHash = "5f66bec2ccf6363e028619f2b340f604";
+        $metaDataHash = "7ded1603b3c20439b4b2b9353434dd5c";
         \Tester\Assert::same($metaDataHash, \md5(\preg_replace("#\"objectIdentificationKey\"\;s\:32\:\"([a-z0-9]{32})\"#", "\"objectIdentificationKey\";s:32:\"00000000000000000000000000000000\"", \serialize($this->getExtendedContact()->metaData()))));
     }
 
