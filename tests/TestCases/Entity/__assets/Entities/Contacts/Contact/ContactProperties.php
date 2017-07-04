@@ -9,4 +9,9 @@ class ContactProperties extends \obo\Tests\Assets\Entities\Contacts\ContactPrope
      */
     public $administrativeEmail = null;
 
+    /**
+     * @obo-one(targetEntity = "\obo\Tests\TestCases\Entity\Assets\Entities\Notes\Note", connectViaProperty="owner", ownerNameInProperty="ownerEntityName" , autoCreate=true)
+     */
+    public $note = null;
+
 }
