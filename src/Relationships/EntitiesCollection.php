@@ -282,6 +282,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param \obo\Interfaces\IQuerySpecification $specification
+     * @return \obo\Carriers\EntitiesCollection
+     */
+    public function findAsCollection(\obo\Interfaces\IQuerySpecification $specification) {
+        return $this->relationShip->findEntitiesAsCollection($specification);
+    }
+
+    /**
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity[]
