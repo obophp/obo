@@ -55,6 +55,16 @@ class Many extends \obo\Relationships\Relationship {
 
     /**
      * @param \obo\Carriers\QuerySpecification $specification
+     * @return \obo\Carriers\EntitiesCollection
+     */
+    public function findEntitiesAsCollection(\obo\Carriers\QuerySpecification $specification = null) {
+        $ownedEntityClassName = $this->entityClassNameToBeConnected;
+        $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
+        return $ownedEntityManagerName::findEntitiesAsCollection($this->createSpecification($specification));
+    }
+
+    /**
+     * @param \obo\Carriers\QuerySpecification $specification
      * @return int
      */
     public function countEntities(\obo\Carriers\QuerySpecification $specification = null) {
