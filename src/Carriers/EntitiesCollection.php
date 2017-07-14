@@ -131,6 +131,16 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @param \obo\Interfaces\IQuerySpecification $specification
+     * @return \obo\Carriers\EntitiesCollection
+     */
+    public function findAsCollection(\obo\Interfaces\IQuerySpecification $specification) {
+        $entitiesClassName = $this->entitiesClassName;
+        $entitiesManagerClassName = $entitiesClassName::entityInformation()->managerName;
+        return $entitiesManagerClassName::findEntitiesAsCollection($entitiesManagerClassName::queryCarrier()->addSpecification($this->getSpecification())->addSpecification($specification));
+    }
+
+    /**
      * @param \obo\Interfaces\IPaginator $paginator
      * @param \obo\Interfaces\IFilter $filter
      * @return \obo\Entity[]
