@@ -80,6 +80,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return bool
+     */
+    public function getEntitiesAreLoaded() {
+        return $this->entitiesAreLoaded;
+    }
+
+    /**
      * @internal
      * @param array $requiredItems
      * @return array
@@ -307,6 +314,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         $specification->addSpecification($paginator->getSpecification());
 
         return $this->find($specification);
+    }
+
+    public function setEntities($entities) {
+        $variables = &parent::variables([]);
+        foreach ($entities as $entity) {
+            $variables[$entity->primaryPropertyValue()] = $entity;
+        }
+        $this->entitiesAreLoaded = true;
     }
 
     /**

@@ -170,6 +170,14 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
         return $ownedEntityManagerName::countRecords($ownedEntityManagerName::queryCarrier()->addSpecification($this->getSpecification()->addSpecification($specification)));
     }
 
+    public function setEntities($entities) {
+        $variables = &parent::variables([]);
+        foreach ($entities as $entity) {
+            $variables[$entity->primaryPropertyValue()] = $entity;
+        }
+        $this->entitiesAreLoaded = true;
+    }
+
     /**
      * @param array $entityKeys
      * @return void
