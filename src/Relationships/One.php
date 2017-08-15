@@ -33,6 +33,11 @@ class One extends \obo\Relationships\Relationship {
     public $ownerNameInProperty = "";
 
     /**
+     * @var array
+     */
+    public $declaredEntities = [];
+
+    /**
      * @param string $entityClassNameToBeConnected
      * @param string $ownerPropertyName
      * @param array $cascade
