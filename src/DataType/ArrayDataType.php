@@ -46,4 +46,11 @@ class ArrayDataType extends \obo\DataType\Base\DataType {
         return $value === null ? $value : (array) $value;
     }
 
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return true;
+    }
+
 }

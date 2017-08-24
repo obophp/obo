@@ -55,4 +55,11 @@ class BooleanDataType extends \obo\DataType\Base\DataType {
         return $value;
     }
 
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return false;
+    }
+
 }

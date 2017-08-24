@@ -32,7 +32,7 @@ class ObjectDataType extends \obo\DataType\Base\DataType {
      * @return array
      */
     public static function optionsStructure() {
-        return ["className" => false];
+        return ["className" => false, "storageDataCompression" => false];
     }
 
     /**
@@ -62,6 +62,13 @@ class ObjectDataType extends \obo\DataType\Base\DataType {
     public static function sanitizeValue($value) {
         if (!\is_object($value) AND @$object = \unserialize($value)) return $object;
         return $value;
+    }
+
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return true;
     }
 
 }

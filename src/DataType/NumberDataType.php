@@ -40,10 +40,18 @@ class NumberDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
-     * @return mixed
+     * @return void
+     * @throws \obo\Exceptions\Exception
      */
     public static function convertValue($value) {
         throw new \obo\Exceptions\Exception("Datatype 'Number' can't convert any value.");
+    }
+
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return false;
     }
 
 }
