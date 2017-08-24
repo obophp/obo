@@ -23,6 +23,11 @@ class One extends \obo\Annotation\Base\Property {
     protected $targetEntityInProperty = null;
 
     /**
+     * @var array
+     */
+    protected $declaredEntities = [];
+
+    /**
      * @var string
      */
     protected $connectViaProperty = null;
@@ -78,13 +83,15 @@ class One extends \obo\Annotation\Base\Property {
     public function process(array $values) {
         parent::process($values);
 
-        $this->targetEntity = \trim($values["targetEntity"], "\\");
+        $explodedTargetEntity = \array_map("trim", \explode(",", \trim($values["targetEntity"], "\\")));
+        $this->targetEntity = \array_shift($explodedTargetEntity);
 
         if (\strpos($this->targetEntity, "property:") === 0) {
             $this->targetEntityInProperty = \substr($this->targetEntity, 9);
             if ($this->entityInformation->existInformationForPropertyWithName($this->targetEntityInProperty)) {
                 \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\StringDataType::name(), $this->entityInformation->informationForPropertyWithName($this->targetEntityInProperty));
             }
+            $this->declaredEntities = $explodedTargetEntity;
         }
 
         if (isset($values["cascade"])) $this->cascadeOptions = \preg_split("#, ?#", $values["cascade"]);
@@ -121,6 +128,7 @@ class One extends \obo\Annotation\Base\Property {
         $relationship->autoCreate = $this->autoCreate;
         $relationship->ownerNameInProperty = $this->ownerNameInProperty;
         $relationship->connectViaProperty = $this->connectViaProperty;
+        $relationship->declaredEntities = $this->declaredEntities;
 
         $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\EntityDataType::name(), $this->propertyInformation, $this->targetEntityInProperty === null ? ["className" => $this->targetEntity] : []);
     }
@@ -209,10 +217,15 @@ class One extends \obo\Annotation\Base\Property {
                 "name" => "beforeWrite" . \ucfirst($this->propertyInformation->name),
                 "actionAnonymousFunction" => function($arguments) {
                     if (\is_string($arguments["propertyValue"]["new"]) AND \count($parts = explode(":", $arguments["propertyValue"]["new"])) === 2) {
-                        $entityName = ltrim($parts[1], "\\");
+                        $entityName = \ltrim($parts[1], "\\");
                         \obo\obo::$entitiesInformation->entityClassNameForEntityWithName($entityName);
                         $arguments["propertyValue"]["new"] = $parts[0];
                         $propertyInformation = $arguments["entity"]->informationForPropertyWithName($this->propertyInformation->name);
+
+                        if ((bool) $this->declaredEntities && !\in_array($entityName, $this->declaredEntities)) {
+                            throw new \obo\Exceptions\PropertyAccessException("Entity with type '{$entityName}' isn't allowed for relation defined in entity '{$arguments["entity"]->className()}' and property '{$this->propertyInformation->name}'. Declared entities are '" . \implode(", ", $this->declaredEntities) . "'");
+                        }
+
                         $arguments["entity"]->setValueForPropertyWithName($entityName, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }
                 },
@@ -225,7 +238,13 @@ class One extends \obo\Annotation\Base\Property {
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
 
                     if ($arguments["propertyValue"]["new"] instanceof \obo\Entity) {
-                        $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->entityInformation()->name, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        $entityName = $arguments["propertyValue"]["new"]->entityInformation()->name;
+
+                        if ((bool) $this->declaredEntities && !\in_array($entityName, $this->declaredEntities)) {
+                            throw new \obo\Exceptions\PropertyAccessException("Entity with type '{$entityName}' isn't allowed for relation defined in entity '{$arguments["entity"]->className()}' and property '{$this->propertyInformation->name}'. Declared entities are '" . \implode(", ", $this->declaredEntities) . "'");
+                        }
+
+                        $arguments["entity"]->setValueForPropertyWithName($entityName, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     } elseif ($arguments["propertyValue"]["new"] === null) {
                         $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }
