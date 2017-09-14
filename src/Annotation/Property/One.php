@@ -53,6 +53,11 @@ class One extends \obo\Annotation\Base\Property {
     protected $eager = false;
 
     /**
+     * @var string
+     */
+    protected $interface = null;
+
+    /**
      * @return string
      */
     public static function name() {
@@ -71,6 +76,7 @@ class One extends \obo\Annotation\Base\Property {
                 "cascade" => false,
                 "autoCreate" => false,
                 "eager" => false,
+                "interface" => false,
             ]
         ];
     }
@@ -107,6 +113,10 @@ class One extends \obo\Annotation\Base\Property {
 
         if (isset($values["eager"])) $this->eager = $values["eager"];
         if ($this->eager) $this->entityInformation->eagerConnections[] = $this->propertyInformation->name;
+
+        if (isset($values["interface"])) {
+            $this->interface = $values["interface"];
+        }
     }
 
     /**
@@ -129,6 +139,7 @@ class One extends \obo\Annotation\Base\Property {
         $relationship->ownerNameInProperty = $this->ownerNameInProperty;
         $relationship->connectViaProperty = $this->connectViaProperty;
         $relationship->declaredEntities = $this->declaredEntities;
+        $relationship->interface = $this->interface;
 
         $this->propertyInformation->dataType = \obo\obo::$entitiesExplorer->createDataType(\obo\DataType\EntityDataType::name(), $this->propertyInformation, $this->targetEntityInProperty === null ? ["className" => $this->targetEntity] : []);
     }
@@ -226,6 +237,12 @@ class One extends \obo\Annotation\Base\Property {
                             throw new \obo\Exceptions\PropertyAccessException("Entity with type '{$entityName}' isn't allowed for relation defined in entity '{$arguments["entity"]->className()}' and property '{$this->propertyInformation->name}'. Declared entities are '" . \implode(", ", $this->declaredEntities) . "'");
                         }
 
+                        $interface = \ltrim($this->interface, "\\");
+
+                        if ($this->interface !== null && !($arguments["entity"] instanceof $interface)) {
+                            throw new \obo\Exceptions\PropertyAccessException("Entity with class '{$arguments["propertyValue"]["new"]->className()}' isn't allowed for relation defined in entity '{$arguments["entity"]->className()}' and property '{$propertyInformation->name}' because it must implement interface '{$interface}'");
+                        }
+
                         $arguments["entity"]->setValueForPropertyWithName($entityName, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }
                 },
@@ -245,6 +262,13 @@ class One extends \obo\Annotation\Base\Property {
                         }
 
                         $arguments["entity"]->setValueForPropertyWithName($entityName, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
+                        $interface = \ltrim($this->interface, "\\");
+
+                        if ($this->interface !== null && !($arguments["propertyValue"]["new"] instanceof $interface)) {
+                            throw new \obo\Exceptions\PropertyAccessException("Entity with class '{$arguments["propertyValue"]["new"]->className()}' isn't allowed for relation defined in entity '{$arguments["entity"]->className()}' and property '{$propertyInformation->name}' because it must implement interface '{$interface}'");
+                        }
+
+                        $arguments["entity"]->setValueForPropertyWithName($arguments["propertyValue"]["new"]->entityInformation()->name, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     } elseif ($arguments["propertyValue"]["new"] === null) {
                         $arguments["entity"]->setValueForPropertyWithName(null, $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName);
                     }
