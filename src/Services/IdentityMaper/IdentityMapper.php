@@ -10,7 +10,7 @@
 
 namespace obo\Services\IdentityMapper;
 
-class IdentityMapper extends \obo\Object {
+class IdentityMapper extends \obo\BaseObject {
 
     /**
      * @var \obo\Entity[]

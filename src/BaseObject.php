@@ -10,7 +10,7 @@
 
 namespace obo;
 
-abstract class Object {
+abstract class BaseObject {
 
     /**
      * @return string
