@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class DataCarrier extends \obo\Object implements \Iterator,  \ArrayAccess, \Countable {
+class DataCarrier extends \obo\BaseObject implements \Iterator,  \ArrayAccess, \Countable {
 
     /**
      * @var array

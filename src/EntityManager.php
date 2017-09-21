@@ -10,7 +10,7 @@
 
 namespace obo;
 
-abstract class EntityManager  extends \obo\Object {
+abstract class EntityManager  extends \obo\BaseObject {
 
     /**
      * @var array

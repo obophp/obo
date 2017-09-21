@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class QuerySpecification extends \obo\Object implements \obo\Interfaces\IQuerySpecification {
+class QuerySpecification extends \obo\BaseObject implements \obo\Interfaces\IQuerySpecification {
 
     /**
      * @var array
