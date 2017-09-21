@@ -13,7 +13,7 @@ namespace obo;
 /**
  * @method void on($eventName, callable $callback)
  */
-abstract class Entity  extends \obo\Object {
+abstract class Entity  extends \obo\BaseObject {
 
     /**
      * @var \obo\Carriers\EntityInformationCarrier[]

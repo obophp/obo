@@ -10,7 +10,7 @@
 
 namespace obo\DataType;
 
-class CoreDataTypes extends \obo\Object {
+class CoreDataTypes extends \obo\BaseObject {
 
     public static function register(\obo\Services\EntitiesInformation\Explorer $entitiesExplorer) {
         $entitiesExplorer->registerDatatype("\\obo\\DataType\\ArrayDataType");

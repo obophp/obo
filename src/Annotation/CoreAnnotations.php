@@ -10,7 +10,7 @@
 
 namespace obo\Annotation;
 
-class CoreAnnotations extends \obo\Object {
+class CoreAnnotations extends \obo\BaseObject {
 
     /**
      * @param \obo\Services\EntitiesInformation\Explorer $entitiesExplorer

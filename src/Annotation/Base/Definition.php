@@ -10,7 +10,7 @@
 
 namespace obo\Annotation\Base;
 
-abstract class Definition extends \obo\Object {
+abstract class Definition extends \obo\BaseObject {
 
     const ENTITY_SCOPE = "entity";
     const METHOD_SCOPE = "method";
