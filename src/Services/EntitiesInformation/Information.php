@@ -10,7 +10,7 @@
 
 namespace obo\Services\EntitiesInformation;
 
-class Information extends \obo\Object {
+class Information extends \obo\BaseObject {
 
     /** @var array */
     protected $modelsDirs = [];

@@ -10,7 +10,7 @@
 
 namespace obo;
 
-class obo extends \obo\Object {
+class obo extends \obo\BaseObject {
 
     const _NAME = "obo";
     const _VERSION = "v1-dev";

@@ -52,7 +52,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
 
-        if (!$this->entitiesAreLoaded AND ((\count($requiredItems) !== 0) OR $requiredItems === null)) {
+        if (!$this->entitiesAreLoaded AND ($requiredItems === null OR !$requiredItems)) {
             $this->entitiesAreLoaded = $requiredItems === null;
             $this->loadEntities($requiredItems);
         }

@@ -10,7 +10,7 @@
 
 namespace obo\DataType\Base;
 
-abstract class DataType extends \obo\Object implements \obo\Interfaces\IDataType {
+abstract class DataType extends \obo\BaseObject implements \obo\Interfaces\IDataType {
 
     /**
      * @var \obo\Carriers\PropertyInformationCarrier

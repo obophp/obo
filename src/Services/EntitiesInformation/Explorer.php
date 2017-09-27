@@ -10,7 +10,7 @@
 
 namespace obo\Services\EntitiesInformation;
 
-class Explorer extends \obo\Object {
+class Explorer extends \obo\BaseObject {
 
     const ANNOTATION_PREFIX = "obo-";
 
@@ -312,7 +312,7 @@ class Explorer extends \obo\Object {
         foreach ($propertiesClassReflection->getMethods() as $method) {
             $methodName = $method->name;
 
-            if ($method->class === "obo\\EntityProperties" OR $method->class === "obo\\Object") continue;
+            if ($method->class === "obo\\EntityProperties" OR $method->class === "obo\\BaseObject") continue;
 
             if (!\preg_match("#^((get)|(set))[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff].+#", $methodName)) continue;
 
@@ -325,7 +325,7 @@ class Explorer extends \obo\Object {
         $propertiesDeclaringClassNameMap = $this->loadPropertiesDeclaringClassNameMap($entityClassName);
 
         foreach ($propertiesClassReflection->getProperties() as $property) {
-            if (!$property->isPublic() OR $property->class === "obo\\EntityProperties" OR $property->class === "obo\\Object") continue;
+            if (!$property->isPublic() OR $property->class === "obo\\EntityProperties" OR $property->class === "obo\\BaseObject") continue;
 
             $propertyInformation = new \obo\Carriers\PropertyInformationCarrier();
             $propertyInformation->name = $property->name;
@@ -610,7 +610,7 @@ class Explorer extends \obo\Object {
         $classes = [$className];
 
         foreach (\class_parents($className) as $class) {
-            if ($class === "obo\\Object") break;
+            if ($class === "obo\\BaseObject") break;
             \array_unshift($classes, $class);
         }
 

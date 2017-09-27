@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class EntityInformationCarrier extends \obo\Object {
+class EntityInformationCarrier extends \obo\BaseObject {
 
     /**
      * @var string

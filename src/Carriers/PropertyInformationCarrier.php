@@ -10,7 +10,7 @@
 
 namespace obo\Carriers;
 
-class PropertyInformationCarrier extends \obo\Object {
+class PropertyInformationCarrier extends \obo\BaseObject {
 
     /**
      * @var \obo\Carriers\EntityInformationCarrier
