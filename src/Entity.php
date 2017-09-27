@@ -297,7 +297,13 @@ abstract class Entity  extends \obo\BaseObject {
             \obo\obo::$eventManager->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
         }
 
-        if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) $value = $value->primaryPropertyValue();
+        if ($entityAsPrimaryPropertyValue === true) {
+            if ($propertyInformation->hasRelationshipOne() && $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName && $value) {
+                $value = ($value instanceof \obo\Entity) ? $value->entityIdentificationKey() : \obo\obo::$identityMapper->entityIdentificationKeyForPrimaryPropertyValueAndClassName($value, $this->valueForPropertyWithName($propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName));
+            } elseif ($value instanceof \obo\Entity) {
+                $value = $value->primaryPropertyValue();
+            }
+        }
 
         return $value;
     }
@@ -589,14 +595,20 @@ abstract class Entity  extends \obo\BaseObject {
         $changedProperties = $this->changedProperties($this->entityInformation()->persistablePropertiesNames, true, true);
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
+            if ($propertyInformation->hasRelationshipOne() && $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName && isset($changedProperties[$propertyInformation->name])) {
+                $value = $this->valueForPropertyWithName($propertyInformation->name);
+                $changedProperties[$propertyInformation->name] = ($value instanceof \obo\Entity) ? $value->primaryPropertyValue() : $value;
+            }
+
             if ($propertyInformation->persistable
-                    AND ($relationship = $propertyInformation->relationship) instanceof \obo\Relationships\One
-                    AND $relationship->connectViaProperty !== ""
+                    AND $propertyInformation->hasRelationshipOne()
+                    AND $propertyInformation->relationship->connectViaProperty !== ""
                     AND isset($propertiesChanges[$propertyInformation->name])
                     AND $this->valueForPropertyWithName($propertyInformation->name, true) != ((($lastPersistedValue = $propertiesChanges[$propertyInformation->name]["lastPersistedValue"]) instanceof \obo\Entity) ? $lastPersistedValue->primaryPropertyValue() : $lastPersistedValue)
                     AND !isset($changedProperties[$propertyInformation->name])
                 ) {
-                    $changedProperties[$propertyInformation->name] = $this->valueForPropertyWithName($propertyInformation->name, true);
+                    $value = $this->valueForPropertyWithName($propertyInformation->name);
+                    $changedProperties[$propertyInformation->name] = ($value instanceof \obo\Entity) ? $value->primaryPropertyValue() : $value;
             }
         }
 

@@ -12,6 +12,8 @@ namespace obo\Services\IdentityMapper;
 
 class IdentityMapper extends \obo\BaseObject {
 
+    const ENTITY_IDENTIFICATION_KEY_SPEARATOR = ":";
+
     /**
      * @var \obo\Entity[]
      */
@@ -22,7 +24,16 @@ class IdentityMapper extends \obo\BaseObject {
      * @return string
      */
     public function identificationKeyForEntity(\obo\Entity $entity) {
-        return $entity->primaryPropertyValue() ? $entity->className() . $entity->primaryPropertyValue() : null;
+        return $entity->primaryPropertyValue() ? $this->entityIdentificationKeyForPrimaryPropertyValueAndClassName($entity->primaryPropertyValue(), $entity->className()) : null;
+    }
+
+    /**
+     * @param mixed $primaryPropertyValue
+     * @param string $className
+     * @return string
+     */
+    public function entityIdentificationKeyForPrimaryPropertyValueAndClassName($primaryPropertyValue, $className) {
+        return $primaryPropertyValue . static::ENTITY_IDENTIFICATION_KEY_SPEARATOR . $className::entityInformation()->name;
     }
 
     /**
