@@ -177,7 +177,7 @@ class One extends \obo\Annotation\Base\Property {
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-                if ($arguments["entityAsPrimaryPropertyValue"] AND $this->connectViaProperty === null) return;
+                if ($arguments["entityAsEntityIdentificationKey"] AND $this->connectViaProperty === null) return;
 
                 $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                 $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);

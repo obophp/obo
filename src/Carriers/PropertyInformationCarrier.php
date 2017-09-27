@@ -111,4 +111,39 @@ class PropertyInformationCarrier extends \obo\BaseObject {
      * @var array
      */
     public $declaredInClasses = [];
+
+    /**
+     * @return \obo\Annotation\Base\Property|null
+     */
+    public function getRelationshipAnnotation() {
+        foreach ($this->annotations as $annotation) {
+            if ($annotation instanceof \obo\Annotation\Property\One || $annotation instanceof \obo\Annotation\Property\Many) {
+                return $annotation;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRelationship() {
+        return ($this->getRelationshipAnnotation() !== null);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRelationshipOne() {
+        return ($this->getRelationshipAnnotation() instanceof \obo\Annotation\Property\One);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRelationshipMany() {
+        return ($this->getRelationshipAnnotation() instanceof \obo\Annotation\Property\Many);
+    }
+
 }

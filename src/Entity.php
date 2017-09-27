@@ -242,19 +242,19 @@ abstract class Entity  extends \obo\BaseObject {
 
     /**
      * @param string $propertyName
-     * @param bool $entityAsPrimaryPropertyValue
+     * @param bool $entityAsEntityIdentificationKey
      * @param bool $triggerEvents
      * @param bool $autoCreate
      * @return mixed
      * @throws Exceptions\PropertyNotFoundException
      * @throws Exceptions\ServicesException
      */
-    public function &valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue = false, $triggerEvents = true, $autoCreate = true) {
+    public function &valueForPropertyWithName($propertyName, $entityAsEntityIdentificationKey = false, $triggerEvents = true, $autoCreate = true) {
         if (!$this->hasPropertyWithName($propertyName)) {
 
             if ($pos = \strpos($propertyName, "_")) {
                 if (($subPropertyValue = $this->valueForPropertyWithName(\substr($propertyName, 0, $pos))) instanceof \obo\Entity) {
-                    return $subPropertyValue->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsPrimaryPropertyValue, $triggerEvents);
+                    return $subPropertyValue->valueForPropertyWithName(substr($propertyName, $pos + 1), $entityAsEntityIdentificationKey, $triggerEvents);
                 } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
 
@@ -284,7 +284,7 @@ abstract class Entity  extends \obo\BaseObject {
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
 
         if ($triggerEvents) {
-            \obo\obo::$eventManager->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue, "autoCreate" => $autoCreate]);
+            \obo\obo::$eventManager->notifyEventForEntity("beforeRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsEntityIdentificationKey" => $entityAsEntityIdentificationKey, "autoCreate" => $autoCreate]);
         }
 
         if ($propertyInformation->getterName === "") {
@@ -294,10 +294,21 @@ abstract class Entity  extends \obo\BaseObject {
         }
 
         if ($triggerEvents) {
-            \obo\obo::$eventManager->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsPrimaryPropertyValue" => $entityAsPrimaryPropertyValue]);
+            \obo\obo::$eventManager->notifyEventForEntity("afterRead" . \ucfirst($propertyName), $this, ["propertyName" => $propertyName, "entityAsEntityIdentificationKey" => $entityAsEntityIdentificationKey]);
         }
 
-        if ($entityAsPrimaryPropertyValue === true AND $value instanceof \obo\Entity) $value = $value->primaryPropertyValue();
+        if ($entityAsEntityIdentificationKey === true) {
+            if ($propertyInformation->hasRelationshipOne() && $value) {
+                if ($value instanceof \obo\Entity) {
+                    $value = $value->entityIdentificationKey();
+                } else {
+                    $className = ($propertyInformation->hasRelationshipOne() && $propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) ? $this->valueForPropertyWithName($propertyInformation->relationship->entityClassNameToBeConnectedInPropertyWithName) : $propertyInformation->relationship->entityClassNameToBeConnected;
+                    $value = \obo\obo::$identityMapper->entityIdentificationKeyForPrimaryPropertyValueAndClassName($value, $className);
+                }
+            } elseif ($value instanceof \obo\Entity) {
+                $value = $value->entityIdentificationKey();
+            }
+        }
 
         return $value;
     }
@@ -412,10 +423,10 @@ abstract class Entity  extends \obo\BaseObject {
 
     /**
      * @param array | \Iterator | null $onlyFromList
-     * @param bool $entityAsPrimaryPropertyValue
+     * @param bool $entityAsEntityIdentificationKey
      * @return array
      */
-    public function propertiesAsArray($onlyFromList = null, $entityAsPrimaryPropertyValue = true) {
+    public function propertiesAsArray($onlyFromList = null, $entityAsEntityIdentificationKey = true) {
         $data = [];
 
         if ($onlyFromList !== null) {
@@ -426,7 +437,7 @@ abstract class Entity  extends \obo\BaseObject {
 
         foreach ($propertiesNames as $propertyName) {
             try {
-                $data[$propertyName] = $this->valueForPropertyWithName($propertyName, $entityAsPrimaryPropertyValue);
+                $data[$propertyName] = $this->valueForPropertyWithName($propertyName, $entityAsEntityIdentificationKey);
             } catch (\obo\Exceptions\PropertyNotFoundException $exc) {
 
             }
@@ -548,11 +559,11 @@ abstract class Entity  extends \obo\BaseObject {
 
     /**
      * @param array | \Iterator | null $onlyFromList
-     * @param bool $entityAsPrimaryPropertyValue
+     * @param bool $entityAsEntityIdentificationKey
      * @param bool $onlyNonPersistentChanges
      * @return array
      */
-    public function changedProperties($onlyFromList = null, $entityAsPrimaryPropertyValue = true, $onlyNonPersistentChanges = false) {
+    public function changedProperties($onlyFromList = null, $entityAsEntityIdentificationKey = true, $onlyNonPersistentChanges = false) {
         if ($this->isBasedInRepository()) {
 
             $propertiesChanges = $this->propertiesChanges;
@@ -564,13 +575,13 @@ abstract class Entity  extends \obo\BaseObject {
             }
 
             if ($onlyFromList === null) {
-                return $this->propertiesAsArray($propertiesChanges, $entityAsPrimaryPropertyValue);
+                return $this->propertiesAsArray($propertiesChanges, $entityAsEntityIdentificationKey);
             } else {
-                return $this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($propertiesChanges))), $entityAsPrimaryPropertyValue);
+                return $this->propertiesAsArray(array_flip(array_intersect(array_keys($onlyFromList), array_keys($propertiesChanges))), $entityAsEntityIdentificationKey);
             }
 
         } else {
-            return $this->propertiesAsArray($onlyFromList, $entityAsPrimaryPropertyValue);
+            return $this->propertiesAsArray($onlyFromList, $entityAsEntityIdentificationKey);
         }
     }
 
@@ -589,14 +600,20 @@ abstract class Entity  extends \obo\BaseObject {
         $changedProperties = $this->changedProperties($this->entityInformation()->persistablePropertiesNames, true, true);
 
         foreach ($this->propertiesInformation() as $propertyInformation) {
+            if ($propertyInformation->hasRelationshipOne() && isset($changedProperties[$propertyInformation->name])) {
+                $value = $this->valueForPropertyWithName($propertyInformation->name);
+                $changedProperties[$propertyInformation->name] = ($value instanceof \obo\Entity) ? $value->primaryPropertyValue() : $value;
+            }
+
             if ($propertyInformation->persistable
-                    AND ($relationship = $propertyInformation->relationship) instanceof \obo\Relationships\One
-                    AND $relationship->connectViaProperty !== ""
+                    AND $propertyInformation->hasRelationshipOne()
+                    AND $propertyInformation->relationship->connectViaProperty !== ""
                     AND isset($propertiesChanges[$propertyInformation->name])
                     AND $this->valueForPropertyWithName($propertyInformation->name, true) != ((($lastPersistedValue = $propertiesChanges[$propertyInformation->name]["lastPersistedValue"]) instanceof \obo\Entity) ? $lastPersistedValue->primaryPropertyValue() : $lastPersistedValue)
                     AND !isset($changedProperties[$propertyInformation->name])
                 ) {
-                    $changedProperties[$propertyInformation->name] = $this->valueForPropertyWithName($propertyInformation->name, true);
+                    $value = $this->valueForPropertyWithName($propertyInformation->name);
+                    $changedProperties[$propertyInformation->name] = ($value instanceof \obo\Entity) ? $value->primaryPropertyValue() : $value;
             }
         }
 
