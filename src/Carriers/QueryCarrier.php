@@ -38,6 +38,11 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
     protected $join = ["query" => "", "data" => []];
 
     /**
+     * @var bool
+     */
+    protected $distinct = false;
+
+    /**
      * @return string
      */
     public function getDefaultEntityClassName() {
@@ -111,6 +116,22 @@ class QueryCarrier extends \obo\Carriers\QuerySpecification implements \obo\Inte
     public function join() {
         $this->processArguments(\func_get_args(), $this->join, " ");
         return $this;
+    }
+
+    /**
+     * @param bool $flag
+     * @return \obo\Carriers\QueryCarrier
+     */
+    public function distinct($flag = true) {
+        $this->distinct = (bool) $flag;
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDistinct() {
+        return $this->distinct;
     }
 
     /**
