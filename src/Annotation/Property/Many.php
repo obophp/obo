@@ -144,7 +144,7 @@ class Many extends \obo\Annotation\Base\Property {
             "onClassWithName" => $this->entityInformation->className,
             "name" => "beforeRead" . \ucfirst($this->propertyInformation->name),
             "actionAnonymousFunction" => function($arguments) {
-                if ($arguments["entityAsPrimaryPropertyValue"]) return;
+                if ($arguments["entityAsEntityIdentificationKey"]) return;
 
                     $propertyInformation = $arguments["entity"]->informationForPropertyWithName($arguments["propertyName"]);
                     $currentPropertyValue = $arguments["entity"]->valueForPropertyWithName($arguments["propertyName"]);
