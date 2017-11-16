@@ -123,6 +123,14 @@ class EntityTest extends \Tester\TestCase {
                             "zip" => self::DEFAULT_ADDRESS_ZIP,
                         ]]);
 
+        $newAddressSpecification = \obo\Tests\Assets\Entities\Contacts\AddressManager::queryCarrier()
+                ->select(\obo\Tests\Assets\Entities\Contacts\AddressManager::constructSelect())
+                ->where("AND {id} IN (?) AND {owner} = ? AND {ownerEntity} = ?", ["___0"], 1, \obo\Tests\Assets\Entities\Contacts\Contact::entityInformation()->name);
+
+        $dataStorageMock->shouldReceive("dataForQuery")
+                        ->with(\equalTo($newAddressSpecification))
+                        ->andReturnNull();
+
         $dataStorageMock->setDefaultDataForQueryBehavior($dataStorageMock);
 
         return $dataStorageMock;
@@ -221,7 +229,6 @@ class EntityTest extends \Tester\TestCase {
         $entity->name = $originalName;
         \Tester\Assert::false($entity->changed());
 
-
         $originalNoPersitedProperty = $entity->noPersitedProperty;
         $entity->noPersitedProperty = "ChangedValue";
         \Tester\Assert::false($entity->changed(true));
@@ -267,6 +274,61 @@ class EntityTest extends \Tester\TestCase {
         $contact->administrativeEmail->save();
         $contact->defaultPhone->save();
         \Tester\Assert::same(["administrativeEmail" => 3], $contact->dataToStore());
+    }
+
+    public function testPrimaryKeyValue() {
+        \Tester\Assert::exception(function() {
+            $item = \obo\Tests\Assets\ItemManager::item([
+                "id" => "_AB",
+                "text" => "Text"
+            ]);
+        },"\obo\Exceptions\BadValueException");
+
+        \Tester\Assert::exception(function() {
+            $item = \obo\Tests\Assets\ItemManager::item([
+                "id" => "A_B",
+                "text" => "Text"
+            ]);
+        },"\obo\Exceptions\BadValueException");
+
+        $item = \obo\Tests\Assets\ItemManager::item([
+            "id" => "AB",
+            "text" => "Text"
+            ]);
+        \Tester\Assert::same("AB", $item->primaryPropertyValue());
+    }
+
+    public function testNewItemIntoCollection() {
+        $newAddress = [
+            "addresses__0_street" => self::DEFAULT_ADDRESS_STREET,
+            "addresses__0_city" => self::DEFAULT_ADDRESS_CITY,
+            "addresses__0_zip" => self::DEFAULT_ADDRESS_ZIP,
+            "addresses__0_note_text" => self::DEFAULT_NOTE,
+        ];
+        $dataStorageMock = $this->createDataStorageMockForChangePropertiesOfStoredEntity();
+        \obo\Tests\Assets\Entities\Contacts\ContactManager::setDataStorage($dataStorageMock);
+        \obo\Tests\Assets\Entities\Contacts\AddressManager::setDataStorage($dataStorageMock);
+
+        $contact = \obo\Tests\Assets\Entities\Contacts\ContactManager::contact(1);
+        $contact->setValuesPropertiesFromArray($newAddress);
+        $contact->changeValuesPropertiesFromArray($newAddress);
+        \Tester\Assert::same($newAddress, $contact->propertiesAsArray([
+            "addresses__0_street" => true,
+            "addresses__0_city" => true,
+            "addresses__0_zip" => true,
+            "addresses__0_note_text" => true
+            ]));
+
+        \Tester\Assert::same(self::DEFAULT_ADDRESS_STREET, $contact->addresses["___0"]->street);
+        \Tester\Assert::same(self::DEFAULT_ADDRESS_CITY, $contact->addresses["___0"]->city);
+        \Tester\Assert::same(self::DEFAULT_ADDRESS_ZIP, $contact->addresses["___0"]->zip);
+        \Tester\Assert::same(self::DEFAULT_NOTE, $contact->addresses["___0"]->note->text);
+
+        $contact->setValueForPropertyWithName("700 30", "addresses__0_zip");
+        \Tester\Assert::same("700 30", $contact->addresses["___0"]->zip);
+
+        $contact->setValueForPropertyWithName("ZIP was changed", "addresses__0_note_text");
+        \Tester\Assert::same("ZIP was changed", $contact->addresses["___0"]->note->text);
     }
 
 }
