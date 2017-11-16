@@ -73,6 +73,13 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @return bool
+     */
+    public function getEntitiesAreLoaded() {
+        return $this->entitiesAreLoaded;
+    }
+
+    /**
      * @return string
      */
     public function getEntitiesClassName() {
