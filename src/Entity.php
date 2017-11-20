@@ -320,21 +320,11 @@ abstract class Entity  extends \obo\Object {
                 } elseif ($subPropertyValue instanceof \obo\Relationships\EntitiesCollection) {
                     $propertyName = substr($propertyName, $pos + 1);
                     $pos = \strpos($propertyName, "_");
-                    if ($pos === 0) {
-                        $pos = \strpos($propertyName, "_", 1);
-                        $index = "___" . \substr($propertyName, 1, $pos - 1);
-                    } else {
-                        $index = \substr($propertyName, 0, $pos);
-                    }
-                    return $subPropertyValue->variableForName($index)->setValueForPropertyWithName($value, \substr($propertyName, $pos + 1));
+                    return $subPropertyValue->variableForName(\substr($propertyName, 0, $pos))->setValueForPropertyWithName($value, \substr($propertyName, $pos + 1));
                 }
             }
 
             throw new \obo\Exceptions\PropertyNotFoundException("Can't write to the property with name '{$propertyName}', does not exist in entity '".$this->className()."'");
-        }
-
-        if ($this->primaryPropertyName() === $propertyName && \is_string($value) && \strpos($value, "_") !== false) {
-            throw new \obo\Exceptions\BadValueException("Primary property value must not contain '_'. '{$value}' given.");
         }
 
         $propertyInformation = $this->informationForPropertyWithName($propertyName);
