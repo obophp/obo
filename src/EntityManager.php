@@ -77,11 +77,26 @@ abstract class EntityManager  extends \obo\Object {
      * @internal
      * @return \obo\Entity
      */
-    public static function emptyEntity() {
+    protected static function emptyEntity() {
         $entityClassName = self::classNameManagedEntity();
         $entity = new $entityClassName;
         $entity->setDataStorage(self::dataStorage());
         return $entity;
+    }
+
+    /**
+     * @internal
+     * @param mixed $primaryPropertyValue
+     * @return \obo\Entity
+     */
+    protected static function mappedEntity($primaryPropertyValue) {
+        $entity = self::emptyEntity();
+        $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
+        $primaryPropertyDataType = $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType;
+        if (!$primaryPropertyDataType->validate($primaryPropertyDataType->sanitizeValue($primaryPropertyValue), false)) throw new \obo\Exceptions\BadDataTypeException("Can't create entity from value " . (\is_scalar($primaryPropertyValue) ? "'" . print_r($primaryPropertyValue, true) . "'" : "") . " of '" . \gettype($primaryPropertyValue) . "' datatype. Primary property '" . $primaryPropertyName . "' in entity '" . self::classNameManagedEntity() . "' is of '" . $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->name() . "' datatype.");
+        $entity->setValueForPropertyWithName($primaryPropertyValue, $primaryPropertyName);
+
+        return \obo\obo::$identityMapper->mappedEntity($entity) ?: $entity;
     }
 
     /**
@@ -95,17 +110,17 @@ abstract class EntityManager  extends \obo\Object {
      * @throws \obo\Exceptions\ServicesException
      */
     public static function entityWithPrimaryPropertyValue($primaryPropertyValue, $ignoreSoftDelete = false) {
-        $entity = self::emptyEntity();
-
-        $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
-        $primaryPropertyDataType = $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType;
-        if (!$primaryPropertyDataType->validate($primaryPropertyDataType->sanitizeValue($primaryPropertyValue), false)) throw new \obo\Exceptions\BadDataTypeException("Can't create entity from value " . (\is_scalar($primaryPropertyValue) ? "'" . print_r($primaryPropertyValue, true) . "'" : "") . " of '" . \gettype($primaryPropertyValue) . "' datatype. Primary property '" . $primaryPropertyName . "' in entity '" . self::classNameManagedEntity() . "' is of '" . $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType->name() . "' datatype.");
-        $entity->setValueForPropertyWithName($primaryPropertyValue, $primaryPropertyName);
-        $entity = \obo\obo::$identityMapper->mappedEntity($entity) ?: $entity;
+        $entity = self::mappedEntity($primaryPropertyValue);
 
         if (!$entity->isInitialized()) {
             $data = self::rawDataForEntity($entity, $ignoreSoftDelete);
-            if (!count($data)) throw new \obo\Exceptions\EntityNotFoundException("Entity '" . self::classNameManagedEntity() . "' with primary property value '{$primaryPropertyName} = {$primaryPropertyValue}' does not exist in the repository or is deleted");
+
+            if (!$data) {
+                $entityClassName = self::classNameManagedEntity();
+                $primaryPropertyName = $entityClassName::entityInformation()->primaryPropertyName;
+                throw new \obo\Exceptions\EntityNotFoundException("Entity '" . $entityClassName . "' with primary property value '{$primaryPropertyName} = {$primaryPropertyValue}' does not exist in the repository or is deleted");
+            }
+
             return self::entityFromRawData($data);
         }
 
@@ -119,18 +134,14 @@ abstract class EntityManager  extends \obo\Object {
      * @return \obo\Entity
      */
     public static function entityFromArray($data, $loadOriginalData = false, $overwriteOriginalData = true) {
-        $entity = self::emptyEntity();
-
-        $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
+        $entityClassName = self::classNameManagedEntity();
+        $primaryPropertyName = $entityClassName::entityInformation()->primaryPropertyName;
 
         if (isset($data[$primaryPropertyName]) OR \array_key_exists($primaryPropertyName, $data)) {
-            $entity->setValueForPropertyWithName($data[$primaryPropertyName], $primaryPropertyName);
+            $entity = self::mappedEntity($data[$primaryPropertyName]);
             unset($data[$primaryPropertyName]);
-        }
-
-        if (($mappedEntity = \obo\obo::$identityMapper->mappedEntity($entity)) instanceof \obo\Entity) {
-            $entity = $mappedEntity;
         } else {
+            $entity = self::emptyEntity();
             \obo\obo::$eventManager->registerEvent(new \obo\Services\Events\Event([
                 "onObject" => $entity,
                 "name" => "afterInsert",
