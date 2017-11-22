@@ -24,6 +24,11 @@ class obo extends \obo\BaseObject {
     public static $developerMode = false;
 
     /**
+     * @var string
+     */
+    public static $environmentVersion = self::_VERSION;
+
+    /**
      * @var array
      */
     protected static $modelsDirs = [];
@@ -126,7 +131,7 @@ class obo extends \obo\BaseObject {
         \obo\Annotation\CoreAnnotations::register(self::$entitiesExplorer);
         \obo\DataType\CoreDataTypes::register(self::$entitiesExplorer);
 
-        self::$entitiesInformation = new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, self::$entitiesExplorer, self::$cache);
+        self::$entitiesInformation = new \obo\Services\EntitiesInformation\Information(self::$modelsDirs, self::$entitiesExplorer, self::$cache, self::$environmentVersion);
     }
 
     /**
