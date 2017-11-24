@@ -21,6 +21,9 @@ class Information extends \obo\Object {
     /** @var \obo\Interfaces\ICache */
     protected $cache = null;
 
+    /** @var string */
+    protected $environmentVersion = null;
+
     /** @var array */
     protected $entitiesListByEntitiesNames = null;
 
@@ -40,11 +43,13 @@ class Information extends \obo\Object {
      * @param array $modelsDirs
      * @param \obo\Services\EntitiesInformation\Explorer $explorer
      * @param \obo\Interfaces\ICache $cache
+     * @param string $environmentVersion
      */
-    public function __construct(array $modelsDirs, \obo\Services\EntitiesInformation\Explorer $explorer, \obo\Interfaces\ICache $cache) {
+    public function __construct(array $modelsDirs, \obo\Services\EntitiesInformation\Explorer $explorer, \obo\Interfaces\ICache $cache, $environmentVersion = null) {
         $this->explorer = $explorer;
         $this->cache = $cache;
         $this->modelsDirs = $modelsDirs;
+        $this->environmentVersion = $environmentVersion;
         $this->lockFilePath = \obo\obo::tempDir() . "/cache.lock";
         if (\obo\obo::$developerMode) $this->validateCache();
     }
@@ -121,7 +126,7 @@ class Information extends \obo\Object {
      * @return string
      */
     protected function calculateChangesHash() {
-        $lastChange = "";
+        $lastChange = 0;
 
         foreach ($this->modelsDirs as $dir) {
             $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir), \RecursiveDirectoryIterator::CURRENT_AS_FILEINFO);
@@ -132,7 +137,7 @@ class Information extends \obo\Object {
             }
         }
 
-        return \md5($lastChange);
+        return \sha1($this->environmentVersion . $lastChange);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace obo\Tests;
+namespace obo\Tests\EntityInformation;
 
 use Tester\Assert;
 
@@ -9,7 +9,7 @@ require __DIR__ . "/../../bootstrap.php";
 /**
  * @testCase
  */
-class EntityInformationTest extends \Tester\TestCase {
+class EntityNameTest extends \Tester\TestCase {
 
     public function testEntityClassNameForEntityWithName() {
         \Tester\Assert::same("obo\Tests\Assets\Entities\Contacts\Contact", \obo\obo::$entitiesInformation->entityClassNameForEntityWithName("Contact"));
@@ -20,4 +20,4 @@ class EntityInformationTest extends \Tester\TestCase {
 
 }
 
-(new EntityInformationTest())->run();
+(new EntityNameTest())->run();
