@@ -221,7 +221,6 @@ class EntityTest extends \Tester\TestCase {
         $entity->name = $originalName;
         \Tester\Assert::false($entity->changed());
 
-
         $originalNoPersitedProperty = $entity->noPersitedProperty;
         $entity->noPersitedProperty = "ChangedValue";
         \Tester\Assert::false($entity->changed(true));

@@ -94,7 +94,11 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     protected function &variables(array $requiredItems = null) {
         if ($requiredItems !== null) {
             $variables = parent::variables();
-            foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
+
+            foreach ($requiredItems as $key => $requiredItem) {
+                if ((\is_string($requiredItem) && \substr($requiredItem, 0, 3) === "___")
+                    || isset($variables[$requiredItem])) unset($requiredItems[$key]);
+            }
         }
 
         if (!$this->entitiesAreLoaded AND ($requiredItems === null OR (\is_array($requiredItems) AND (boolean) $requiredItems))) {
