@@ -90,6 +90,9 @@ abstract class EntityManager  extends \obo\BaseObject {
      * @return \obo\Entity
      */
     protected static function mappedEntity($primaryPropertyValue) {
+        if (\is_string($primaryPropertyValue) && \strpos($primaryPropertyValue, "_") !== false) {
+            throw new \obo\Exceptions\BadValueException("Primary property value must not contain '_'. '{$primaryPropertyValue}' given.");
+        }
         $entity = self::emptyEntity();
         $primaryPropertyName = $entity->entityInformation()->primaryPropertyName;
         $primaryPropertyDataType = $entity->entityInformation()->informationForPropertyWithName($primaryPropertyName)->dataType;
