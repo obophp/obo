@@ -6,15 +6,10 @@ php:
     - 7.0
     - 7.1
     - 7.2
-    - hhvm
 
 env:
     global:
         secure: A2MqbdfarhYnXh9EqiMyWIE/iFDf8Rb9H5LksNFNUJ4GXVy2dUXlYp1nrO81zMNDFyWa4gV+ZrQ5yBe7Jeb9XdoU82HcALt+QejhX2cit7LOUi/346I8gTKLg11wzXsZJ5dmn+47kQ6ibv2MGVhfmPxhasMlmaoq2ZiEZbWUL/8=
-
-matrix:
-    allow_failures:
-        - php: hhvm
 
 before_script:
     # update Composer to current version, install Nette Tester & Code Checker
