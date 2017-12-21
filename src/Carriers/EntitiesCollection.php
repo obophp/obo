@@ -52,7 +52,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
             foreach ($requiredItems as $key => $requiredItem) if (isset($variables[$requiredItem])) unset($requiredItems[$key]);
         }
 
-        if (!$this->entitiesAreLoaded AND ($requiredItems === null OR !$requiredItems)) {
+        if (!$this->entitiesAreLoaded AND ($requiredItems === null OR (\is_array($requiredItems) AND (boolean) $requiredItems))) {
             $this->entitiesAreLoaded = $requiredItems === null;
             $this->loadEntities($requiredItems);
         }
@@ -164,7 +164,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
      * @param \obo\Interfaces\IQuerySpecification $specification
      * @return int
      */
-    public function countEntities (\obo\Interfaces\IQuerySpecification $specification = null) {
+    public function countEntities(\obo\Interfaces\IQuerySpecification $specification = null) {
         $ownedEntityClassName = $this->entitiesClassName;
         $ownedEntityManagerName = $ownedEntityClassName::entityInformation()->managerName;
         return $ownedEntityManagerName::countRecords($ownedEntityManagerName::queryCarrier()->addSpecification($this->getSpecification()->addSpecification($specification)));
@@ -205,9 +205,9 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
-     * @param string $name
+     * @param mixed $name
      * @return mixed
-     * @throws \obo\Exceptions\VariableNotFoundException
+     * @throws \obo\Exceptions\EntityNotFoundException
      */
     public function &variableForName($name) {
         $variables = $this->variables([$name]);
@@ -216,6 +216,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @internal
      * @param mixed $value
      * @param string $variableName
      * @return mixed
@@ -225,6 +226,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @internal
      * @param string $variableName
      * @return void
      */
@@ -243,6 +245,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @internal
      * @param mixed $offset
      * @param mixed $value
      * @return void
@@ -252,6 +255,7 @@ class EntitiesCollection extends \obo\Carriers\DataCarrier implements \obo\Inter
     }
 
     /**
+     * @internal
      * @param mixed $offset
      * @return void
      */
