@@ -79,7 +79,7 @@ class StoreTo extends \obo\Annotation\Base\Property {
             throw new \obo\Exceptions\BadDataTypeException("Property '$this->propertyToStore' of entity '{$this->entityInformation->className}' must be Obo Array dataType");
 
         $rawData = $arguments["entity"]->valueForPropertyWithName($this->propertyToStore);
-        $rawData[$this->propertyInformation->name] = $arguments["entity"]->valueForPropertyWithName($this->propertyInformation->name, true, false);
+        $rawData[$this->propertyInformation->name] = $arguments["propertyValue"]["new"];
         $arguments["entity"]->setValueForPropertyWithName($rawData, $this->propertyToStore);
     }
 
