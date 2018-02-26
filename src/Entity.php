@@ -722,7 +722,7 @@ abstract class Entity  extends \obo\BaseObject {
      */
     public function discardChanges() {
         if ($this->isSavingInProgress()) throw new \obo\Exceptions\Exception("Can't discard changes, the entity is in the process of saving");
-        foreach ($this->propertiesChanges as $propertyName => $changeStatus) $this->setValueForPropertyWithName($changeStatus["oldValue"], $propertyName);
+        foreach ($this->propertiesChanges as $propertyName => $changeStatus) $this->setValueForPropertyWithName($changeStatus["originalValue"], $propertyName);
     }
 
     /**
