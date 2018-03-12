@@ -97,10 +97,10 @@ class One extends \obo\Relationships\Relationship {
 
         if ($owner->isBasedInRepository()) {
             if (\count($foreignKey) === 1) {
-                $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
+                $specification->where("AND {{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue());
             } else {
                 $this->ownerNameInProperty = $foreignKey[1];
-                $specification->where("{{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->name);
+                $specification->where("AND {{$foreignKey[0]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER . " AND {{$foreignKey[1]}} = " . \obo\Interfaces\IQuerySpecification::PARAMETER_PLACEHOLDER, $owner->primaryPropertyValue(), $owner->entityInformation()->name);
             }
 
             if ($entity = $entityManagerName::findEntity($specification, false)) return $entity;
