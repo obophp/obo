@@ -38,4 +38,11 @@ class DateIntervalDataType extends \obo\DataType\Base\DataType {
         return false;
     }
 
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return false;
+    }
+
 }

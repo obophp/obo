@@ -18,22 +18,34 @@ abstract class DataType extends \obo\BaseObject implements \obo\Interfaces\IData
     protected $propertyInformation = null;
 
     /**
+     * @var bool
+     */
+    public $storageDataCompression = false;
+
+    /**
      * @param \obo\Carriers\PropertyInformationCarrier $propertyInformation
      * @param array $options
+     * @throws \obo\Exceptions\Exception
      */
     public function __construct(\obo\Carriers\PropertyInformationCarrier $propertyInformation, array $options = []) {
         foreach (static::optionsStructure() as $optionName => $requiredOption) {
-            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys (\array_filter(static::optionsStructure(), function($value) {return $value;
-            }))) . "]");
+            if ($requiredOption AND !(isset($options[$optionName]) OR \array_key_exists($optionName, $options))) throw new \obo\Exceptions\Exception("Options don't contain one or more required option from  [" . \implode(", ", \array_keys(\array_filter(static::optionsStructure(), function ($value) {
+                    return $value;
+                }))) . "]");
         }
 
         foreach ($options as $optionName => $optionValue) {
-            if (!(isset(static::optionsStructure()[$optionName]) OR \array_key_exists($optionName, static::optionsStructure()))) throw new \obo\Exceptions\Exception("Option '{$optionName}' can not be set, the data type is not supported");
+            if (!(isset(static::optionsStructure()[$optionName]) OR \array_key_exists($optionName, static::optionsStructure()))) throw new \obo\Exceptions\Exception("Option '{$optionName}' can not be set, it is not supported by the '". static::name() . "' data type");
             $this->$optionName = $optionValue;
         }
 
         $this->propertyInformation = $propertyInformation;
-        foreach ($options as $optionName => $optionValue) $this->$optionName = $optionValue;
+
+        foreach ($options as $optionName => $optionValue) {
+            if ($optionName === "storageCompression" && $optionValue === true && $this->storageDataCompression() === false) throw new \obo\Exceptions\Exception("Data type '" . static::name() . "' does not support data compression.");
+            $this->$optionName = $optionValue;
+        }
+
     }
 
     /**
@@ -49,7 +61,7 @@ abstract class DataType extends \obo\BaseObject implements \obo\Interfaces\IData
      * @return array
      */
     public static function optionsStructure() {
-        return [];
+        return ["storageDataCompression" => false];
     }
 
     /**

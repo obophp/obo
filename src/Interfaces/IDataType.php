@@ -34,7 +34,7 @@ interface IDataType {
     public static function dataTypeClass();
 
     /**
-     * @return array Parameter names e.g. ["lenght" => true, "unsigned" => false].
+     * @return array Parameter names e.g. ["length" => true, "unsigned" => false].
      */
     public static function optionsStructure();
 
@@ -69,5 +69,11 @@ interface IDataType {
      * @return void
      */
     public function registerEvents();
+
+    /**
+     * Is compression in specific dataType allowed?
+     * @return boolean
+     */
+    public function storageDataCompression();
 
 }

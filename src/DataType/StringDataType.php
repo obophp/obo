@@ -46,4 +46,11 @@ class StringDataType extends \obo\DataType\Base\DataType {
         return ($value === null) ? null : (string) $value;
     }
 
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return true;
+    }
+
 }

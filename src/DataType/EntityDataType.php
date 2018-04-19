@@ -49,10 +49,18 @@ class EntityDataType extends \obo\DataType\Base\DataType {
 
     /**
      * @param mixed $value
+     * @return void
      * @throws \obo\Exceptions\Exception
      */
     public static function convertValue($value) {
         throw new \obo\Exceptions\Exception("Datatype 'Entity' can't convert any value.");
+    }
+
+    /**
+     * @return bool
+     */
+    public function storageDataCompression() {
+        return false;
     }
 
 }

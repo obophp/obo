@@ -34,7 +34,7 @@ class DataType extends \obo\Annotation\Base\Property {
     public function process(array  $values) {
         parent::process($values);
 
-        if (count($values) > 1 ) {
+        if (count($values) > 1) {
             $dataTypeName = \array_shift($values);
             $dataTypeOptions = $values;
         } else {

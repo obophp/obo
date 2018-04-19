@@ -66,4 +66,11 @@ class IdentityMapper extends \obo\BaseObject {
         return isset($this->entities[$entityIdentificationKey]) ? $this->entities[$entityIdentificationKey]["entity"] : null;
     }
 
+
+    public function __destruct() {
+        foreach ($this->entities as $entity) {
+            \obo\obo::$eventManager->notifyEventForEntity("beforeDeath", $entity["entity"]);
+        }
+    }
+
 }
